@@ -3,11 +3,11 @@
 
 #include "WorkingUnit.h"
 #include "MessageInterface.h"
+#include "UpdatingFrame.h"
 #include <unordered_map>
 #include <map>
 #include <unordered_set>
 #include <functional>
-#include "UpdatingFrame.h"
 
 class Frame;
 class UpdatingFrame;

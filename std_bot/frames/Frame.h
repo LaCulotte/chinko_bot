@@ -22,7 +22,7 @@ public:
     virtual ~Frame() = default;
 
     // 'Acts' according to the message. SrcKey is there to indentify the message's source (sender)
-    virtual bool computeMessage(sp<Message> message, int srcKey) = 0;
+    virtual bool computeMessage(sp<Message> message, int srcId) = 0;
 
     // Sets Frames's parent
     virtual bool setParent(MessagingUnit* parent) { this->parent = parent; return true; };

@@ -39,7 +39,7 @@ bool ClientConnection::connectTo(string address, int port){
     }
 
     // Connects to the set adress
-    if(connect(sock, (sockaddr *) &addr_in, sizeof(sockaddr)) < 0){
+    if(connect(sock, (sockaddr *) &addr_in, sizeof(addr_in)) < 0){
         Logger::write("Cannot connect to :" + address + ".", LOG_WARNING);
         return false;
     }

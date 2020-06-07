@@ -17,6 +17,7 @@ set(SRCS
     units/WorkingUnit.cpp
     units/MessagingUnit.cpp
     units/ConnectionUnit.cpp
+    std_include/socket_include.cpp
 )
 
 add_library(std_bot ${SRCS})
