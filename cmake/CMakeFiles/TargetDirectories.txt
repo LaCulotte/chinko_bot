@@ -1,0 +1,6 @@
+/home/christophe/cpp/chinko_bot/cmake/CMakeFiles/rebuild_cache.dir
+/home/christophe/cpp/chinko_bot/cmake/CMakeFiles/chinko_bot.dir
+/home/christophe/cpp/chinko_bot/cmake/CMakeFiles/edit_cache.dir
+/home/christophe/cpp/chinko_bot/cmake/std_bot/CMakeFiles/rebuild_cache.dir
+/home/christophe/cpp/chinko_bot/cmake/std_bot/CMakeFiles/std_bot.dir
+/home/christophe/cpp/chinko_bot/cmake/std_bot/CMakeFiles/edit_cache.dir

@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/chinko_bot.dir/chinko_bot/messages/UnknownDofusMessage.cpp.o CMakeFiles/chinko_bot.dir/main.cpp.o  -o chinko_bot  std_bot/libstd_bot.a -lpthread -lstdc++fs 
