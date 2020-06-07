@@ -114,12 +114,12 @@ std_bot/clean: std_bot/CMakeFiles/std_bot.dir/clean
 CMakeFiles/chinko_bot.dir/all: std_bot/CMakeFiles/std_bot.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chinko_bot.dir/build.make CMakeFiles/chinko_bot.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chinko_bot.dir/build.make CMakeFiles/chinko_bot.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/christophe/cpp/chinko_bot/cmake/CMakeFiles --progress-num=1,2,3 "Built target chinko_bot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/christophe/cpp/chinko_bot/cmake/CMakeFiles --progress-num=1,2,3,4 "Built target chinko_bot"
 .PHONY : CMakeFiles/chinko_bot.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/chinko_bot.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/christophe/cpp/chinko_bot/cmake/CMakeFiles 16
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/christophe/cpp/chinko_bot/cmake/CMakeFiles 17
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/chinko_bot.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/christophe/cpp/chinko_bot/cmake/CMakeFiles 0
 .PHONY : CMakeFiles/chinko_bot.dir/rule
@@ -141,7 +141,7 @@ CMakeFiles/chinko_bot.dir/clean:
 std_bot/CMakeFiles/std_bot.dir/all:
 	$(MAKE) $(MAKESILENT) -f std_bot/CMakeFiles/std_bot.dir/build.make std_bot/CMakeFiles/std_bot.dir/depend
 	$(MAKE) $(MAKESILENT) -f std_bot/CMakeFiles/std_bot.dir/build.make std_bot/CMakeFiles/std_bot.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/christophe/cpp/chinko_bot/cmake/CMakeFiles --progress-num=4,5,6,7,8,9,10,11,12,13,14,15,16 "Built target std_bot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/christophe/cpp/chinko_bot/cmake/CMakeFiles --progress-num=5,6,7,8,9,10,11,12,13,14,15,16,17 "Built target std_bot"
 .PHONY : std_bot/CMakeFiles/std_bot.dir/all
 
 # Build rule for subdir invocation for target.

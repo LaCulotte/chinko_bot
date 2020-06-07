@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/chinko_bot.dir/chinko_bot/messages/DofusMessageTypeHandler.cpp.o"
   "CMakeFiles/chinko_bot.dir/chinko_bot/messages/UnknownDofusMessage.cpp.o"
   "CMakeFiles/chinko_bot.dir/main.cpp.o"
   "chinko_bot"

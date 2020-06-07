@@ -7,8 +7,8 @@ class UnknownDofusMessage : public PrefixedMessage {
 public:
     // Constructor
     UnknownDofusMessage();
-    // Constructor with length initialisation
-    UnknownDofusMessage(int length);
+    // Constructor with real_id initialisation
+    UnknownDofusMessage(int real_id);
     // Copy constructor
     UnknownDofusMessage(const UnknownDofusMessage& other) = default;
 

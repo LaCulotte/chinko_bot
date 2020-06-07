@@ -3,8 +3,8 @@
 UnknownDofusMessage::UnknownDofusMessage() : PrefixedMessage() {
 }
 
-UnknownDofusMessage::UnknownDofusMessage(int length) {
-    this->length = length;
+UnknownDofusMessage::UnknownDofusMessage(int real_id) {
+    this->real_id = real_id;
 }
 
 bool UnknownDofusMessage::serialize(sp<MessageDataBuffer> output) {

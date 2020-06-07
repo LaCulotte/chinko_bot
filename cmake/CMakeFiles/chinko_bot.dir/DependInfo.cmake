@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/christophe/cpp/chinko_bot/chinko_bot/messages/DofusMessageTypeHandler.cpp" "/home/christophe/cpp/chinko_bot/cmake/CMakeFiles/chinko_bot.dir/chinko_bot/messages/DofusMessageTypeHandler.cpp.o"
   "/home/christophe/cpp/chinko_bot/chinko_bot/messages/UnknownDofusMessage.cpp" "/home/christophe/cpp/chinko_bot/cmake/CMakeFiles/chinko_bot.dir/chinko_bot/messages/UnknownDofusMessage.cpp.o"
   "/home/christophe/cpp/chinko_bot/main.cpp" "/home/christophe/cpp/chinko_bot/cmake/CMakeFiles/chinko_bot.dir/main.cpp.o"
   )

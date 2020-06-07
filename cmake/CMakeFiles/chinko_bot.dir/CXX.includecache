@@ -6,6 +6,20 @@
 
 #IncludeRegexTransform: 
 
+../chinko_bot/messages/DofusMessageTypeHandler.h
+MessageTypeHandler.h
+../chinko_bot/messages/MessageTypeHandler.h
+functional
+-
+unordered_map
+-
+UnknownDofusMessage.h
+../chinko_bot/messages/UnknownDofusMessage.h
+
+../chinko_bot/messages/UnknownDofusMessage.h
+PrefixedMessage.h
+../chinko_bot/messages/PrefixedMessage.h
+
 ../std_bot/dataContainers/DataBuffer.h
 std_include.h
 ../std_bot/dataContainers/std_include.h
@@ -48,6 +62,10 @@ Logger.h
 MessageDataBuffer.h
 ../std_bot/messaging/MessageDataBuffer.h
 
+../std_bot/messaging/MessageTypeHandler.h
+Message.h
+../std_bot/messaging/Message.h
+
 ../std_bot/messaging/NetworkMessage.h
 ConnectionMessage.h
 ../std_bot/messaging/ConnectionMessage.h
@@ -78,6 +96,20 @@ thread
 mutex
 -
 
+/home/christophe/cpp/chinko_bot/chinko_bot/messages/DofusMessageTypeHandler.cpp
+DofusMessageTypeHandler.h
+/home/christophe/cpp/chinko_bot/chinko_bot/messages/DofusMessageTypeHandler.h
+
+/home/christophe/cpp/chinko_bot/chinko_bot/messages/DofusMessageTypeHandler.h
+MessageTypeHandler.h
+/home/christophe/cpp/chinko_bot/chinko_bot/messages/MessageTypeHandler.h
+functional
+-
+unordered_map
+-
+UnknownDofusMessage.h
+/home/christophe/cpp/chinko_bot/chinko_bot/messages/UnknownDofusMessage.h
+
 /home/christophe/cpp/chinko_bot/chinko_bot/messages/UnknownDofusMessage.cpp
 UnknownDofusMessage.h
 /home/christophe/cpp/chinko_bot/chinko_bot/messages/UnknownDofusMessage.h
@@ -87,4 +119,6 @@ PrefixedMessage.h
 /home/christophe/cpp/chinko_bot/chinko_bot/messages/PrefixedMessage.h
 
 /home/christophe/cpp/chinko_bot/main.cpp
+DofusMessageTypeHandler.h
+/home/christophe/cpp/chinko_bot/DofusMessageTypeHandler.h
 

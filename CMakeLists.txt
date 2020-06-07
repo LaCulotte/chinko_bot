@@ -8,6 +8,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(SRCS
     chinko_bot/messages/UnknownDofusMessage.cpp
+    chinko_bot/messages/DofusMessageTypeHandler.cpp
     main.cpp
 )
 

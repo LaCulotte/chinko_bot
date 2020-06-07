@@ -156,6 +156,33 @@ std_bot/fast:
 	$(MAKE) $(MAKESILENT) -f std_bot/CMakeFiles/std_bot.dir/build.make std_bot/CMakeFiles/std_bot.dir/build
 .PHONY : std_bot/fast
 
+chinko_bot/messages/DofusMessageTypeHandler.o: chinko_bot/messages/DofusMessageTypeHandler.cpp.o
+
+.PHONY : chinko_bot/messages/DofusMessageTypeHandler.o
+
+# target to build an object file
+chinko_bot/messages/DofusMessageTypeHandler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chinko_bot.dir/build.make CMakeFiles/chinko_bot.dir/chinko_bot/messages/DofusMessageTypeHandler.cpp.o
+.PHONY : chinko_bot/messages/DofusMessageTypeHandler.cpp.o
+
+chinko_bot/messages/DofusMessageTypeHandler.i: chinko_bot/messages/DofusMessageTypeHandler.cpp.i
+
+.PHONY : chinko_bot/messages/DofusMessageTypeHandler.i
+
+# target to preprocess a source file
+chinko_bot/messages/DofusMessageTypeHandler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chinko_bot.dir/build.make CMakeFiles/chinko_bot.dir/chinko_bot/messages/DofusMessageTypeHandler.cpp.i
+.PHONY : chinko_bot/messages/DofusMessageTypeHandler.cpp.i
+
+chinko_bot/messages/DofusMessageTypeHandler.s: chinko_bot/messages/DofusMessageTypeHandler.cpp.s
+
+.PHONY : chinko_bot/messages/DofusMessageTypeHandler.s
+
+# target to generate assembly for a file
+chinko_bot/messages/DofusMessageTypeHandler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chinko_bot.dir/build.make CMakeFiles/chinko_bot.dir/chinko_bot/messages/DofusMessageTypeHandler.cpp.s
+.PHONY : chinko_bot/messages/DofusMessageTypeHandler.cpp.s
+
 chinko_bot/messages/UnknownDofusMessage.o: chinko_bot/messages/UnknownDofusMessage.cpp.o
 
 .PHONY : chinko_bot/messages/UnknownDofusMessage.o
@@ -220,6 +247,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... chinko_bot"
 	@echo "... std_bot"
+	@echo "... chinko_bot/messages/DofusMessageTypeHandler.o"
+	@echo "... chinko_bot/messages/DofusMessageTypeHandler.i"
+	@echo "... chinko_bot/messages/DofusMessageTypeHandler.s"
 	@echo "... chinko_bot/messages/UnknownDofusMessage.o"
 	@echo "... chinko_bot/messages/UnknownDofusMessage.i"
 	@echo "... chinko_bot/messages/UnknownDofusMessage.s"
