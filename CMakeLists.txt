@@ -11,13 +11,15 @@ set(SRCS
     chinko_bot/messages/DofusMessageTypeHandler.cpp
     chinko_bot/connections/DofusClientConnection.cpp
     chinko_bot/units/dofusBotUnit/frames/AuthentificationFrame.cpp
+    chinko_bot/managers/AuthentificationManager.cpp
     main.cpp
 )
 
 add_executable(chinko_bot ${SRCS})
 
-target_include_directories(chinko_bot PUBLIC ./chinko_bot/messages)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/connections)
+target_include_directories(chinko_bot PUBLIC ./chinko_bot/managers)
+target_include_directories(chinko_bot PUBLIC ./chinko_bot/messages)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/units/dofusBotUnit)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/units/dofusBotUnit/frames)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/units/dofusBotUnit/messages)

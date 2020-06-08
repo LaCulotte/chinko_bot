@@ -1,8 +1,22 @@
 #include "AuthentificationFrame.h"
 
+AuthentificationFrame::AuthentificationFrame(){
+    manager = make_shared<AuthentificationManager>();
+}
+
 bool AuthentificationFrame::setParent(MessagingUnit *parent){
-    if(dynamic_cast<DofusBotUnit*>(parent))
-        return Frame::setParent(parent);
+    if(dynamic_cast<DofusBotUnit*>(parent)) {
+
+        if(Frame::setParent(parent)){
+        
+            if(!manager)
+                manager = make_shared<AuthentificationManager>();
+            
+            manager->setBot(dynamic_cast<DofusBotUnit*>(parent));
+
+            return true;
+        }
+    }
 
     return false;
 }
@@ -13,26 +27,33 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<UnknownDofusMessage> udMsg;
     sp<BeginAuthentificationMessage> baMsg;
+    sp<ConnectionSuccessMessage> csMsg;
+    sp<ConnectionFailureMessage> cfMsg;
 
     switch (message->getId()) {
     case BeginAuthentificationMessage::protocolId:
         baMsg = dynamic_pointer_cast<BeginAuthentificationMessage>(message);
 
-        if(true){
-            sp<DofusClientConnection> conn (new DofusClientConnection());
-            sp<ConnectionRequestMessage> crMsg(new ConnectionRequestMessage(conn, baMsg->serverAdress, baMsg->port));
-
-            if(botParent->connectionUnitId == -1){
-                botParent->connectionUnitId = parent->getMessageInterfaceOutId<ConnectionUnit>();
-                if(botParent->connectionUnitId == -1){
-                    Logger::write("A ConnectionUnit must be linked in order to begin connections.", LOG_ERROR);
-                    break;
-                }
-            }
-
-            parent->sendMessage(crMsg, botParent->connectionUnitId);
+        if(!manager){
+            Logger::write("An authentification was requested but no AuthentificationManager was created. Building one now", LOG_DEBUG);
+            manager = make_shared<AuthentificationManager>();
         }
 
+        manager->setCredentials(baMsg->username, baMsg->password);
+        manager->beginAuthentification(baMsg->serverAdress, baMsg->port);
+
+        break;
+
+    case ConnectionSuccessMessage::protocolId:
+        csMsg = dynamic_pointer_cast<ConnectionSuccessMessage>(message);
+        Logger::write("Connected to the dofus authentification server.", LOG_DEBUG);
+
+        manager->setDofusConnectionId(csMsg->connectionId);
+        break;
+
+    case ConnectionFailureMessage::protocolId:
+        cfMsg = dynamic_pointer_cast<ConnectionFailureMessage>(message);
+        Logger::write("Could not make the connect to dofus authentification server. Reason : " + cfMsg->reason, LOG_ERROR);
         break;
 
     case UnknownDofusMessage::protocolId:

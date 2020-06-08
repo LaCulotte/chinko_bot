@@ -74,8 +74,6 @@ sp<PrefixedMessage> DofusClientConnection::deserializePrefix(sp<MessageDataBuffe
     // Sets message length
     ret_message->setLength(length);
 
-    cout << prefixData->toString() << endl;
-
     return ret_message;
 }
 
