@@ -155,7 +155,7 @@ void MessageDataBuffer::writeUTFBytes(string UTF){
 string MessageDataBuffer::toString(){
     stringstream str_stream;
     for (char unit : data){
-        str_stream << (unsigned int) unit << "; ";
+        str_stream << (unsigned int) (unsigned char) unit << "; ";
     }
     return str_stream.str();
 }

@@ -1,10 +1,32 @@
-#include "DofusMessageTypeHandler.h"
+#include "DofusBotUnit.h"
+#include "ConnectionUnit.h"
 
 int main(){
-    sp<DofusMessageTypeHandler> dmth(new DofusMessageTypeHandler());
+    Logger::beginInstance();
 
-    cout << dynamic_pointer_cast<UnknownDofusMessage>(dmth->generateMessageById(UnknownDofusMessage::protocolId))->real_id << endl;
-    cout << dynamic_pointer_cast<UnknownDofusMessage>(dmth->generateMessageById(7))->real_id << endl;
+    sp<ConnectionUnit> cu (new ConnectionUnit());
+    sp<DofusBotUnit> dbu (new DofusBotUnit());
+
+    dbu->addFrame(make_shared<AuthentificationFrame>());
+    cu->initFrames();
+
+    MessagingUnit::link(cu, dbu);
+
+    cu->launch().get();
+    dbu->launch().get();
+
+    sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage("salut", "prout"));
+    dbu->sendSelfMessage(baMsg);
+
+    usleep(5000*1000);
+
+    cu->stop();
+    dbu->stop();
+
+    cu->waitThreadEnd();
+    dbu->waitThreadEnd();
+
+    Logger::endInstance();
 
     return 0;
 }
