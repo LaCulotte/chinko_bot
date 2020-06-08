@@ -11,6 +11,9 @@
 #include "ConnectionSuccessMessage.h"
 #include "ConnectionFailureMessage.h"
 
+#include "ProtocolRequiredMessage.h"
+#include "HelloConnectMessage.h"
+
 class AuthentificationManager;
 class AuthentificationFrame : public Frame {
 public :

@@ -6,6 +6,8 @@
 #include <unordered_map>
 
 #include "UnknownDofusMessage.h"
+#include "ProtocolRequiredMessage.h"
+#include "HelloConnectMessage.h"
 
 class DofusMessageTypeHandler : public MessageTypeHandler {
 public:

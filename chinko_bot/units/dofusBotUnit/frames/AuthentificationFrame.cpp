@@ -30,6 +30,9 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     sp<ConnectionSuccessMessage> csMsg;
     sp<ConnectionFailureMessage> cfMsg;
 
+    sp<ProtocolRequiredMessage> prMsg;
+    sp<HelloConnectMessage> hcMsg;
+
     switch (message->getId()) {
     case BeginAuthentificationMessage::protocolId:
         baMsg = dynamic_pointer_cast<BeginAuthentificationMessage>(message);
@@ -56,6 +59,18 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         Logger::write("Could not make the connect to dofus authentification server. Reason : " + cfMsg->reason, LOG_ERROR);
         break;
 
+    case ProtocolRequiredMessage::protocolId:
+        prMsg = dynamic_pointer_cast<ProtocolRequiredMessage>(message);
+        Logger::write("ProtocolRequiredMessage received", LOG_INFO);
+        Logger::write("Required version : " + to_string(prMsg->requiredVersion) + "; Current version : " + to_string(prMsg->currentVersion), LOG_INFO);
+        break;
+
+    case HelloConnectMessage::protocolId:
+        hcMsg = dynamic_pointer_cast<HelloConnectMessage>(message);
+        Logger::write("HelloConnectMessage received", LOG_INFO);
+        Logger::write("Salt : " + hcMsg->salt + "; Key : " + (string) hcMsg->key);
+        break;
+    
     case UnknownDofusMessage::protocolId:
         udMsg = dynamic_pointer_cast<UnknownDofusMessage>(message);
         Logger::write("Got message of unkown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
