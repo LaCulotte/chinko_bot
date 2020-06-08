@@ -38,7 +38,7 @@ sp<MessageDataBuffer> NetworkConnection::readData(int length){
     // Do something if there is data to read
     if (isThereMessage()) {
         // Reads 'length' Bytes
-        char *data = (char *) malloc(length * sizeof(char));
+        uchar *data = (uchar *) malloc(length * sizeof(uchar));
         int recv_len = recv(sock, data, length, 0);
 
         if(recv_len == 0){

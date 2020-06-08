@@ -1,7 +1,7 @@
 #include "MessageDataBuffer.h"
 
-char * MessageDataBuffer::toCharArray(){
-    char * ret = (char *) malloc(size() * sizeof(char));
+uchar * MessageDataBuffer::toCharArray(){
+    uchar * ret = (uchar *) malloc(size() * sizeof(uchar));
 
     for(int i = 0; i < size(); i++){
         ret[i] = data[i];
@@ -11,12 +11,12 @@ char * MessageDataBuffer::toCharArray(){
 }
 
 bool MessageDataBuffer::readBool(){
-    char b = read();
+    uchar b = read();
 
     return !(b == 0);
 }
 
-char MessageDataBuffer::readByte(){
+uchar MessageDataBuffer::readByte(){
     return read();
 }
 
@@ -36,7 +36,7 @@ int16_t MessageDataBuffer::readVarShort(){
     char offset = 0;
 
     for(char i = 0; i < 3; i++){
-        char byte = read();
+        uchar byte = read();
 
         ret += (byte & 127) << offset;
         offset += 7;
@@ -65,7 +65,7 @@ int MessageDataBuffer::readVarInt(){
     char offset = 0;
 
     for(char i = 0; i < 5; i++){
-        char byte = read();
+        uchar byte = read();
 
         ret += (byte & 127) << offset;
         offset += 7;
@@ -106,7 +106,7 @@ void MessageDataBuffer::writeBool(bool b){
         write(0);
 }
 
-void MessageDataBuffer::writeByte(char byte){
+void MessageDataBuffer::writeByte(uchar byte){
     write(byte);
 }
 
@@ -118,7 +118,7 @@ void MessageDataBuffer::writeShort(int16_t s){
 
 void MessageDataBuffer::writeVarShort(int16_t s){
     while (s > 0){
-        char b = s & 127;
+        uchar b = s & 127;
         s >>= 7;
         b |= (s > 0) << 7;
         write(b);
@@ -133,7 +133,7 @@ void MessageDataBuffer::writeInt(int i){
 
 void MessageDataBuffer::writeVarInt(int i){
     while (i > 0){
-        char b = i & 127;
+        uchar b = i & 127;
         i >>= 7;
         b |= (i > 0) << 7;
         write(b);
@@ -143,18 +143,18 @@ void MessageDataBuffer::writeVarInt(int i){
 void MessageDataBuffer::writeUTF(string UTF){
     writeShort(UTF.size());
 
-    for(char c : UTF)
+    for(uchar c : UTF)
         write(c);
 }
 
 void MessageDataBuffer::writeUTFBytes(string UTF){
-    for(char c : UTF)
+    for(uchar c : UTF)
         write(c);
 }
 
 string MessageDataBuffer::toString(){
     stringstream str_stream;
-    for (char unit : data){
+    for (uchar unit : data){
         str_stream << (unsigned int) (unsigned char) unit << "; ";
     }
     return str_stream.str();

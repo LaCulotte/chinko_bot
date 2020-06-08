@@ -4,30 +4,32 @@
 #include "DataBuffer.h"
 #include "Logger.h"
 
-class MessageDataBuffer : public DataBuffer<char> {
+#define uchar unsigned char
+
+class MessageDataBuffer : public DataBuffer<uchar> {
 public:
 
     // Constructor
     MessageDataBuffer() {};
-    // Constructor with char vector initialisation
-    MessageDataBuffer(vector<char> dat) : DataBuffer<char>(dat) {};
-    // Constructor with char array initialisation
-    MessageDataBuffer(char *dat, int size) : DataBuffer<char>(dat, size) {};
+    // Constructor with uchar vector initialisation
+    MessageDataBuffer(vector<uchar> dat) : DataBuffer<uchar>(dat) {};
+    // Constructor with uchar array initialisation
+    MessageDataBuffer(uchar *dat, int size) : DataBuffer<uchar>(dat, size) {};
     // Copy constructor
-    MessageDataBuffer(const MessageDataBuffer& other) : DataBuffer<char>(other) {};
+    MessageDataBuffer(const MessageDataBuffer& other) : DataBuffer<uchar>(other) {};
 
     // Copy operator
     MessageDataBuffer& operator=(const MessageDataBuffer& other) = default;
     // Destructor
     ~MessageDataBuffer() = default;
 
-    // Transforms the data vector into a char array
-    char * toCharArray();
+    // Transforms the data vector into a uchar array
+    uchar * toCharArray();
 
     // Read functions for basic data types
 
     bool readBool();
-    char readByte();
+    uchar readByte();
     int16_t readShort();
     int16_t readVarShort();
     int readInt();
@@ -38,7 +40,7 @@ public:
     // Write functions for basic data types
 
     void writeBool(bool b);
-    void writeByte(char byte);
+    void writeByte(uchar byte);
     void writeShort(int16_t s);
     void writeVarShort(int16_t s);
     void writeInt(int i);
