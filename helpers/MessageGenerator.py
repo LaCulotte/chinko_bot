@@ -62,6 +62,12 @@ if(with_serialize != 'n' and with_serialize != 'N'):
     f.write("\t// Turns the message's attributes into raw data\n")
     f.write("\tvirtual bool serialize(shared_ptr<MessageDataBuffer> output) override;\n")
     f.write("\n")
+else:
+    f.write("\t// Turns raw data into the usable data (message's attributes)\n")
+    f.write("\tvirtual bool deserialize(shared_ptr<MessageDataBuffer> input) override { return true; };\n")
+    f.write("\t// Turns the message's attributes into raw data\n")
+    f.write("\tvirtual bool serialize(shared_ptr<MessageDataBuffer> output) override { return true; };\n")
+    f.write("\n")
 for att in attributes:
     f.write("\t" + att + ";\n")
 f.write("\n")
