@@ -39,16 +39,17 @@ sp<MessageDataBuffer> DofusClientConnection::readPrefix() {
     // Gets typeLen
     int typeLen = prefixData->readShort() & 3;
 
-    // Reads last bytes of the prefix
-    sp<MessageDataBuffer> addData = readData(typeLen);
+    if(typeLen != 0) {
+        // Reads last bytes of the prefix
+        sp<MessageDataBuffer> addData = readData(typeLen);
 
-    if(!addData)
-        return nullptr;
+        if(!addData)
+            return nullptr;
 
-    // Reads 'typeLen' Bytes
-    prefixData->cursor_end();
-    prefixData->write(addData->getData());
-
+        // Reads 'typeLen' Bytes
+        prefixData->cursor_end();
+        prefixData->write(addData->getData());
+    }
     // Resets buffer's cursor
     prefixData->cursor_reset();
 
@@ -97,7 +98,7 @@ bool DofusClientConnection::serializePrefix(sp<MessageDataBuffer> data, sp<Prefi
 
     // Inserts space at the beginning of the data buffer
     data->cursor_reset();
-    data->insertDataSpace(2 + typeLen);
+    data->insertDataSpace(2 + 4 + typeLen);
     // Writes the first part of the prefix
     data->writeShort(prefix);
     data->writeInt(instance_id);

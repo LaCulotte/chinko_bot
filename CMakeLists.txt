@@ -7,10 +7,13 @@ add_subdirectory(std_bot)
 set(CMAKE_BUILD_TYPE Debug)
 
 set(SRCS
+    base64/base64.cpp
     chinko_bot/messages/UnknownDofusMessage.cpp
     chinko_bot/messages/DofusMessageTypeHandler.cpp
     chinko_bot/messages/connection/authentification/HelloConnectMessage.cpp
     chinko_bot/messages/connection/authentification/ProtocolRequiredMessage.cpp
+    chinko_bot/messages/connection/authentification/IdentificationMessage.cpp
+    chinko_bot/messages/connection/authentification/ClientKeyMessage.cpp
     chinko_bot/connections/DofusClientConnection.cpp
     chinko_bot/units/dofusBotUnit/frames/AuthentificationFrame.cpp
     chinko_bot/managers/AuthentificationManager.cpp
@@ -19,6 +22,7 @@ set(SRCS
 
 add_executable(chinko_bot ${SRCS})
 
+target_include_directories(chinko_bot PUBLIC ./base64)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/connections)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/managers)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/messages)
@@ -30,6 +34,7 @@ target_include_directories(chinko_bot PUBLIC ./chinko_bot/units/dofusBotUnit/mes
 
 target_link_libraries(chinko_bot pthread)
 target_link_libraries(chinko_bot stdc++fs)
+target_link_libraries(chinko_bot crypto)
 
 target_link_libraries(chinko_bot std_bot)
 

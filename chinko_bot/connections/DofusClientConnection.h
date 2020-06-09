@@ -25,7 +25,7 @@ public:
     virtual void initHandler() override;
 
 protected:
-public:
+
     // Reads and return necessary prefix data to know the type and the length of the message
     virtual sp<MessageDataBuffer> readPrefix() override;
     // Returns the right message type with only the prefixed data
@@ -34,7 +34,7 @@ public:
     virtual bool serializePrefix(sp<MessageDataBuffer> data, sp<PrefixedMessage> msg) override;
 
     // Instance id; used in the prefix of the sent messages
-    int instance_id = 0;    
+    int instance_id = 1;    
 };
 
 #endif

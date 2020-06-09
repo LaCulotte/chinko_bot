@@ -13,6 +13,13 @@
 
 #include "ProtocolRequiredMessage.h"
 #include "HelloConnectMessage.h"
+#include "ClientKeyMessage.h"
+
+// enum msgWaitStatus {
+//     none = 0,
+//     IdentificationMessage
+// }
+
 
 class AuthentificationManager;
 class AuthentificationFrame : public Frame {
@@ -33,6 +40,7 @@ public :
 
 protected:
     sp<AuthentificationManager> manager;
+
 };
 
 #endif

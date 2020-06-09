@@ -1,6 +1,9 @@
 #include "DofusBotUnit.h"
 #include "ConnectionUnit.h"
 
+#define USERNAME "OMAGAAD"
+#define PASSWORD "420Blazeit"
+
 int main(){
     Logger::beginInstance();
 
@@ -15,7 +18,7 @@ int main(){
     cu->launch().get();
     dbu->launch().get();
 
-    sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage("salut", "prout"));
+    sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage(USERNAME, PASSWORD));
     dbu->sendSelfMessage(baMsg);
 
     usleep(5000*1000);

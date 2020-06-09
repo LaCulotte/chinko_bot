@@ -8,6 +8,8 @@
 #include "UnknownDofusMessage.h"
 #include "ProtocolRequiredMessage.h"
 #include "HelloConnectMessage.h"
+#include "IdentificationMessage.h"
+#include "ClientKeyMessage.h"
 
 class DofusMessageTypeHandler : public MessageTypeHandler {
 public:

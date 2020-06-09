@@ -37,3 +37,122 @@ bool AuthentificationManager::beginAuthentification(string address, int port) {
 
     return true;
 }
+
+bool AuthentificationManager::setPublicKey(char *signedKey, int signedKeyLength) {
+    // Gets verifyKey in string form
+    string verifyKey_str = verify_key;
+
+    // Gets verifyKey in BIO form
+    BIO *verifyKey_bio = BIO_new(BIO_s_mem());
+    BIO_write(verifyKey_bio, verifyKey_str.c_str(), verifyKey_str.size());
+
+    // Gets verifyKey in RSA form
+    RSA *verifyKey_rsa = RSA_new();
+    verifyKey_rsa = PEM_read_bio_RSA_PUBKEY(verifyKey_bio, NULL, NULL, NULL);
+
+    // Frees verify key's BIO form
+    BIO_free(verifyKey_bio);
+
+    //Decrypt public key in char array form
+    unsigned char *publicKey_char = (unsigned char *) malloc(RSA_size(verifyKey_rsa));
+    int publicKey_len = RSA_public_decrypt(signedKeyLength, (unsigned char *) signedKey, publicKey_char, verifyKey_rsa, RSA_PKCS1_PADDING);
+
+    if(publicKey_len < 0) {
+        Logger::write("Could not decrypt sent public key. Check if the verify key in AuthentificationManager.h is still up to date.", LOG_ERROR);
+        return false;
+    }
+
+    // Gets public key in string form
+    string publicKey_str_temp = base64_encode(publicKey_char, publicKey_len);
+    // Gets it shaped for the transformation into RSA form
+    string publicKey_str = "-----BEGIN PUBLIC KEY-----\n";
+
+    for(int i = 0; i < publicKey_str_temp.size(); i+=76) 
+        publicKey_str += publicKey_str_temp.substr(i, 76) + '\n';
+    
+    publicKey_str += "-----END PUBLIC KEY-----\n";
+
+    // Gets public key in BIO form
+    BIO *publicKey_bio = BIO_new_mem_buf(publicKey_str.c_str(), publicKey_str.size());
+
+    // Gets public key in RSA form
+    publicKey = RSA_new();
+    publicKey = PEM_read_bio_RSA_PUBKEY(publicKey_bio, NULL, NULL, NULL);
+
+    return true;
+}
+
+void AuthentificationManager::generateAESKey(int size) {
+    AESKey = "";
+
+    for(int i = 0; i < size; i++) 
+        AESKey += (char) rand() % 32;
+}
+
+string AuthentificationManager::cipherCredentialsRSA(string salt) {
+    // TODO : take certificate, token, etc into account
+    string toCipher = "";
+
+    if(salt.size() != 32) {
+        Logger::write("Salt size is not 32 Bytes. Cannot cipher credentials.", LOG_ERROR);
+        return "";
+    }
+
+    toCipher += salt;
+    toCipher += AESKey;
+    toCipher += (char) username.size();
+    toCipher += username;
+    toCipher += password;
+
+    if(!publicKey) {
+        Logger::write("RSA public key was not initialized. Cannot cipher credentials", LOG_ERROR);
+        return "";
+    }
+
+    char *cipheredCredentials = (char *) malloc(RSA_size(publicKey));
+    int cipheredLen = RSA_public_encrypt(toCipher.size(), (unsigned char *) toCipher.c_str(),  (unsigned char *) cipheredCredentials, publicKey, RSA_PKCS1_PADDING);
+
+    if(cipheredLen <= 0) {
+        Logger::write("Could not cipher credentials.", LOG_ERROR);
+        return "";
+    }
+
+    return string(cipheredCredentials, cipheredLen);
+
+}
+
+bool AuthentificationManager::sendIdentificationMessage(char *signedKey, int signedKeyLen, string salt) {
+    if(!setPublicKey(signedKey, signedKeyLen)){
+        Logger::write("Public key decryption fail.", LOG_ERROR);
+        return false;
+    }
+    generateAESKey();
+    string cipheredCredentials = cipherCredentialsRSA(salt);
+
+    sp<IdentificationMessage> idMsg (new IdentificationMessage(cipheredCredentials));
+    if(!idMsg) {
+        Logger::write("Could not create IdentificationMessage.", LOG_ERROR);
+        return false;
+    }
+
+    Logger::write("Sending IdentificationMessage", LOG_INFO);
+    return bot->sendMessage(make_shared<SendPacketRequestMessage>(idMsg, dofusConnectionId), bot->connectionUnitId);
+}
+
+bool AuthentificationManager::sendClientKeyMessage() {
+    sp<ClientKeyMessage> ckMsg (new ClientKeyMessage());
+    if(!ckMsg){
+        Logger::write("Could not create ClientKeyMessage.", LOG_ERROR);
+        return false;
+    }
+
+    Logger::write("Sending ClientKeyMessage", LOG_INFO);
+    return bot->sendMessage(make_shared<SendPacketRequestMessage>(ckMsg, dofusConnectionId), bot->connectionUnitId);
+}
+
+void AuthentificationManager::interruptAuthentification() {
+    bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
+    dofusConnectionId = -1;
+    username = "None";
+    password = "None";
+}

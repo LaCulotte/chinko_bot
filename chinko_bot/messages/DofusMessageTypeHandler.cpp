@@ -4,6 +4,8 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     // Inits the map : message's id -> message builder
     id_to_builder[ProtocolRequiredMessage::protocolId] = make_shared<ProtocolRequiredMessage>;
     id_to_builder[HelloConnectMessage::protocolId] = make_shared<HelloConnectMessage>;
+    id_to_builder[IdentificationMessage::protocolId] = make_shared<IdentificationMessage>;
+    id_to_builder[ClientKeyMessage::protocolId] = make_shared<ClientKeyMessage>;
     id_to_builder[UnknownDofusMessage::protocolId] = make_shared<UnknownDofusMessage>;
 }
 

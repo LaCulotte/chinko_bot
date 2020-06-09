@@ -21,6 +21,7 @@ bool AuthentificationFrame::setParent(MessagingUnit *parent){
     return false;
 }
 
+// TODO : gérer le cas autoConnect = false (ds IdentificationMessage)
 bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
     DofusBotUnit* botParent = dynamic_cast<DofusBotUnit *>(parent);
@@ -29,9 +30,12 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     sp<BeginAuthentificationMessage> baMsg;
     sp<ConnectionSuccessMessage> csMsg;
     sp<ConnectionFailureMessage> cfMsg;
+    sp<SendPacketFailureMessage> spfMsg;
 
     sp<ProtocolRequiredMessage> prMsg;
     sp<HelloConnectMessage> hcMsg;
+    sp<IdentificationMessage> idMsg;
+    sp<ClientKeyMessage> ckMsg;
 
     switch (message->getId()) {
     case BeginAuthentificationMessage::protocolId:
@@ -68,14 +72,27 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     case HelloConnectMessage::protocolId:
         hcMsg = dynamic_pointer_cast<HelloConnectMessage>(message);
         Logger::write("HelloConnectMessage received", LOG_INFO);
-        Logger::write("Salt : " + hcMsg->salt + "; Key : " + (string) hcMsg->key);
+        if(!manager->sendIdentificationMessage(hcMsg->key, hcMsg->keyLength, hcMsg->salt)) {
+            Logger::write("Cannot send IdentificationMessage. Disconnection.", LOG_ERROR);
+            manager->interruptAuthentification();
+        }
+        if(!manager->sendClientKeyMessage()) {
+            Logger::write("Cannot send ClientKeyMessage. Disconnection.", LOG_ERROR);
+            manager->interruptAuthentification();
+        }
         break;
     
+    case SendPacketFailureMessage::protocolId:
+        spfMsg = dynamic_pointer_cast<SendPacketFailureMessage>(message);
+        Logger::write("Failed to send IdentificationMessage or ClientKeyMessage. Reason : " + spfMsg->reason, LOG_ERROR);
+        break;
+
     case UnknownDofusMessage::protocolId:
         udMsg = dynamic_pointer_cast<UnknownDofusMessage>(message);
         Logger::write("Got message of unkown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
         Logger::write("Length: " + to_string(udMsg->getLength()) + ";", LOG_DEBUG);
-        Logger::write("Data : " + udMsg->data->toString() + ";", LOG_DEBUG);
+        if(udMsg->data)
+            Logger::write("Data : " + udMsg->data->toString(), LOG_DEBUG);
         break;
 
     default:
