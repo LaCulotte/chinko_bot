@@ -117,6 +117,11 @@ void MessageDataBuffer::writeShort(int16_t s){
 }
 
 void MessageDataBuffer::writeVarShort(int16_t s){
+    if(s == 0) {
+        write(0);
+        return;
+    }
+
     while (s > 0){
         uchar b = s & 127;
         s >>= 7;
@@ -132,6 +137,11 @@ void MessageDataBuffer::writeInt(int i){
 }
 
 void MessageDataBuffer::writeVarInt(int i){
+    if(i == 0) {
+        write(0);
+        return;
+    }
+
     while (i > 0){
         uchar b = i & 127;
         i >>= 7;
@@ -155,7 +165,7 @@ void MessageDataBuffer::writeUTFBytes(string UTF){
 string MessageDataBuffer::toString(){
     stringstream str_stream;
     for (uchar unit : data){
-        str_stream << (unsigned int) (unsigned char) unit << "; ";
+        str_stream << (unsigned int) (unsigned char) unit << ";";
     }
     return str_stream.str();
 }
