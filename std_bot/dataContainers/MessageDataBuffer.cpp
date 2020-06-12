@@ -78,6 +78,35 @@ int MessageDataBuffer::readVarInt(){
     return ret;
 }   
 
+uint64_t MessageDataBuffer::readInt64(){
+    uint64_t ret = 0;
+
+    for (char i = 0; i < 8; i++){
+        ret <<= 8;
+        ret += read();
+    }
+
+    return ret;    
+}
+
+uint64_t MessageDataBuffer::readVarInt64(){
+    uint64_t ret = 0;
+    char offset = 0;
+
+    for(char i = 0; i < 9; i++){
+        uchar byte = read();
+
+        ret += (byte & 127) << offset;
+        offset += 7;
+
+        if(!(byte & 128))
+            return ret;
+    }
+
+    cerr << "Wrong VarInt64 Encoding" << endl;
+    return ret;
+}   
+
 string MessageDataBuffer::readUTF(){
     string ret = "";
     int length = readShort();
@@ -146,6 +175,26 @@ void MessageDataBuffer::writeVarInt(int i){
         uchar b = i & 127;
         i >>= 7;
         b |= (i > 0) << 7;
+        write(b);
+    }
+}
+
+void MessageDataBuffer::writeInt64(uint64_t d){
+    for(char k = 7; k >= 0; k--){
+        write((d >> (8 * k)) & 255);
+    }
+}
+
+void MessageDataBuffer::writeVarInt64(uint64_t d){
+    if(d == 0) {
+        write(0);
+        return;
+    }
+
+    while (d > 0){
+        uchar b = d & 127;
+        d >>= 7;
+        b |= (d > 0) << 7;
         write(b);
     }
 }
