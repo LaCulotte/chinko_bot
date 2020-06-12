@@ -1,7 +1,7 @@
 #ifndef AUTHENTIFICATION_MANAGER_H
 #define AUTHENTIFICATION_MANAGER_H
 
-#include "AuthentificationFrame.h"
+// #include "AuthentificationFrame.h"
 #include "DofusBotUnit.h"
 
 #include "DofusClientConnection.h"
@@ -22,6 +22,7 @@
 #include "openssl/rsa.h"
 #include "openssl/bio.h"
 #include "openssl/pem.h"
+#include "openssl/aes.h"
 
 #define verify_key "-----BEGIN PUBLIC KEY-----\nMIIBUzANBgkqhkiG9w0BAQEFAAOCAUAAMIIBOwKCATIAgucoka9J2PXcNdjcu6CuDmgteIMB+rih\n2UZJIuSoNT/0J/lEKL/W4UYbDA4U/6TDS0dkMhOpDsSCIDpO1gPG6+6JfhADRfIJItyHZflyXNUj\nWOBG4zuxc/L6wldgX24jKo+iCvlDTNUedE553lrfSU23Hwwzt3+doEfgkgAf0l4ZBez5Z/ldp9it\n2NH6/2/7spHm0Hsvt/YPrJ+EK8ly5fdLk9cvB4QIQel9SQ3JE8UQrxOAx2wrivc6P0gXp5Q6bHQo\nad1aUp81Ox77l5e8KBJXHzYhdeXaM91wnHTZNhuWmFS3snUHRCBpjDBCkZZ+CxPnKMtm2qJIi57R\nslALQVTykEZoAETKWpLBlSm92X/eXY2DdGf+a7vju9EigYbX0aXxQy2Ln2ZBWmUJyZE8B58CAwEA\nAQ==\n-----END PUBLIC KEY-----\n"
 
@@ -47,6 +48,11 @@ public:
     bool beginAuthentification(string server, int port);
     void interruptAuthentification();
 
+    // bool connectGameServer(string address, int port, string ticket);
+    bool decodeAndSetTicket(string encodedTicket);
+    bool connectGameServer(string address, int port);
+    void interruptConnectGameServer();
+
     // void resetState();
     // void setState(State_AuthentificationManager new_state);
 
@@ -63,7 +69,7 @@ protected:
     string username;
     string password;
 
-    int dofusConnectionId;
+    int dofusConnectionId = -1;
 
     DofusBotUnit *bot = nullptr;
 
@@ -75,6 +81,8 @@ protected:
     string AESKey;
 
     string cipherCredentialsRSA(string salt);
+
+    string clientTicket = "";
 };
 
 #endif

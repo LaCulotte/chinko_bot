@@ -4,12 +4,14 @@
 #include "Frame.h"
 #include "DofusBotUnit.h"
 #include "AuthentificationManager.h"
+#include "GameServerConnectionFrame.h"
 
 // TODO : enlever, le message sera à compute à partir d'une autre frame de base
 #include "UnknownDofusMessage.h"
 #include "BeginAuthentificationMessage.h"
 #include "ConnectionSuccessMessage.h"
 #include "ConnectionFailureMessage.h"
+#include "BeginGameServerConnectionMessage.h"
 
 #include "ProtocolRequiredMessage.h"
 #include "HelloConnectMessage.h"

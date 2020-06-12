@@ -156,3 +156,53 @@ void AuthentificationManager::interruptAuthentification() {
     username = "None";
     password = "None";
 }
+
+bool AuthentificationManager::decodeAndSetTicket(string encodedTicket) {
+    if(AESKey.size() != 32) {
+        Logger::write("AES key must be 32 Bytes long. It is currently : " + to_string(AESKey.size()) + " Bytes long.", LOG_ERROR);
+        return false;
+    }
+
+    unsigned char *encodedTicket_char = (unsigned char *) encodedTicket.c_str();
+    int encodedSize = encodedTicket.size();
+    unsigned char *decodedTicket_char = (unsigned char *) calloc(encodedSize, sizeof(unsigned char));
+
+    AES_KEY aes_key;
+    unsigned char *AESKey_char = (unsigned char *) AESKey.c_str();
+    unsigned char *IV = (unsigned char *) calloc(encodedSize, sizeof(unsigned char));
+    memcpy(IV, AESKey_char, encodedSize);
+
+    if(AES_set_decrypt_key(AESKey_char, 256, &aes_key) != 0) {
+        Logger::write("Error, cannot set AES decrypt key", LOG_ERROR);
+        return false;
+    }
+    AES_cbc_encrypt(encodedTicket_char, decodedTicket_char, encodedSize, &aes_key, IV, AES_DECRYPT);
+
+    clientTicket = (string) (char *) decodedTicket_char;
+
+    return true;
+}
+
+bool AuthentificationManager::connectGameServer(string address, int port) {
+    if(dofusConnectionId == -1) {
+        Logger::write("Authentification must have begun in order to connect to GameServer.", LOG_ERROR);
+        return false;
+    }
+    if(clientTicket.size() == 0) {
+        Logger::write("Cannot connect to game server without a client ticket", LOG_ERROR);
+        return false;
+    }
+
+    bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
+
+    sp<DofusClientConnection> gameServerConnection (new DofusClientConnection());
+    bot->sendMessage(make_shared<ConnectionRequestMessage>(gameServerConnection, address, port), bot->connectionUnitId);
+
+    return true;
+}
+
+void AuthentificationManager::interruptConnectGameServer() {
+    bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
+    dofusConnectionId = -1;
+    clientTicket = "";
+}

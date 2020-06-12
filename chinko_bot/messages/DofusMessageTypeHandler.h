@@ -9,7 +9,13 @@
 #include "ProtocolRequiredMessage.h"
 #include "HelloConnectMessage.h"
 #include "IdentificationMessage.h"
+#include "IdentificationSuccessMessage.h"
 #include "ClientKeyMessage.h"
+#include "CredentialsAknowledgementMessage.h"
+#include "LoginQueueStatusMessage.h"
+#include "SelectedServerDataExtendedMessage.h"
+#include "SelectedServerDataMessage.h"
+
 
 class DofusMessageTypeHandler : public MessageTypeHandler {
 public:

@@ -22,6 +22,7 @@ bool AuthentificationFrame::setParent(MessagingUnit *parent){
 }
 
 // TODO : gérer le cas autoConnect = false (ds IdentificationMessage)
+// TODO : reset propre en cas d'erreur
 bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
     DofusBotUnit* botParent = dynamic_cast<DofusBotUnit *>(parent);
@@ -36,6 +37,8 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     sp<HelloConnectMessage> hcMsg;
     sp<IdentificationMessage> idMsg;
     sp<ClientKeyMessage> ckMsg;
+    sp<LoginQueueStatusMessage> lqsMsg;
+    sp<SelectedServerDataExtendedMessage> ssdeMsg;
 
     switch (message->getId()) {
     case BeginAuthentificationMessage::protocolId:
@@ -53,13 +56,13 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
     case ConnectionSuccessMessage::protocolId:
         csMsg = dynamic_pointer_cast<ConnectionSuccessMessage>(message);
-        Logger::write("Connected to the dofus authentification server.", LOG_DEBUG);
+        Logger::write("Connected to the dofus authentification server.", LOG_INFO);
 
         manager->setDofusConnectionId(csMsg->connectionId);
         break;
 
     case ConnectionFailureMessage::protocolId:
-        cfMsg = dynamic_pointer_cast<ConnectionFailureMessage>(message);
+        cfMsg = dynamic_pointer_cast<    ConnectionFailureMessage>(message);
         Logger::write("Could not make the connect to dofus authentification server. Reason : " + cfMsg->reason, LOG_ERROR);
         break;
 
@@ -87,9 +90,37 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         Logger::write("Failed to send IdentificationMessage or ClientKeyMessage. Reason : " + spfMsg->reason, LOG_ERROR);
         break;
 
+    case CredentialsAcknowledgementMessage::protocolId:
+        Logger::write("Received CredentialsAcknowledgementMessage", LOG_INFO);
+        break;
+
+    case LoginQueueStatusMessage::protocolId:
+        lqsMsg = dynamic_pointer_cast<LoginQueueStatusMessage>(message);
+        Logger::write("Queue position : " + to_string(lqsMsg->position) + "/" + to_string(lqsMsg->total), LOG_INFO);
+        break;
+
+    case IdentificationSuccessMessage::protocolId:
+        Logger::write("Received IdentificationSucessMessage", LOG_INFO);
+        break;
+
+    case SelectedServerDataExtendedMessage::protocolId:
+        ssdeMsg = dynamic_pointer_cast<SelectedServerDataExtendedMessage>(message);
+        Logger::write("Selected server : " + ssdeMsg->address, LOG_INFO);
+        // manager->connectGameServer(ssdeMsg->address, ssdeMsg->ports[0], ssdeMsg->ticket);
+        if(!manager->decodeAndSetTicket(ssdeMsg->ticket)){
+            Logger::write("Error on AES decoding.", LOG_ERROR);
+            // TODO : reset total
+            break;
+        }
+        parent->addFrame(make_shared<GameServerConnectionFrame>(manager));
+        parent->sendSelfMessage(make_shared<BeginGameServerConnectionMessage>(ssdeMsg));
+        parent->removeFrame(this);
+        break;
+
+    // TODO : enlever
     case UnknownDofusMessage::protocolId:
         udMsg = dynamic_pointer_cast<UnknownDofusMessage>(message);
-        Logger::write("Got message of unkown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
+        Logger::write("Got message  of unkown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
         Logger::write("Length: " + to_string(udMsg->getLength()) + ";", LOG_DEBUG);
         if(udMsg->data)
             Logger::write("Data : " + udMsg->data->toString(), LOG_DEBUG);

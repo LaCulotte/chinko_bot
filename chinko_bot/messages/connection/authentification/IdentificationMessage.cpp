@@ -20,8 +20,7 @@ bool IdentificationMessage::serialize(sp<MessageDataBuffer> output) {
     output->writeUTFBytes(credentials);
 
     output->writeShort(serverId);
-    // TODO : transformer en writeVarLong
-    output->writeVarInt(sessionOptionalSalt);
+    output->writeVarInt64(sessionOptionalSalt);
 
     output->writeShort(failedAttempts.size());
     for(int failedAttempt : failedAttempts){
@@ -49,8 +48,7 @@ bool IdentificationMessage::deserialize(sp<MessageDataBuffer> input) {
     credentials = input->readUTFBytes(credentialsLength);
 
     serverId = input->readShort();
-    // TODO : changer en readVarLong
-    sessionOptionalSalt = input->readVarInt();
+    sessionOptionalSalt = input->readVarInt64();
 
     int failedAttemtpsLength = input->readShort();
     for(int i = 0; i < failedAttemtpsLength; i++) {
