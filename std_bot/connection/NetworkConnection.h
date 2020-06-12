@@ -20,7 +20,7 @@ public:
     virtual ~NetworkConnection();
 
     // Disconnects
-    virtual void disconnect() override { close(sock); connected = false; };
+    virtual void disconnect() override { if(!connected) return; close(sock); connected = false; Logger::write("Disconnected from : " + connectedAddress, LOG_INFO); };
     // Returns connected
     bool isConnected() override;
     // Remote initialization of the connection's socket

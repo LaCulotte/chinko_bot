@@ -5,7 +5,7 @@ using namespace std;
 vector<string> dns_lookup_ipv4(string address){
     addrinfo *hints, *res;
 
-    hints = (addrinfo *) malloc(sizeof(addrinfo));
+    hints = (addrinfo *) calloc(1, sizeof(addrinfo));
     hints->ai_family = AF_INET;
     hints->ai_socktype = SOCK_STREAM;
 

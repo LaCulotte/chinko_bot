@@ -20,7 +20,7 @@ bool ClientConnection::connectTo(string address, int port){
 
     // Tries to find the adress
     if(inet_pton(AF_INET, address.c_str(), &addr_in.sin_addr) <= 0){
-        Logger::write(address + " is not a valid IP adress. Attenpting a dns request.", LOG_INFO);
+        Logger::write(address + " is not a valid IP adress. Attempting a dns request.", LOG_INFO);
         
         // If it is not a valid ip adress, tries a dns lookup
         vector<string> ips = dns_lookup_ipv4(address);
@@ -28,7 +28,7 @@ bool ClientConnection::connectTo(string address, int port){
         // Tries to connect to one of the returned adresses
         bool correctAddress = false;
         for(int i = 0; i < ips.size() && !correctAddress; i++){
-            if(inet_pton(AF_INET, address.c_str(), &addr_in.sin_addr) > 0)
+            if(inet_pton(AF_INET, ips[0].c_str(), &addr_in.sin_addr) > 0)
                 correctAddress = true;
         }
 
