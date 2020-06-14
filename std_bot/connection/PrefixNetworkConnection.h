@@ -64,7 +64,7 @@ protected:
      * Maximum time between two following packets so they can be considered from the same message
      * nullptr means that two packets can be infinitly appart and still can be consedered from the same message
      */
-    chrono::system_clock::duration *maxTimeBetweenPendingUpdates;
+    chrono::system_clock::duration *maxTimeBetweenPendingUpdates = nullptr;
     // Resets the pending variables
     void resetPending();
 };

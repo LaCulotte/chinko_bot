@@ -73,7 +73,7 @@ sp<ConnectionMessage> PrefixNetworkConnection::readMessage() {
                 // Tries to build the message
                 if(!message->deserialize(contentData)){
                     // Logs potential error
-                    Logger::write("Could not deserialize data to message. Message id : " + to_string(message->getLength()) + "; length : " + to_string(message->getLength()) + "b.");
+                    Logger::write("Could not deserialize data to message. Message id : " + to_string(message->getId()) + "; length : " + to_string(message->getLength()) + " Bytes.");
 
                     return nullptr;
                 }
