@@ -8,7 +8,15 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(SRCS
     base64/base64.cpp
+    chinko_bot/types/NetworkTypeHandler.cpp
     chinko_bot/types/connection/authentification/GameServerInfo.cpp
+    chinko_bot/types/connection/gameServerConnection/AbstractCharacterInformation.cpp
+    chinko_bot/types/connection/gameServerConnection/CharacterBaseInformations.cpp
+    chinko_bot/types/connection/gameServerConnection/CharacterBasicMinimalInformations.cpp
+    chinko_bot/types/connection/gameServerConnection/CharacterMinimalInformations.cpp
+    chinko_bot/types/connection/gameServerConnection/CharacterMinimalPlusLookInformations.cpp
+    chinko_bot/types/connection/gameServerConnection/CharacterHardcoreOrEpicInformations.cpp
+    chinko_bot/types/connection/gameServerConnection/EntityLook.cpp
     chinko_bot/messages/UnknownDofusMessage.cpp
     chinko_bot/messages/DofusMessageTypeHandler.cpp
     chinko_bot/messages/connection/authentification/HelloConnectMessage.cpp
@@ -19,6 +27,12 @@ set(SRCS
     chinko_bot/messages/connection/authentification/LoginQueueStatusMessage.cpp
     chinko_bot/messages/connection/authentification/SelectedServerDataMessage.cpp
     chinko_bot/messages/connection/authentification/SelectedServerDataExtendedMessage.cpp
+    chinko_bot/messages/connection/gameServerConnection/AuthentificationTicketMessage.cpp
+    chinko_bot/messages/connection/gameServerConnection/RawDataMessage.cpp
+    chinko_bot/messages/connection/gameServerConnection/BasicCharactersListMessage.cpp
+    chinko_bot/messages/connection/gameServerConnection/CharactersListMessage.cpp
+    chinko_bot/messages/connection/gameServerConnection/CharacterSelectionMessage.cpp
+    chinko_bot/messages/connection/gameServerConnection/CheckIntegrityMessage.cpp
     chinko_bot/connections/DofusClientConnection.cpp
     chinko_bot/units/dofusBotUnit/frames/connection/AuthentificationFrame.cpp
     chinko_bot/units/dofusBotUnit/frames/connection/GameServerConnectionFrame.cpp
@@ -29,11 +43,14 @@ set(SRCS
 add_executable(chinko_bot ${SRCS})
 
 target_include_directories(chinko_bot PUBLIC ./base64)
+target_include_directories(chinko_bot PUBLIC ./chinko_bot/types)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/types/connection/authentification)
+target_include_directories(chinko_bot PUBLIC ./chinko_bot/types/connection/gameServerConnection)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/connections)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/managers/connection)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/messages)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/messages/connection/authentification)
+target_include_directories(chinko_bot PUBLIC ./chinko_bot/messages/connection/gameServerConnection)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/units/dofusBotUnit)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/units/dofusBotUnit/frames/connection)
 target_include_directories(chinko_bot PUBLIC ./chinko_bot/units/dofusBotUnit/messages)

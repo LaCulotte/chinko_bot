@@ -1,6 +1,6 @@
 #include "GameServerInfo.h"
 
-void GameServerInfo::serialize(sp<MessageDataBuffer> output) {
+bool GameServerInfo::serialize(sp<MessageDataBuffer> output) {
     uchar flags = isMonoAccount | (isSelectable << 1);
     output->writeByte(flags);
 
@@ -13,9 +13,11 @@ void GameServerInfo::serialize(sp<MessageDataBuffer> output) {
     output->writeByte(charactersSlots);
 
     output->writeInt64(date);
+
+    return true;
 } 
 
-void GameServerInfo::deserialize(sp<MessageDataBuffer> input) {
+bool GameServerInfo::deserialize(sp<MessageDataBuffer> input) {
     uchar flags = input->readByte();
     isMonoAccount = flags & 1;
     isSelectable = flags & 2;
@@ -29,4 +31,6 @@ void GameServerInfo::deserialize(sp<MessageDataBuffer> input) {
     charactersSlots = input->readByte();
 
     date = input->readInt64();
+
+    return true;
 }

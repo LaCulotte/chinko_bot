@@ -58,9 +58,12 @@ public:
 
     void setDofusConnectionId(int id) { dofusConnectionId = id; };
 
-
     bool sendIdentificationMessage(char * signedKey, int signedKeyLength, string salt);
     bool sendClientKeyMessage();
+    bool sendAuthentificationTicketMessage();
+    bool sendCheckIntegrityMessage();
+    bool sendCharactersListRequestMessage();
+    bool sendCharacterSelectionMessage(uint64_t id);
 
     void setAESKey(string AESKey) { this->AESKey = AESKey; };
     string getAESKey() { return AESKey; };

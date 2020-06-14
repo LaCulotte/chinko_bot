@@ -120,7 +120,7 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     // TODO : enlever
     case UnknownDofusMessage::protocolId:
         udMsg = dynamic_pointer_cast<UnknownDofusMessage>(message);
-        Logger::write("Got message  of unkown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
+        Logger::write("Got message  of unknown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
         Logger::write("Length: " + to_string(udMsg->getLength()) + ";", LOG_DEBUG);
         if(udMsg->data)
             Logger::write("Data : " + udMsg->data->toString(), LOG_DEBUG);

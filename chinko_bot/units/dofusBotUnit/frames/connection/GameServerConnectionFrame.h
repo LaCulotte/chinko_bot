@@ -7,6 +7,25 @@
 
 #include "BeginGameServerConnectionMessage.h"
 
+#include "SendPacketSuccessMessage.h"
+#include "SendPacketFailureMessage.h"
+
+#include "ProtocolRequiredMessage.h"
+#include "HelloGameMessage.h"
+#include "AuthentificationTicketMessage.h"
+
+
+enum GameServerConnectionState {
+    rcv_HelloGameMessage = 0,
+    snd_AuthentificationTicketMessage,
+    rcv_RawDataMessage,
+    snd_CheckIntegrityMessage,
+    rcv_AuthentificationTicketResponseMessage,
+    snd_CharactersListRequestMessage,
+    rcv_CharactersListMessage,
+    snd_CharacterSelectionMessage
+};
+
 class AuthentificationManager;
 class GameServerConnectionFrame : public Frame {
 public:
@@ -32,6 +51,11 @@ protected:
     string serverAddress;
     vector<int> serverPorts;
     int serverPorts_i = 0;
+
+    GameServerConnectionState currentState = rcv_HelloGameMessage;
+
+    bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message);
+    bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message);
 
 };
 

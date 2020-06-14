@@ -1,10 +1,9 @@
 #ifndef GAMESERVERINFO_H
 #define GAMESERVERINFO_H
 
-#include "ptr_include.h"
-#include "MessageDataBuffer.h"
+#include "NetworkType.h"
 
-class GameServerInfo {
+class GameServerInfo : public NetworkType {
 public:
     // Constructor
     GameServerInfo() {};
@@ -16,8 +15,13 @@ public:
     // Destructor
     ~GameServerInfo() = default;
 
-    void serialize(sp<MessageDataBuffer> output);
-    void deserialize(sp<MessageDataBuffer> input);
+    // Returns the type's id
+    virtual unsigned int getId() { return typeId; };
+    // Type's id
+    static const unsigned int typeId = 25;
+
+    bool serialize(sp<MessageDataBuffer> output) override;
+    bool deserialize(sp<MessageDataBuffer> input) override;
 
     bool isMonoAccount = false;
     bool isSelectable = false;

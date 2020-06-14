@@ -16,6 +16,15 @@
 #include "SelectedServerDataExtendedMessage.h"
 #include "SelectedServerDataMessage.h"
 
+#include "HelloGameMessage.h"
+#include "AuthentificationTicketMessage.h"
+#include "RawDataMessage.h"
+#include "CheckIntegrityMessage.h"
+#include "AuthentificationTicketAcceptedMessage.h"
+#include "CharactersListRequestMessage.h"
+#include "BasicCharactersListMessage.h"
+#include "CharactersListMessage.h"
+#include "CharacterSelectionMessage.h"
 
 class DofusMessageTypeHandler : public MessageTypeHandler {
 public:

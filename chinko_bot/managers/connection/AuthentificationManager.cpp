@@ -206,3 +206,28 @@ void AuthentificationManager::interruptConnectGameServer() {
     dofusConnectionId = -1;
     clientTicket = "";
 }
+
+bool AuthentificationManager::sendAuthentificationTicketMessage() {
+    if(clientTicket.size() == 0) {
+        Logger::write("Cannot send AuthentificationTicketMessage without a ticket", LOG_ERROR);
+        return false;
+    }
+
+    sp<AuthentificationTicketMessage> atMsg( new AuthentificationTicketMessage(clientTicket));
+    return bot->sendMessage(make_shared<SendPacketRequestMessage>(atMsg, dofusConnectionId), bot->connectionUnitId);
+}
+
+bool AuthentificationManager::sendCheckIntegrityMessage() {
+    sp<CheckIntegrityMessage> ciMsg(new CheckIntegrityMessage());
+    return bot->sendMessage(make_shared<SendPacketRequestMessage>(ciMsg, dofusConnectionId), bot->connectionUnitId);
+}
+
+bool AuthentificationManager::sendCharactersListRequestMessage() {
+    sp<CharactersListRequestMessage> clrMsg(new CharactersListRequestMessage());
+    return bot->sendMessage(make_shared<SendPacketRequestMessage>(clrMsg, dofusConnectionId), bot->connectionUnitId);
+}
+
+bool AuthentificationManager::sendCharacterSelectionMessage(uint64_t id) {
+    sp<CharacterSelectionMessage> csMsg(new CharacterSelectionMessage(id));
+    return bot->sendMessage(make_shared<SendPacketRequestMessage>(csMsg, dofusConnectionId), bot->connectionUnitId);
+}
