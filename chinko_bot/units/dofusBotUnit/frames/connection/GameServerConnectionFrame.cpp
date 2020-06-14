@@ -16,6 +16,7 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     sp<BeginGameServerConnectionMessage> bgscMsg;
     sp<ConnectionSuccessMessage> csMsg;
     sp<ConnectionFailureMessage> cfMsg;
+    sp<BasicCharactersListMessage> bclMsg;
 
     sp<UnknownDofusMessage> udMsg;
     sp<ProtocolRequiredMessage> prMsg;
@@ -67,21 +68,135 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         }
         break;
 
-     case ProtocolRequiredMessage::protocolId:
+    case SendPacketSuccessMessage::protocolId:
+        if(handleSendPacketSuccessMessage(dynamic_pointer_cast<SendPacketSuccessMessage>(message))) 
+            break;
+
+        return false;        
+
+    case SendPacketFailureMessage::protocolId:
+        if(handleSendPacketFailureMessage(dynamic_pointer_cast<SendPacketFailureMessage>(message))) 
+            break;
+
+        return false;        
+
+    case ProtocolRequiredMessage::protocolId:
         prMsg = dynamic_pointer_cast<ProtocolRequiredMessage>(message);
         Logger::write("ProtocolRequiredMessage received", LOG_INFO);
         Logger::write("Required version : " + to_string(prMsg->requiredVersion) + "; Current version : " + to_string(prMsg->currentVersion), LOG_INFO);
         break;
 
+    case HelloGameMessage::protocolId:
+        if(currentState == rcv_HelloGameMessage) {
+            Logger::write("Received HelloGameMessage", LOG_INFO);
+
+            if(manager->sendAuthentificationTicketMessage()) {
+                currentState = snd_AuthentificationTicketMessage;
+            } else {
+                // TODO : reset
+            }
+
+        } else {
+            Logger::write("Received HelloGameMessage when not supposed to.", LOG_WARNING);
+        }
+
+        break;
+
+    case RawDataMessage::protocolId:
+        if(currentState == rcv_RawDataMessage) {
+            Logger::write("Received RawDataMessage", LOG_INFO);
+
+            if(manager->sendCheckIntegrityMessage()) {
+                currentState = snd_CheckIntegrityMessage;
+            } else {
+                // TODO : reset
+            }
+        } else {
+            Logger::write("Received RawDataMessage when not supposed to.", LOG_WARNING);
+        }
+        break;
+
+    // TODO : cas AuthentificationTicketRefusedMessage
+    case AuthentificationTicketAcceptedMessage::protocolId:
+        if(currentState == rcv_AuthentificationTicketResponseMessage) {
+            Logger::write("Received AuthentificationTicketAcceptedMessage", LOG_INFO);
+            if(manager->sendCharactersListRequestMessage()) {
+                currentState = snd_CharactersListRequestMessage;
+            } else {
+                // TODO : reset
+            }
+        } else {
+            Logger::write("Received AuthentificationTicketAcceptedMessage when not supposed to.", LOG_WARNING);
+        }
+
+        break;
+
+    case CharactersListMessage::protocolId:
+    case BasicCharactersListMessage::protocolId:
+        bclMsg = dynamic_pointer_cast<BasicCharactersListMessage>(message);
+        for(sp<CharacterBaseInformations> character : bclMsg->characters) {
+            Logger::write(character->name + " : Level " + to_string(character->level) + "; Breed : " + to_string(character->breed) + "; Sex : " + to_string(character->sex), LOG_INFO);
+        }
+
+        break;
     // TODO : enlever
     case UnknownDofusMessage::protocolId:
         udMsg = dynamic_pointer_cast<UnknownDofusMessage>(message);
-        Logger::write("Got message of unkown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
+        Logger::write("Got message of unknown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
         Logger::write("Length: " + to_string(udMsg->getLength()) + ";", LOG_DEBUG);
-        if(udMsg->data)
-            Logger::write("Data : " + udMsg->data->toString(), LOG_DEBUG);
+        // if(udMsg->data)
+        //     Logger::write("Data : " + udMsg->data->toString(), LOG_DEBUG);
         break;
 
+    default:
+        return false;
+    }
+
+    return true;
+}
+
+bool GameServerConnectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
+    switch (currentState) {
+    case snd_AuthentificationTicketMessage:
+        Logger::write("AuthentificationTicketMessage sent.", LOG_INFO);
+        currentState = rcv_RawDataMessage;
+        break;
+    case snd_CheckIntegrityMessage:
+        Logger::write("CheckIntegrityMessage sent.", LOG_INFO);
+        currentState = rcv_AuthentificationTicketResponseMessage;
+        break;
+    case snd_CharactersListRequestMessage:
+        Logger::write("CharactersListRequestMessage sent.", LOG_INFO);
+        currentState = rcv_CharactersListMessage;
+        break;
+    case snd_CharacterSelectionMessage:
+        Logger::write("CharacterSelectionMessage sent.", LOG_INFO);
+        break;
+    default:
+        return false;
+    }
+
+    return true;
+}
+
+bool GameServerConnectionFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
+    switch (currentState) {
+    case snd_AuthentificationTicketMessage:
+        Logger::write("AuthentificationTicketMessage could not be sent. Reason : " + message->reason, LOG_INFO);
+        // TODO : Reset ou retry
+        break;
+    case snd_CheckIntegrityMessage:
+        Logger::write("CheckIntegrityMessage could not be sent. Reason : " + message->reason, LOG_INFO);
+        // TODO : Reset ou retry
+        break;
+    case snd_CharactersListRequestMessage:
+        Logger::write("CharactersListRequestMessage could not be sent. Reason : " + message->reason, LOG_INFO);
+        // TODO : Reset ou retry
+        break;
+    case snd_CharacterSelectionMessage:
+        Logger::write("CharacterSelectionMessage could not be sent. Reason : " + message->reason, LOG_INFO);
+        // TODO : Retry
+        break;
     default:
         return false;
     }
