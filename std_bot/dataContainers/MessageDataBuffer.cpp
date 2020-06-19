@@ -96,7 +96,7 @@ uint64_t MessageDataBuffer::readVarInt64(){
     for(char i = 0; i < 9; i++){
         uchar byte = read();
 
-        ret += (byte & 127) << offset;
+        ret += ((uint64_t) (byte & 127)) << offset;
         offset += 7;
 
         if(!(byte & 128))
