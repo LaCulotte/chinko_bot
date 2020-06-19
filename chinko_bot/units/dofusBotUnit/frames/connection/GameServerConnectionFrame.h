@@ -4,8 +4,10 @@
 #include "Frame.h"
 #include "DofusBotUnit.h"
 #include "AuthentificationManager.h"
+#include "CharacterSelectionFrame.h"
 
 #include "BeginGameServerConnectionMessage.h"
+#include "BeginCharacterSelectionMessage.h"
 
 #include "SendPacketSuccessMessage.h"
 #include "SendPacketFailureMessage.h"
@@ -15,15 +17,13 @@
 #include "AuthentificationTicketMessage.h"
 
 
-enum GameServerConnectionState {
-    rcv_HelloGameMessage = 0,
+enum GameServerConnectionFrameState {
+    gcsf_idle = 0,
+    rcv_HelloGameMessage,
     snd_AuthentificationTicketMessage,
     rcv_RawDataMessage,
     snd_CheckIntegrityMessage,
-    rcv_AuthentificationTicketResponseMessage,
-    snd_CharactersListRequestMessage,
-    rcv_CharactersListMessage,
-    snd_CharacterSelectionMessage
+    rcv_AuthentificationTicketResponseMessage
 };
 
 class AuthentificationManager;
@@ -52,7 +52,7 @@ protected:
     vector<int> serverPorts;
     int serverPorts_i = 0;
 
-    GameServerConnectionState currentState = rcv_HelloGameMessage;
+    GameServerConnectionFrameState currentState = gcsf_idle;
 
     bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message);
     bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message);

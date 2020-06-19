@@ -2,7 +2,10 @@
 #define DOFUS_BOTUNIT_H
 
 #include "MessagingUnit.h"
-#include "AuthentificationFrame.h"
+#include "QueueFrame.h"
+// #include "AuthentificationFrame.h"
+
+#include "GameServerInformationContainer.h"
 
 class DofusBotUnit : public MessagingUnit {
 public:
@@ -16,9 +19,10 @@ public:
     // Destructor
     virtual ~DofusBotUnit() = default;
 
-    virtual void initFrames() override {};
+    virtual void initFrames() override { addFrame(make_shared<QueueFrame>()); };
 
     int connectionUnitId = -1;
+    GameServerInformationContainer gameServerInfos;
 };
 
 #endif

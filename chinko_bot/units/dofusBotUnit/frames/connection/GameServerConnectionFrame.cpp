@@ -24,25 +24,29 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     switch (message->getId())
     {
     case BeginGameServerConnectionMessage::protocolId:
-        bgscMsg = dynamic_pointer_cast<BeginGameServerConnectionMessage>(message);
+        if(currentState == gcsf_idle) {
+            bgscMsg = dynamic_pointer_cast<BeginGameServerConnectionMessage>(message);
 
-        if(!manager) {
-            Logger::write("Cannot begin Game server connection if there is no AuthentificationManager.", LOG_ERROR);
-            // TODO : reset complet (Erreur de progammation, pas de connection/authentification)
-            break;
-        }
+            if(!manager) {
+                Logger::write("Cannot begin Game server connection if there is no AuthentificationManager.", LOG_ERROR);
+                // TODO : reset complet (Erreur de progammation, pas de connection/authentification)
+                break;
+            }
 
-        serverAddress = bgscMsg->ssdMsg->address;
-        serverPorts = bgscMsg->ssdMsg->ports;
-        if(serverPorts.size() <= 0) {
-            Logger::write("Cannot connect to the game server (" + serverAddress + ") : No port specified.", LOG_ERROR);
-            // TODO : reset vers authentification
-            break;
-        }
-        serverPorts_i = 0;
-        
-        if(!manager->connectGameServer(serverAddress, serverPorts[0])) {
-            // TODO : reset vers authentification
+            serverAddress = bgscMsg->ssdMsg->address;
+            serverPorts = bgscMsg->ssdMsg->ports;
+            if(serverPorts.size() <= 0) {
+                Logger::write("Cannot connect to the game server (" + serverAddress + ") : No port specified.", LOG_ERROR);
+                // TODO : reset vers authentification
+                break;
+            }
+            serverPorts_i = 0;
+            
+            if(!manager->connectGameServer(serverAddress, serverPorts[0])) {
+                // TODO : reset vers authentification
+            }
+        } else {
+            Logger::write("Tried to begin the GameServer connection while it is already started.", LOG_WARNING);
         }
 
         break;
@@ -50,11 +54,17 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     case ConnectionSuccessMessage::protocolId:
         csMsg = dynamic_pointer_cast<ConnectionSuccessMessage>(message);
         manager->setDofusConnectionId(csMsg->connectionId);
+
+        botParent->gameServerInfos.connectionId = csMsg->connectionId;
+        botParent->gameServerInfos.adress = serverAddress;
+        
+        currentState = rcv_HelloGameMessage;
         Logger::write("Connected to the game server : " + serverAddress, LOG_INFO);
         break;
 
     case ConnectionFailureMessage::protocolId:
         cfMsg = dynamic_pointer_cast<ConnectionFailureMessage>(message);
+
         Logger::write("Failed to connect to " + serverAddress + ":" + to_string(serverPorts[serverPorts_i]) + "; Reason : " + cfMsg->reason, LOG_WARNING);
         if(++serverPorts_i >= serverPorts.size()) {
             Logger::write("Cannot connect to the game server", LOG_ERROR);
@@ -119,33 +129,18 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     // TODO : cas AuthentificationTicketRefusedMessage
     case AuthentificationTicketAcceptedMessage::protocolId:
         if(currentState == rcv_AuthentificationTicketResponseMessage) {
-            Logger::write("Received AuthentificationTicketAcceptedMessage", LOG_INFO);
-            if(manager->sendCharactersListRequestMessage()) {
-                currentState = snd_CharactersListRequestMessage;
+            sp<CharacterSelectionFrame> csFrame(new CharacterSelectionFrame());
+            if(parent->addFrame(csFrame)) {
+                parent->sendSelfMessage(make_shared<BeginCharacterSelectionMessage>());
+                parent->removeFrame(this);
             } else {
-                // TODO : reset
+                Logger::write("Could not add CharacterSelectionFrame to parent.", LOG_ERROR);
+                //TODO : reset
             }
         } else {
             Logger::write("Received AuthentificationTicketAcceptedMessage when not supposed to.", LOG_WARNING);
         }
 
-        break;
-
-    case CharactersListMessage::protocolId:
-    case BasicCharactersListMessage::protocolId:
-        bclMsg = dynamic_pointer_cast<BasicCharactersListMessage>(message);
-        for(sp<CharacterBaseInformations> character : bclMsg->characters) {
-            Logger::write(character->name + " : Level " + to_string(character->level) + "; Breed : " + to_string(character->breed) + "; Sex : " + to_string(character->sex), LOG_INFO);
-        }
-
-        break;
-    // TODO : enlever
-    case UnknownDofusMessage::protocolId:
-        udMsg = dynamic_pointer_cast<UnknownDofusMessage>(message);
-        Logger::write("Got message of unknown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
-        Logger::write("Length: " + to_string(udMsg->getLength()) + ";", LOG_DEBUG);
-        // if(udMsg->data)
-        //     Logger::write("Data : " + udMsg->data->toString(), LOG_DEBUG);
         break;
 
     default:
@@ -165,13 +160,6 @@ bool GameServerConnectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSucc
         Logger::write("CheckIntegrityMessage sent.", LOG_INFO);
         currentState = rcv_AuthentificationTicketResponseMessage;
         break;
-    case snd_CharactersListRequestMessage:
-        Logger::write("CharactersListRequestMessage sent.", LOG_INFO);
-        currentState = rcv_CharactersListMessage;
-        break;
-    case snd_CharacterSelectionMessage:
-        Logger::write("CharacterSelectionMessage sent.", LOG_INFO);
-        break;
     default:
         return false;
     }
@@ -188,14 +176,6 @@ bool GameServerConnectionFrame::handleSendPacketFailureMessage(sp<SendPacketFail
     case snd_CheckIntegrityMessage:
         Logger::write("CheckIntegrityMessage could not be sent. Reason : " + message->reason, LOG_INFO);
         // TODO : Reset ou retry
-        break;
-    case snd_CharactersListRequestMessage:
-        Logger::write("CharactersListRequestMessage could not be sent. Reason : " + message->reason, LOG_INFO);
-        // TODO : Reset ou retry
-        break;
-    case snd_CharacterSelectionMessage:
-        Logger::write("CharacterSelectionMessage could not be sent. Reason : " + message->reason, LOG_INFO);
-        // TODO : Retry
         break;
     default:
         return false;

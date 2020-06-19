@@ -94,11 +94,6 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         Logger::write("Received CredentialsAcknowledgementMessage", LOG_INFO);
         break;
 
-    case LoginQueueStatusMessage::protocolId:
-        lqsMsg = dynamic_pointer_cast<LoginQueueStatusMessage>(message);
-        Logger::write("Queue position : " + to_string(lqsMsg->position) + "/" + to_string(lqsMsg->total), LOG_INFO);
-        break;
-
     case IdentificationSuccessMessage::protocolId:
         Logger::write("Received IdentificationSucessMessage", LOG_INFO);
         break;
@@ -115,15 +110,6 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         parent->addFrame(make_shared<GameServerConnectionFrame>(manager));
         parent->sendSelfMessage(make_shared<BeginGameServerConnectionMessage>(ssdeMsg));
         parent->removeFrame(this);
-        break;
-
-    // TODO : enlever
-    case UnknownDofusMessage::protocolId:
-        udMsg = dynamic_pointer_cast<UnknownDofusMessage>(message);
-        Logger::write("Got message  of unknown id : " + to_string(udMsg->real_id) + ";", LOG_DEBUG);
-        Logger::write("Length: " + to_string(udMsg->getLength()) + ";", LOG_DEBUG);
-        if(udMsg->data)
-            Logger::write("Data : " + udMsg->data->toString(), LOG_DEBUG);
         break;
 
     default:

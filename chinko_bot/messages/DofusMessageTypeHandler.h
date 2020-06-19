@@ -25,6 +25,7 @@
 #include "BasicCharactersListMessage.h"
 #include "CharactersListMessage.h"
 #include "CharacterSelectionMessage.h"
+#include "QueueStatusMessage.h"
 
 class DofusMessageTypeHandler : public MessageTypeHandler {
 public:

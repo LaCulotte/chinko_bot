@@ -22,6 +22,7 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[BasicCharactersListMessage::protocolId]               = make_shared<BasicCharactersListMessage>;
     id_to_builder[CharactersListMessage::protocolId]                    = make_shared<CharactersListMessage>;
     id_to_builder[CharacterSelectionMessage::protocolId]                = make_shared<CharacterSelectionMessage>;
+    id_to_builder[QueueStatusMessage::protocolId]                       = make_shared<QueueStatusMessage>;
 
     id_to_builder[UnknownDofusMessage::protocolId]                  = make_shared<UnknownDofusMessage>;
 }
