@@ -27,6 +27,9 @@ public:
 
     // Packet to send through the ConnectionUnit
     sp<ConnectionMessage> message; 
+    // Unique (if != -1) id to identify the packet to be sent
+    int packetId = -1;
+
     // Connection through witch the packet will be sent
     int connectionId = -1;
 };

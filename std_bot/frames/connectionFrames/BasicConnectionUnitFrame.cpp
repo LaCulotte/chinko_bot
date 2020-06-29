@@ -31,9 +31,9 @@ bool BasicConnectionUnitFrame::computeMessage(sp<Message> message, int srcId) {
         
         // Tries to send a message and sends a response message according to the success of the send
         if(connectionParent->sendConnectionMessage(sprMsg->message, sprMsg->connectionId, srcId)){
-            connectionParent->sendMessage(make_shared<SendPacketSuccessMessage>(), srcId);
+            connectionParent->sendMessage(make_shared<SendPacketSuccessMessage>(sprMsg->packetId), srcId);
         } else {
-            connectionParent->sendMessage(make_shared<SendPacketFailureMessage>(), srcId);
+            connectionParent->sendMessage(make_shared<SendPacketFailureMessage>(sprMsg->packetId), srcId);
         }
         
         return true;

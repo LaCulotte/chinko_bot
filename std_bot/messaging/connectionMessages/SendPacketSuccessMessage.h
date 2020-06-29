@@ -8,6 +8,8 @@ class SendPacketSuccessMessage : public Message {
 public:
     // Constructor
     SendPacketSuccessMessage() {};
+    // Constructor with packetId initalization
+    SendPacketSuccessMessage(int packetId) { this->packetId = packetId; };
     // Copy construtor
     SendPacketSuccessMessage(const SendPacketSuccessMessage& other) = default;
 
@@ -21,6 +23,8 @@ public:
 
     // Message's protocol Id
     static const unsigned int protocolId = 611;
+    // Id of the packet that was successfully sent
+    int packetId = -1;
 };
 
 #endif
