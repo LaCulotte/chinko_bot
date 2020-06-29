@@ -9,7 +9,7 @@
 #define USERNAME "OMAGAAD"
 #define PASSWORD "420Blazeit"
 
-int main(){
+int main(){    
     Logger::beginInstance();
 
     sp<ConnectionUnit> cu (new ConnectionUnit());
@@ -43,6 +43,7 @@ int main(){
     au->waitThreadEnd();
 
     Logger::endInstance();
+
 
     return 0;
 }

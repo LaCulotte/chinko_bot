@@ -2,10 +2,15 @@
 #define DOFUS_BOTUNIT_H
 
 #include "MessagingUnit.h"
+#include "ConnectionUnit.h"
 #include "QueueFrame.h"
 // #include "AuthentificationFrame.h"
 
 #include "GameServerInformationContainer.h"
+
+#include "SendPacketRequestMessage.h"
+#include "SendPacketSuccessMessage.h"
+#include "SendPacketFailureMessage.h"
 
 class DofusBotUnit : public MessagingUnit {
 public:
@@ -21,8 +26,13 @@ public:
 
     virtual void initFrames() override { addFrame(make_shared<QueueFrame>()); };
 
+    virtual int sendPacket(sp<ConnectionMessage> message, int connectionId = -1);    
+
     int connectionUnitId = -1;
     GameServerInformationContainer gameServerInfos;
+
+protected:
+    int lastPacketId = 0;
 };
 
 #endif

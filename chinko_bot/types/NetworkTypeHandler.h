@@ -16,6 +16,28 @@
 #include "CharacterHardcoreOrEpicInformations.h"
 #include "EntityLook.h"
 
+#include "Item.h"
+#include "ObjectItem.h"
+#include "SpellItem.h"
+#include "ObjectEffect.h"
+#include "ObjectEffectCreature.h"
+#include "ObjectEffectDate.h"
+#include "ObjectEffectDice.h"
+#include "ObjectEffectInteger.h"
+#include "ObjectEffectLadder.h"
+#include "ObjectEffectMinMax.h"
+#include "ObjectEffectMount.h"
+#include "ObjectEffectString.h"
+
+#include "Shortcut.h"
+#include "ShortcutEmote.h"
+#include "ShortcutObject.h"
+#include "ShortcutObjectIdolsPreset.h"
+#include "ShortcutObjectItem.h"
+#include "ShortcutObjectPreset.h"
+#include "ShortcutSmiley.h"
+#include "ShortcutSpell.h"
+
 class NetworkTypeHandler {
 public:
     static NetworkTypeHandler* getInstance();

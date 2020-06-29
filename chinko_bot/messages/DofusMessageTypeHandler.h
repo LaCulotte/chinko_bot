@@ -26,6 +26,19 @@
 #include "CharactersListMessage.h"
 #include "CharacterSelectionMessage.h"
 #include "QueueStatusMessage.h"
+#include "CharacterSelectedSuccessMessage.h"
+#include "CharacterSelectedErrorMessage.h"
+#include "CharacterLoadingCompleteMessage.h"
+
+#include "InventoryContentMessage.h"
+#include "InventoryWeightMessage.h"
+#include "ShortcutBarContentMessage.h"
+#include "JobExperienceMultiUpdateMessage.h"
+#include "SequenceNumberRequestMessage.h"
+#include "SequenceNumberMessage.h"
+#include "AlmanachCalendarDateMessage.h"
+#include "CharacterExperienceGainMessage.h"
+#include "SpellListMessage.h"
 
 class DofusMessageTypeHandler : public MessageTypeHandler {
 public:

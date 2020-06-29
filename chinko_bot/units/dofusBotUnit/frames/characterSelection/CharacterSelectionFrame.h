@@ -16,12 +16,26 @@
 #include "BasicCharactersListMessage.h"
 #include "CharactersListMessage.h"
 #include "CharacterSelectionMessage.h"
+#include "CharacterSelectedSuccessMessage.h"
+#include "CharacterSelectedErrorMessage.h"
+#include "CharacterLoadingCompleteMessage.h"
+
+// TODO : à enlever
+#include "InventoryContentMessage.h"
+#include "InventoryWeightMessage.h"
+#include "ShortcutBarContentMessage.h"
+#include "JobExperienceMultiUpdateMessage.h"
+#include "AlmanachCalendarDateMessage.h"
+#include "CharacterExperienceGainMessage.h"
+#include "SpellListMessage.h"
 
 enum CharacterSelectionFrameState {
     csf_idle,
     snd_CharactersListRequestMessage,
     rcv_CharactersListMessage,
-    snd_CharacterSelectionMessage
+    snd_CharacterSelectionMessage,
+    rcv_CharacterSelectionResultMessage,
+    rcv_CharacterLoadingCompleteMessage
 };
 
 class CharacterSelectionFrame : public Frame {

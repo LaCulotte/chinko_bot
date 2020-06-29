@@ -30,7 +30,6 @@ bool TerminalPromptFrame::computeMessage(sp<Message> message, int srcId) {
         int selectedCharacterId;
         do {
             cin >> selectedCharacterId;
-            cout << "Selected" << bclMsg->characters[selectedCharacterId]->name << endl;
         } while (selectedCharacterId < 0 || selectedCharacterId >= bclMsg->characters.size());
 
         csMsg = make_shared<CharacterSelectionMessage>(bclMsg->characters[selectedCharacterId]->id);

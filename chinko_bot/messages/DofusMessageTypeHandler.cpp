@@ -16,13 +16,25 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[AuthentificationTicketMessage::protocolId]            = make_shared<AuthentificationTicketMessage>;
     id_to_builder[RawDataMessage::protocolId]                           = make_shared<RawDataMessage>;
     id_to_builder[CheckIntegrityMessage::protocolId]                    = make_shared<CheckIntegrityMessage>;
-    id_to_builder[AuthentificationTicketMessage::protocolId]            = make_shared<AuthentificationTicketMessage>;
     id_to_builder[AuthentificationTicketAcceptedMessage::protocolId]    = make_shared<AuthentificationTicketAcceptedMessage>;
     id_to_builder[CharactersListRequestMessage::protocolId]             = make_shared<CharactersListRequestMessage>;
     id_to_builder[BasicCharactersListMessage::protocolId]               = make_shared<BasicCharactersListMessage>;
     id_to_builder[CharactersListMessage::protocolId]                    = make_shared<CharactersListMessage>;
     id_to_builder[CharacterSelectionMessage::protocolId]                = make_shared<CharacterSelectionMessage>;
     id_to_builder[QueueStatusMessage::protocolId]                       = make_shared<QueueStatusMessage>;
+    id_to_builder[CharacterSelectedSuccessMessage::protocolId]          = make_shared<CharacterSelectedSuccessMessage>;
+    id_to_builder[CharacterSelectedErrorMessage::protocolId]            = make_shared<CharacterSelectedErrorMessage>;
+    id_to_builder[CharacterLoadingCompleteMessage::protocolId]          = make_shared<CharacterLoadingCompleteMessage>;
+
+    id_to_builder[InventoryContentMessage::protocolId]              = make_shared<InventoryContentMessage>;
+    id_to_builder[InventoryWeightMessage::protocolId]               = make_shared<InventoryWeightMessage>;
+    id_to_builder[ShortcutBarContentMessage::protocolId]            = make_shared<ShortcutBarContentMessage>;
+    id_to_builder[JobExperienceMultiUpdateMessage::protocolId]      = make_shared<JobExperienceMultiUpdateMessage>;
+    id_to_builder[SequenceNumberRequestMessage::protocolId]         = make_shared<SequenceNumberRequestMessage>;
+    id_to_builder[SequenceNumberMessage::protocolId]                = make_shared<SequenceNumberMessage>;
+    id_to_builder[AlmanachCalendarDateMessage::protocolId]          = make_shared<AlmanachCalendarDateMessage>;
+    id_to_builder[CharacterExperienceGainMessage::protocolId]       = make_shared<CharacterExperienceGainMessage>;
+    id_to_builder[SpellListMessage::protocolId]                     = make_shared<SpellListMessage>;
 
     id_to_builder[UnknownDofusMessage::protocolId]                  = make_shared<UnknownDofusMessage>;
 }
