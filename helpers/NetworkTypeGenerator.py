@@ -32,7 +32,11 @@ root.option_add('*foreground', 'black')  # set all tk widgets' foreground to red
 root.option_add('*activeForeground', 'black')  # set all tk widgets' foreground to red
 root.withdraw()
 
-file_path = filedialog.askdirectory(master=root, initialdir = "..")
+f_config = open("NetworkTypeGenerator.config", 'r')
+initial_dir = f_config.readline()
+f_config.close()
+
+file_path = filedialog.askdirectory(master=root, initialdir = initial_dir)
 
 f_h = open(file_path + "/" + className + ".h", 'w')
 
@@ -53,10 +57,10 @@ f_h.write("\t" + className + "& operator=(const " + className + "& other) = defa
 f_h.write("\t// Destructor\n")
 f_h.write("\t~" + className + "() = default;\n")
 f_h.write("\n")
-f_h.write("// Returns the type's id")
-f_h.write("virtual unsigned int getId() { return typeId; };")
-f_h.write("// Type's id")
-f_h.write("static const unsigned int typeId = " + type_id + ";")
+f_h.write("\t// Returns the type's id\n")
+f_h.write("\tvirtual unsigned int getId() { return typeId; };\n")
+f_h.write("\t// Type's id\n")
+f_h.write("\tstatic const unsigned int typeId = " + type_id + ";\n")
 
 # if(with_serialize != 'n' and with_serialize != 'N'):
 if(parentName != ""):
@@ -85,13 +89,23 @@ f_cpp = open(file_path + "/" + className + ".cpp", 'w')
 f_cpp.write("#include \"" + className +".h\"\n")
 f_cpp.write("\n")
 f_cpp.write("bool " + className + "::serialize(shared_ptr<MessageDataBuffer> output) {\n")
+if(parentName != "NetworkType"):
+    f_cpp.write("\tif(!" + parentName + "::serialize(output))\n")
+    f_cpp.write("\t\treturn false;\n")
 f_cpp.write("\n")
 f_cpp.write("\treturn true;\n")
 f_cpp.write("}\n")
 f_cpp.write("\n")
 f_cpp.write("bool " + className + "::deserialize(shared_ptr<MessageDataBuffer> input) {\n")
+if(parentName != "NetworkType"):
+    f_cpp.write("\tif(!" + parentName + "::deserialize(input))\n")
+    f_cpp.write("\t\treturn false;\n")
 f_cpp.write("\n")
 f_cpp.write("\treturn true;\n")
 f_cpp.write("}\n")
 
 f_cpp.close()
+
+f_config = open("NetworkTypeGenerator.config", 'w')
+f_config.write(file_path)
+f_config.close()

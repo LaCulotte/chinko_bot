@@ -32,7 +32,11 @@ root.option_add('*foreground', 'black')  # set all tk widgets' foreground to red
 root.option_add('*activeForeground', 'black')  # set all tk widgets' foreground to red
 root.withdraw()
 
-file_path = filedialog.askdirectory(master=root, initialdir = "..")
+f_config = open("MessageGenerator.config", 'r')
+initial_dir = f_config.readline()
+f_config.close()
+
+file_path = filedialog.askdirectory(master=root, initialdir = initial_dir)
 
 f_h = open(file_path + "/" + className + ".h", 'w')
 
@@ -83,13 +87,23 @@ if(with_serialize != 'n' and with_serialize != 'N'):
     f_cpp.write("#include \"" + className +".h\"\n")
     f_cpp.write("\n")
     f_cpp.write("bool " + className + "::serialize(shared_ptr<MessageDataBuffer> output) {\n")
+    if(parentName != "PrefixedMessage"):
+        f_cpp.write("\tif(!" + parentName + "::serialize(output))\n")
+        f_cpp.write("\t\treturn false;\n")
     f_cpp.write("\n")
     f_cpp.write("\treturn true;\n")
     f_cpp.write("}\n")
     f_cpp.write("\n")
     f_cpp.write("bool " + className + "::deserialize(shared_ptr<MessageDataBuffer> input) {\n")
+    if(parentName != "PrefixedMessage"):
+        f_cpp.write("\tif(!" + parentName + "::deserialize(input))\n")
+        f_cpp.write("\t\treturn false;\n")
     f_cpp.write("\n")
     f_cpp.write("\treturn true;\n")
     f_cpp.write("}\n")
 
     f_cpp.close()
+
+f_config = open("MessageGenerator.config", 'w')
+f_config.write(file_path)
+f_config.close()
