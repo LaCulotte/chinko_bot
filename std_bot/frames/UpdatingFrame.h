@@ -6,7 +6,7 @@
 #ifdef FINISHED_FRAME_H
 
 // Frame that has updates if it computes a message
-class UpdatingFrame : public Frame{
+class UpdatingFrame : public virtual Frame {
 public:
     // Constructor
     UpdatingFrame() {};
