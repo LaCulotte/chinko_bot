@@ -6,7 +6,7 @@
 #include "QueueFrame.h"
 // #include "AuthentificationFrame.h"
 
-#include "GameServerInformationContainer.h"
+#include "GameServerInformationsContainer.h"
 
 #include "SendPacketRequestMessage.h"
 #include "SendPacketSuccessMessage.h"
@@ -24,14 +24,21 @@ public:
     // Destructor
     virtual ~DofusBotUnit() = default;
 
+    // Initializes the basic frames
     virtual void initFrames() override { addFrame(make_shared<QueueFrame>()); };
 
+    // Fonction to send a packet direclty to a connection throught a ConnectionUnit; Returns the id of the sent packet.
     virtual int sendPacket(sp<ConnectionMessage> message, int connectionId = -1);    
 
+    // TODO : protected ?
+    // ConnectionUnit's MessagingInterface's id
     int connectionUnitId = -1;
-    GameServerInformationContainer gameServerInfos;
+
+    // Informations of the current GameServer 
+    GameServerInformationsContainer gameServerInfos;
 
 protected:
+    // Id of the last packet sent
     int lastPacketId = 0;
 };
 

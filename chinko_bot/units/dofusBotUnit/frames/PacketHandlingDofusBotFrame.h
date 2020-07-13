@@ -6,6 +6,7 @@
 #include "SendPacketSuccessMessage.h"
 #include "SendPacketFailureMessage.h"
 
+// Frame that have functions to handle SendPacketSucess/FailureMessage; More an interface rather than a real class
 class PacketHandlingDofusBotFrame : public DofusBotFrame {
 public:
     // Constructor

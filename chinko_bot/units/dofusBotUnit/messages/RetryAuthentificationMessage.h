@@ -3,6 +3,7 @@
 
 #include "Message.h"
 
+// Message to request the an other authentification
 class RetryAuthentificationMessage : public Message {
 public : 
     // Constructor

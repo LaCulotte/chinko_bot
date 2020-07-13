@@ -6,6 +6,7 @@
 #include "LoginQueueStatusMessage.h"
 #include "QueueStatusMessage.h"
 
+// Frame that logs queues' informations messages
 class QueueFrame : public Frame {
 public: 
     // Constructor

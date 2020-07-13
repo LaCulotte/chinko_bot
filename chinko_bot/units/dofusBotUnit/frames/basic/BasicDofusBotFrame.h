@@ -27,12 +27,14 @@ public:
 
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
+    // Client's sequence number
     int sequenceNumber = 0;
 
 protected:
     bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
+    // Sends SequenceNumberMessage and increments sequence number
     bool sendSequenceNumberMessage();
 };
 

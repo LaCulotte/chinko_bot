@@ -6,6 +6,8 @@
 #include "DofusBotUnit.h"
 
 class DofusBotUnit;
+
+// Basic frame that needs its parent to be a BofusBotUnit
 class DofusBotFrame : public virtual Frame {
 public:
     // Constructor
@@ -20,6 +22,8 @@ public:
 
     virtual bool setParent(MessagingUnit* parent) override;
 
+    // TODO : protected ?
+    // Frame's parent
     DofusBotUnit* dofusBotParent = nullptr; 
 
 protected:

@@ -8,31 +8,37 @@ bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
     switch (message->getId())
     {
     case BeginGameContextRequestMessage::protocolId:
+        // Requests the beginning of the GameContext building
         sendGameContextCreateRequestMessage();
         break;
     
     case SendPacketSuccessMessage::protocolId:
+        // Handles SendPacketSuccessMessage
         if(!handleSendPacketSuccessMessage(dynamic_pointer_cast<SendPacketSuccessMessage>(message)))
             return false;
         
         break;
 
     case SendPacketFailureMessage::protocolId:
+        // Handles SendPacketFailureMessage
         if(!handleSendPacketFailureMessage(dynamic_pointer_cast<SendPacketFailureMessage>(message)))
             return false;
         
         break;
 
     case GameContextCreateMessage::protocolId:
+        // Logs the GameContextCreateMessage
         gccMsg = dynamic_pointer_cast<GameContextCreateMessage>(message);
         Logger::write("Received GameContextCreateMessage. Context : " + to_string(gccMsg->context), LOG_INFO);
         break;
 
     case CurrentMapMessage::protocolId:
+        // Received current map informations
         ccMsg = dynamic_pointer_cast<CurrentMapMessage>(message);
         Logger::write("Received CurrentMapMessage.", LOG_INFO);
         Logger::write("Map id : " + to_string(ccMsg->mapId) + ". Map key : " + ccMsg->mapKey, LOG_INFO);
 
+        // Request for more map infos
         sendMapInformationsRequestMessage(ccMsg->mapId);
         break;
 
@@ -44,12 +50,15 @@ bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
 }
 
 bool ContextFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
+    // Checks if the message was sent by this frame
     auto it = packetId_to_messageId.find(message->packetId);
     if(it == packetId_to_messageId.end())
         return false;
 
+    // If so, gets the mapped message id
     int messageId = it->second;
 
+    // Logs what message has been sent and changes Frame's state if needed
     switch (messageId)
     {
     case GameContextCreateRequestMessage::protocolId:
@@ -71,12 +80,15 @@ bool ContextFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> m
 }
 
 bool ContextFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
+    // Checks if the message was sent by this frame
     auto it = packetId_to_messageId.find(message->packetId);
     if(it == packetId_to_messageId.end())
         return false;
 
+    // If so, gets the mapped message id
     int messageId = it->second;
 
+    // Logs what message could not be sent and kills bot if needed
     switch (messageId)
     {
     case GameContextCreateRequestMessage::protocolId:

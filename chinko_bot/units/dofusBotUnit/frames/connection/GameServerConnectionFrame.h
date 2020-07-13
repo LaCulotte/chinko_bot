@@ -19,7 +19,7 @@
 #include "HelloGameMessage.h"
 #include "AuthentificationTicketMessage.h"
 
-
+// States that the frame can be in; Keeps track of what to do next and if every thing is going in the right order
 enum GameServerConnectionFrameState {
     gcsf_idle = 0,
     begin_GameServerConnection,
@@ -49,21 +49,29 @@ public:
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
 protected:
+    // AuthentificationManager; does many heavy operations
     sp<AuthentificationManager> manager;
 
+    // Game server's address
     string serverAddress;
+    // Game server's possibles ports
     vector<int> serverPorts;
+    // Iterator throught 'serverPorts'
     int serverPorts_i = 0;
 
+    // Current Frame's state
     GameServerConnectionFrameState currentState = gcsf_idle;
 
     bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
+    // Sends AuthentificationTicketMessage
     bool sendAuthentificationTicketMessage();
+    // Sends CheckIntegrityMessage
     bool sendCheckIntegrityMessage();
 
-    // TODO : faire des tests
+    // TODO : FAIRE DES TESTS BORDEL
+    // Returns to the authentification server 'cause the Game Server connection went wrong
     void retryAuthentification();
 };
 

@@ -3,6 +3,7 @@
 
 #include "Message.h"
 
+// Message to request the beginning of an authentification
 class BeginAuthentificationMessage : public Message {
 public : 
     // Constructor

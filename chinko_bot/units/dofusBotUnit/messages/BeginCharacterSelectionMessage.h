@@ -3,6 +3,7 @@
 
 #include "Message.h"
 
+// Message to request the beginning of the character selection
 class BeginCharacterSelectionMessage : public Message {
 public: 
 	// Constructor

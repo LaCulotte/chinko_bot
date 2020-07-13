@@ -57,9 +57,12 @@ public:
     // Destructor
     virtual ~DofusMessageTypeHandler() {};
 
+    // TODO : rename to build
+    // Builds a message from the message's id
     virtual sp<Message> generateMessageById(int id) override;
 
 protected:
+    // Map that links a message id to a fonction to build the message
     unordered_map<int, function<sp<Message>()>> id_to_builder;
 };
 

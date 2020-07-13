@@ -16,6 +16,7 @@
 #include "HelloConnectMessage.h"
 #include "ClientKeyMessage.h"
 
+// States that the frame can be in; Keeps track of what to do next and if every thing is going in the right order
 enum AuthentificationFrameState {
     af_idle,
     begin_authentification,
@@ -46,16 +47,21 @@ public :
     virtual bool setParent(MessagingUnit* parent) override;
 
 protected:
+    // AuthentificationManager; does many heavy operations
     sp<AuthentificationManager> manager;
 
     virtual bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     virtual bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
+    // Connection's id to the authentification server
     int authentificationServerConnectionId = -1;
 
+    // Current Frame's state
     AuthentificationFrameState currentState = af_idle;  
 
+    // Sends IdentificationMessage
     bool sendIdentificationMessage(sp<HelloConnectMessage> hcMsg);
+    // Sends ClientKeyMessage
     bool sendClientKeyMessage();
 };
 

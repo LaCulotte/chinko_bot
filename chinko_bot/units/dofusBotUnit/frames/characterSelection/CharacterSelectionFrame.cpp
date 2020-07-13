@@ -19,7 +19,9 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     switch (message->getId()) {
     case BeginCharacterSelectionMessage::protocolId:
+        // This message request the beginning of the character selection process
         if(currentState == csf_idle) {
+            // Sends the characters' list request 
             if(sendCharactersListRequestMessage())
                 currentState = snd_CharactersListRequestMessage;   
 
@@ -29,12 +31,14 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case SendPacketSuccessMessage::protocolId:
+        // Handles SendPacketSuccessMessage
         if(handleSendPacketSuccessMessage(dynamic_pointer_cast<SendPacketSuccessMessage>(message)))
             break;
         
         return false;
 
     case SendPacketFailureMessage::protocolId:
+        // Handles SendPacketFailureMessage
         if(handleSendPacketFailureMessage(dynamic_pointer_cast<SendPacketFailureMessage>(message)))
             break;
         
@@ -42,11 +46,15 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     case CharactersListMessage::protocolId:
     case BasicCharactersListMessage::protocolId:
+        // Receive the characters' list
         if(currentState == rcv_CharactersListMessage) {
+            // Asks for the APIUnit's id
             apiUnitId = parent->getMessageInterfaceOutId<APIUnit>();
             if(apiUnitId != -1) {
+                // Sends the character list to the APIUnit
                 parent->sendMessage(message, apiUnitId);
             } else {
+                // If there is not APIUnit, logs it and kills the bot
                 Logger::write("No APIUnit : cannot select character", LOG_ERROR);
                 this->killBot();
             }
@@ -57,16 +65,21 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case CharacterSelectionMessage::protocolId:
+        // Character Selection from the APIUnit
+        // Relay it to the GameServer
         if(sendCharacterSelectionMessage(dynamic_pointer_cast<CharacterSelectionMessage>(message)))
             currentState = snd_CharacterSelectionMessage;
         break;
     
     case CharacterSelectedSuccessMessage::protocolId:
+        // Character selection was successful
         if(currentState == rcv_CharacterSelectionResultMessage) {
+            // Logs it
             cssMsg = dynamic_pointer_cast<CharacterSelectedSuccessMessage>(message);
             currentState = rcv_CharacterLoadingCompleteMessage;
             Logger::write("Successfully selected " + cssMsg->infos.name, LOG_INFO);
 
+            // Sends ClientKeyMessage with a 'hash' at the end 
             if(!sendClientKeyMessageWithHash()) {
                 this->killBot();
             }
@@ -76,8 +89,10 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case CharacterSelectedErrorMessage::protocolId:
+        // Character selection was unsuccessful
         if(currentState == rcv_CharacterSelectionResultMessage) {
             // TODO : Mettre ca en fonction comme un reset ?
+            // Retry the character selection
             currentState = csf_idle;
             parent->sendSelfMessage(make_shared<BeginCharacterSelectionMessage>());
             Logger::write("Error while selecting requested character. Please select a valid character.", LOG_WARNING);
@@ -87,12 +102,16 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case CharacterLoadingCompleteMessage::protocolId:
+        // Character has been fully loaded
         if(currentState == rcv_CharacterLoadingCompleteMessage) {
+            // Logs it
             currentState = csf_idle;
             Logger::write("Character loading complete !", LOG_INFO);
 
             // TODO : mettre ca en fonction?
+            // Delete this Frame (self destruct) and introduces a brand new ContextFrame
             dofusBotParent->addFrame(make_shared<ContextFrame>());
+            // Requests GameContext building
             dofusBotParent->sendSelfMessage(make_shared<BeginGameContextRequestMessage>());
             dofusBotParent->removeFrame(this);
         } else {
@@ -151,12 +170,15 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 }
 
 bool CharacterSelectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
+    // Checks if the message was sent by this frame
     auto it = packetId_to_messageId.find(message->packetId);
     if(it == packetId_to_messageId.end())
         return false;
 
+    // If so, gets the mapped message id
     int messageId = it->second;
 
+    // Logs what message has been sent and changes Frame's state if needed
     switch (messageId)
     {
     case CharactersListRequestMessage::protocolId:
@@ -192,12 +214,15 @@ bool CharacterSelectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSucces
 }
 
 bool CharacterSelectionFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
+    // Checks if the message was sent by this frame
    auto it = packetId_to_messageId.find(message->packetId);
     if(it == packetId_to_messageId.end())
         return false;
 
+    // If so, gets the mapped message id
     int messageId = it->second;
 
+    // Logs what message could not be sent and kills bot if needed
     switch (messageId)
     {
     case CharactersListRequestMessage::protocolId:

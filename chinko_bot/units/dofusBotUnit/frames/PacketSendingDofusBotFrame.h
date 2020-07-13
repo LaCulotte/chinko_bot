@@ -5,6 +5,7 @@
 
 #include <unordered_map>
 
+// Frame that saves and map a sent packet id to a message id, in order to know which messages could be sent and which could not 
 class PacketSendingDofusBotFrame : public PacketHandlingDofusBotFrame {
 public:
     // Constructor
@@ -18,10 +19,12 @@ public:
     ~PacketSendingDofusBotFrame() = default;
 
 protected:
+    // Maps packet's id to the message id
     unordered_map<int, int> packetId_to_messageId;
+    // Sends a packet
     virtual bool sendPacket(sp<ConnectionMessage> message, int connectionId);
 
-    // To override completely
+    // Very basic example of SendPacketResponse handling. To override completely
     virtual bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     virtual bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 

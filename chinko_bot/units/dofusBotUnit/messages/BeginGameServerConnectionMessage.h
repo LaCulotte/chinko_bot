@@ -4,6 +4,7 @@
 #include "Message.h"
 #include "SelectedServerDataMessage.h"
 
+// Message to request the beginning of the Game server connection
 class BeginGameServerConnectionMessage : public Message {
 public:
     // Constructor

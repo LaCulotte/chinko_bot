@@ -33,6 +33,7 @@
 #include "CharacterExperienceGainMessage.h"
 #include "SpellListMessage.h"
 
+// States that the frame can be in; Keeps track of what to do next and if every thing is going in the right order
 enum CharacterSelectionFrameState {
     csf_idle,
     snd_CharactersListRequestMessage,
@@ -57,13 +58,17 @@ public:
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
 protected: 
+    // Current state from the state
     CharacterSelectionFrameState currentState = csf_idle;
 
     bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message);
     bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message);
 
+    // Sends CharactersListRequestMessage
     bool sendCharactersListRequestMessage();
+    // Sends CharacterSelectionMessage
     bool sendCharacterSelectionMessage(sp<CharacterSelectionMessage> csMsg);
+    // Sends ClientKeyMessage with hash at the end
     bool sendClientKeyMessageWithHash();
 };
 

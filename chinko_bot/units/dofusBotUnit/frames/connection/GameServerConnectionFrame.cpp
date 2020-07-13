@@ -12,15 +12,18 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     switch (message->getId())
     {
     case BeginGameServerConnectionMessage::protocolId:
+        // Message that request for the beginning of the Game server connection
         if(currentState == gcsf_idle) {
             bgscMsg = dynamic_pointer_cast<BeginGameServerConnectionMessage>(message);
 
+            // Checks if the manager has been initialized
             if(!manager) {
                 Logger::write("Cannot begin Game server connection if there is no AuthentificationManager.", LOG_ERROR);
                 this->killBot();
                 break;
             }
 
+            // Saves Game server informations
             serverAddress = bgscMsg->ssdMsg->address;
             serverPorts = bgscMsg->ssdMsg->ports;
             if(serverPorts.size() <= 0) {
@@ -30,6 +33,7 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
             }
             serverPorts_i = 0;
             
+            // Tries to connect to the Game server
             if(!manager->connectGameServer(serverAddress, serverPorts[0])) {
                 // TODO : reset vers authentification ou bot kill (pas de ticket client)
             } else {
@@ -42,9 +46,11 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
     
     case ConnectionSuccessMessage::protocolId:
+        // Game server connection was successful
         if(currentState == begin_GameServerConnection) {
             csMsg = dynamic_pointer_cast<ConnectionSuccessMessage>(message);
 
+            // Saves the game server infos
             dofusBotParent->gameServerInfos.connectionId = csMsg->connectionId;
             dofusBotParent->gameServerInfos.adress = serverAddress;
             
@@ -56,15 +62,18 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         return false;
 
     case ConnectionFailureMessage::protocolId:
+        // Game server connection was unsuccessful
         if(currentState == begin_GameServerConnection) {
             cfMsg = dynamic_pointer_cast<ConnectionFailureMessage>(message);
 
             Logger::write("Failed to connect to " + serverAddress + ":" + to_string(serverPorts[serverPorts_i]) + "; Reason : " + cfMsg->reason, LOG_WARNING);
+            // Tries to connect to next port
             if(++serverPorts_i >= serverPorts.size()) {
                 Logger::write("Cannot connect to the game server", LOG_ERROR);
                 // TODO : reset authentification
                 break;
             } else {
+                // If there is no valid port, resets and returns to authentification
                 Logger::write("Trying an next port", LOG_WARNING);
                 if(!manager->connectGameServer(serverAddress, serverPorts[serverPorts_i])) {
                     // TODO : reset vers authentification
@@ -76,12 +85,14 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         return false;
 
     case SendPacketSuccessMessage::protocolId:
+        // Handles SendPacketSuccessMessage
         if(handleSendPacketSuccessMessage(dynamic_pointer_cast<SendPacketSuccessMessage>(message))) 
             break;
 
         return false;        
 
     case SendPacketFailureMessage::protocolId:
+        // Handles SendPacketFailureMessage
         if(handleSendPacketFailureMessage(dynamic_pointer_cast<SendPacketFailureMessage>(message))) 
             break;
 
@@ -95,9 +106,11 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case HelloGameMessage::protocolId:
+        // First message from the game server
         if(currentState == rcv_HelloGameMessage) {
             Logger::write("Received HelloGameMessage", LOG_INFO);
 
+            // Tries to send AuthentificationTicketMessage
             if (sendAuthentificationTicketMessage())
                 currentState = snd_AuthentificationTicketMessage;
 
@@ -108,9 +121,11 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case RawDataMessage::protocolId:
+        // Fake antibot message
         if(currentState == rcv_RawDataMessage) {
             Logger::write("Received RawDataMessage", LOG_INFO);
 
+            // Sends random CheckIntegrityMessage
             if(sendCheckIntegrityMessage())
                 currentState = snd_CheckIntegrityMessage;
 
@@ -121,16 +136,20 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     // TODO : cas AuthentificationTicketRefusedMessage
     case AuthentificationTicketAcceptedMessage::protocolId:
+        // Authentification to the Game server was successful
         if(currentState == rcv_AuthentificationTicketResponseMessage) {
             Logger::write("Received AuthentificationTicketAcceptedMessage", LOG_INFO);
 
+            // Removes this frame and replaces it with a Character selection frame
             sp<CharacterSelectionFrame> csFrame(new CharacterSelectionFrame());
             if(parent->addFrame(csFrame)) {
+                // Requests the beginning of the character selection
                 parent->sendSelfMessage(make_shared<BeginCharacterSelectionMessage>());
                 parent->removeFrame(this);
             } else {
                 Logger::write("Could not add CharacterSelectionFrame to parent.", LOG_ERROR);
                 this->killBot();
+                break;
             }
             currentState = end_GameServerConnection;
         } else {
@@ -147,12 +166,15 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 }
 
 bool GameServerConnectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
+    // Checks if the message was sent by this frame
     auto it = packetId_to_messageId.find(message->packetId);
     if(it == packetId_to_messageId.end())
         return false;
 
+    // If so, gets the mapped message id
     int messageId = it->second;
 
+    // Logs what message has been sent and changes Frame's state if needed
     switch (messageId)
     {
     case AuthentificationTicketMessage::protocolId:
@@ -184,12 +206,15 @@ bool GameServerConnectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSucc
 }
 
 bool GameServerConnectionFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
+    // Checks if the message was sent by this frame
     auto it = packetId_to_messageId.find(message->packetId);
     if(it == packetId_to_messageId.end())
         return false;
 
+    // If so, gets the mapped message id
     int messageId = it->second;
 
+    // Logs what message could not be sent and kills bot if needed
     switch (messageId)
     {
     case AuthentificationTicketMessage::protocolId:
@@ -254,15 +279,21 @@ bool GameServerConnectionFrame::sendCheckIntegrityMessage() {
     return true;
 }
 
+// Rename
 void GameServerConnectionFrame::retryAuthentification() {
+    // Checks if there is a parent
     if(!parent)
         return;
 
+    // Removes eventual AuthentificationFrame leftovers
+    // TODO : getAllFrames
     sp<Frame> oldAuthFrame = parent->getFrame<AuthentificationFrame>();
     if(oldAuthFrame)
         parent->removeFrame(oldAuthFrame);
     
+    // Removes this frame and replaces it with a new AuthentificationFrame
     parent->addFrame(make_shared<AuthentificationFrame>(manager));
+    // Requests the beginning of an authentification
     parent->sendSelfMessage(make_shared<RetryAuthentificationMessage>());
     parent->removeFrame(this);
 }

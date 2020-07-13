@@ -28,7 +28,9 @@ protected:
     virtual bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     virtual bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
+    // Sends GameContextCreateRequestMessage
     bool sendGameContextCreateRequestMessage();
+    // Sends MapInformationsRequestMessage
     bool sendMapInformationsRequestMessage(double mapId);
 };
 

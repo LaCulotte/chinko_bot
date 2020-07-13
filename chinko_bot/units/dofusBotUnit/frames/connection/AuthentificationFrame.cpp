@@ -6,6 +6,7 @@ AuthentificationFrame::AuthentificationFrame() : PacketSendingDofusBotFrame() {
 
 bool AuthentificationFrame::setParent(MessagingUnit *parent){
     if(PacketSendingDofusBotFrame::setParent(parent)) {        
+        // Sets the authentification manager if the parent is valid
         if(!manager)
             manager = make_shared<AuthentificationManager>();
         
@@ -34,16 +35,21 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
     switch (message->getId()) {
     case BeginAuthentificationMessage::protocolId:
+        // Message that requests the beginning of the authentification
         if(currentState == af_idle) {
             baMsg = dynamic_pointer_cast<BeginAuthentificationMessage>(message);
 
+            // Checks if the AuthentificationManager is initialized
             if(!manager){
+                // If not, warns the user and builds one
                 Logger::write("An authentification was requested but no AuthentificationManager was created. Building one now", LOG_DEBUG);
                 manager = make_shared<AuthentificationManager>();
             }
 
+            // Sets credentials
             manager->setCredentials(baMsg->username, baMsg->password);
             if(manager->beginAuthentification(baMsg->serverAdress, baMsg->port))
+                // If the manager could begin the authentification, changes the frame's state
                 currentState = begin_authentification;
 
         } else {
@@ -53,13 +59,17 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case RetryAuthentificationMessage::protocolId:
+        // Message that requests to retry the authentification
         if(currentState == af_idle) {
+            // Checks if the AuthentificationManager has been initialized
             if(!manager) {
                 Logger::write("An authentification retry was requested but no AuthentificationManager was specified.", LOG_ERROR);
                 this->killBot();
+                break;
             }
 
             if(manager->beginAuthentification()) {
+                // If the manager could begin the authentification, changes the frame's state
                 currentState = begin_authentification;
             } else {
                 Logger::write("Authentification retry has failed.", LOG_ERROR);
@@ -72,10 +82,12 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case ConnectionSuccessMessage::protocolId:
+        // Successfully connected to the authentification server
         if(currentState = begin_authentification) {
             csMsg = dynamic_pointer_cast<ConnectionSuccessMessage>(message);
             Logger::write("Connected to the dofus authentification server.", LOG_INFO);
 
+            // Sets authentification server's connection id
             authentificationServerConnectionId = csMsg->connectionId;
             // TODO : enlever qd AuthentificationManager::dofusConnectionId n'est plus utile
             manager->setDofusConnectionId(csMsg->connectionId);
@@ -87,6 +99,7 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         return false;
 
     case ConnectionFailureMessage::protocolId:
+        // Could not connect to the authentification server
         if(currentState == begin_authentification) {
             cfMsg = dynamic_pointer_cast<ConnectionFailureMessage>(message);
             Logger::write("Could not make the connect to dofus authentification server. Reason : " + cfMsg->reason, LOG_ERROR);
@@ -106,10 +119,12 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case HelloConnectMessage::protocolId:
+        // First message sent by the authentification server
         if(currentState == rcv_HelloConnectMessage) {
             hcMsg = dynamic_pointer_cast<HelloConnectMessage>(message);
             Logger::write("HelloConnectMessage received.", LOG_INFO);
 
+            // Sends IdentificationMessage and ClientKeyMessage
             if(sendIdentificationMessage(hcMsg)) {
                 currentState = snd_IdentificationMessage;
 
@@ -122,16 +137,20 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case SendPacketSuccessMessage::protocolId:
+        // Handles SendPacketSuccessMessage
         if (!handleSendPacketSuccessMessage(dynamic_pointer_cast<SendPacketSuccessMessage>(message)))
             return false;     
         break;
 
     case SendPacketFailureMessage::protocolId:
+        // Handles SendPacketFailureMessage
         if (!handleSendPacketFailureMessage(dynamic_pointer_cast<SendPacketFailureMessage>(message)))
             return false;        
         break;
 
+    // Autre cas ? (Credentials...Message ou équivalent)
     case CredentialsAcknowledgementMessage::protocolId:
+        // Credentials are has been received
         if(currentState == rcv_CredentialAknowledgmentMessage) {
             Logger::write("Received CredentialsAcknowledgementMessage.", LOG_INFO);
             currentState = rcv_IdentificationResponseMessage;
@@ -141,7 +160,9 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
         break;
 
+    // Cas IdentificationFailedMessage et autreq
     case IdentificationSuccessMessage::protocolId:
+        // Indentification was successful
         if(currentState == rcv_IdentificationResponseMessage) {
             Logger::write("Received IdentificationSucessMessage.", LOG_INFO);
             currentState = end_authentification;
@@ -151,17 +172,22 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         
         break;
 
-    // A mettre dans le GameServerConnectionFrame ? -> Lancer GameServerConnectionFrame à la reception de IdentificationSuccessMessage
+    // TODO : A mettre dans le GameServerConnectionFrame ? -> Lancer GameServerConnectionFrame à la reception de IdentificationSuccessMessage
     case SelectedServerDataExtendedMessage::protocolId:
+        // Redirects to the GameServer
         ssdeMsg = dynamic_pointer_cast<SelectedServerDataExtendedMessage>(message);
         Logger::write("Selected server : " + ssdeMsg->address, LOG_INFO);
+
+        // Gets ticket 
         if(!manager->decodeAndSetTicket(ssdeMsg->ticket)){
             Logger::write("Error on AES decoding.", LOG_ERROR);
             this->killBot();
             break;
         }
 
+        // Removes this frame and replaces it with a GameServerConnectionFrame
         parent->addFrame(make_shared<GameServerConnectionFrame>(manager));
+        // Requests the Beginning of the GameServer connection
         parent->sendSelfMessage(make_shared<BeginGameServerConnectionMessage>(ssdeMsg));
         parent->removeFrame(this);
 
@@ -175,12 +201,15 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 }
 
 bool AuthentificationFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
+    // Checks if the message was sent by this frame
     auto it = packetId_to_messageId.find(message->packetId);
     if(it == packetId_to_messageId.end())
         return false;
 
+    // If so, gets the mapped message id
     int messageId = it->second;
 
+    // Logs what message has been sent and changes Frame's state if needed
     switch (messageId)
     {
     case IdentificationMessage::protocolId:
@@ -207,12 +236,15 @@ bool AuthentificationFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessM
 }
 
 bool AuthentificationFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
+    // Checks if the message was sent by this frame
     auto it = packetId_to_messageId.find(message->packetId);
     if(it == packetId_to_messageId.end())
         return false;
 
+    // If so, gets the mapped message id
     int messageId = it->second;
 
+    // Logs what message could not be sent and kills bot if needed
     switch (messageId)
     {
     case IdentificationMessage::protocolId:

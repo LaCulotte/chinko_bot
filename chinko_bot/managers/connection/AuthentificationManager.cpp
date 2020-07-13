@@ -1,11 +1,13 @@
 #include "AuthentificationManager.h"
 
 AuthentificationManager::AuthentificationManager() {
+    // Sets credentials default values
     username = "None";
     password = "None";
 }
 
 AuthentificationManager::AuthentificationManager(string username, string password) {
+    // Sets credentials
     setCredentials(username, password);
 }
 
@@ -14,57 +16,73 @@ void AuthentificationManager::setCredentials(string username, string password) {
     this->password = password;
 }
 
+// TO rename
 bool AuthentificationManager::beginAuthentification() {
+    // Checks if the bot is launched
     if(!bot) {
         Logger::write("Cannot begin authentification if no BotUnit was linked to the AuthentificationManager.", LOG_WARNING);
         return false;
     }
 
+    // Warn the user if the credentials are unintialized
     if(username == "None" && password == "None"){
         Logger::write("Credentials have most likely not be initialized.", LOG_WARNING);
         Logger::write("Current username : " + username + "; Current password : " + password, LOG_WARNING);
     }
 
+    // Get connectionUnit's ID
     bot->connectionUnitId = bot->getMessageInterfaceOutId<ConnectionUnit>();
     if(bot->connectionUnitId == -1) {
+        // Error if there is no ConnectionUnit attached to the bot
         Logger::write("Cannot begin authentification : there is no ConnectionUnit.", LOG_ERROR);
         return false;
     }
 
+    // Checks if the saved address and port are actually initialized
     if(authentificationServerAddress == "" || authentificationServerPort == -1){
         Logger::write("Cannot begin authentification : no authentification server address or port has been specified.", LOG_ERROR);
         return false;
     }
 
+    // Builds a new connection
     sp<DofusClientConnection> connection(new DofusClientConnection());
 
+    // Asks the ConnectionUnit to manage the new connection and connect it to the authentification server
     bot->sendMessage(make_shared<ConnectionRequestMessage>(connection, authentificationServerAddress, authentificationServerPort), bot->connectionUnitId);
+    // Disables auto connect to avoid being "softlocked" to a server that we cannot connect to
     this->autoConnect = false;
 
     return true;
 }
 
 bool AuthentificationManager::beginAuthentification(string address, int port) {
+    // Checks if the bot is launched
     if(!bot) {
         Logger::write("Cannot begin authentification if no BotUnit was linked to the AuthentificationManager.", LOG_WARNING);
         return false;
     }
 
+    // Warn the user if the credentials are unintialized
     if(username == "None" && password == "None"){
         Logger::write("Credentials have most likely not be initialized.", LOG_WARNING);
         Logger::write("Current username : " + username + "; Current password : " + password, LOG_WARNING);
     }
 
+    // Get connectionUnit's ID
     bot->connectionUnitId = bot->getMessageInterfaceOutId<ConnectionUnit>();
     if(bot->connectionUnitId == -1) {
+        // Error if there is no ConnectionUnit attached to the bot
         Logger::write("Cannot begin authentification : there is no ConnectionUnit.", LOG_ERROR);
         return false;
     }
 
+    // Builds a new connection
     sp<DofusClientConnection> connection(new DofusClientConnection());
 
+    // Asks the ConnectionUnit to manage the new connection and connect it to the authentification server
     bot->sendMessage(make_shared<ConnectionRequestMessage>(connection, address, port), bot->connectionUnitId);
     
+    // Saves the authentification server's address and port
     authentificationServerAddress = address;
     authentificationServerPort = port;
 
@@ -116,52 +134,65 @@ bool AuthentificationManager::setPublicKey(char *signedKey, int signedKeyLength)
 }
 
 void AuthentificationManager::generateAESKey(int size) {
+    // Generate a string of random bytes  
     AESKey = "";
 
     for(int i = 0; i < size; i++) 
-        AESKey += (char) rand() % 32;
+        AESKey += (char) rand() % 256;
 }
 
 string AuthentificationManager::cipherCredentialsRSA(string salt) {
     // TODO : take certificate, token, etc into account
+
     string toCipher = "";
 
+    // Checks if salt is correct
     if(salt.size() != 32) {
         Logger::write("Salt size is not 32 Bytes. Cannot cipher credentials.", LOG_ERROR);
         return "";
     }
 
+    // Builds a string of all the elements to cipher with RSA
     toCipher += salt;
     toCipher += AESKey;
     toCipher += (char) username.size();
     toCipher += username;
     toCipher += password;
 
+    // Checks if the RSA public key has been initialiazed
     if(!publicKey) {
         Logger::write("RSA public key was not initialized. Cannot cipher credentials", LOG_ERROR);
         return "";
     }
 
+    // Ciphering
     char *cipheredCredentials = (char *) malloc(RSA_size(publicKey));
     int cipheredLen = RSA_public_encrypt(toCipher.size(), (unsigned char *) toCipher.c_str(),  (unsigned char *) cipheredCredentials, publicKey, RSA_PKCS1_PADDING);
 
+    // Checks for eventual errors
     if(cipheredLen <= 0) {
         Logger::write("Could not cipher credentials.", LOG_ERROR);
         return "";
     }
 
+    // Returns ciphered credentials
     return string(cipheredCredentials, cipheredLen);
 
 }
 
 sp<IdentificationMessage> AuthentificationManager::generateIdentificationMessage(char *signedKey, int signedKeyLen, string salt) {
+    // Decipher and sets public key
     if(!setPublicKey(signedKey, signedKeyLen)){
         Logger::write("Public key decryption fail.", LOG_ERROR);
         return nullptr;
     }
+    
+    // Generate AES key
     generateAESKey();
+    // Cipher credentials
     string cipheredCredentials = cipherCredentialsRSA(salt);
 
+    // Builds IdentificationMessage
     sp<IdentificationMessage> idMsg (new IdentificationMessage(cipheredCredentials));
     idMsg->autoConnect = this->autoConnect;
     
@@ -169,18 +200,11 @@ sp<IdentificationMessage> AuthentificationManager::generateIdentificationMessage
 }
 
 sp<ClientKeyMessage> AuthentificationManager::generateClientKeyMessage() {
-    // sp<ClientKeyMessage> ckMsg (new ClientKeyMessage());
-    // if(!ckMsg){
-    //     Logger::write("Could not create ClientKeyMessage.", LOG_ERROR);
-    //     return false;
-    // }
-
-    // Logger::write("Sending ClientKeyMessage", LOG_INFO);
-    // return bot->sendMessage(make_shared<SendPacketRequestMessage>(ckMsg, dofusConnectionId), bot->connectionUnitId);
-
+    // Builds and return ClientKeyMessage
     return make_shared<ClientKeyMessage>();
 }
 
+// TODO : remove
 void AuthentificationManager::interruptAuthentification() {
     bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
     dofusConnectionId = -1;
@@ -189,15 +213,18 @@ void AuthentificationManager::interruptAuthentification() {
 }
 
 bool AuthentificationManager::decodeAndSetTicket(string encodedTicket) {
+    // Checks if AES key is correct
     if(AESKey.size() != 32) {
         Logger::write("AES key must be 32 Bytes long. It is currently : " + to_string(AESKey.size()) + " Bytes long.", LOG_ERROR);
         return false;
     }
 
+    // Variables initialization
     unsigned char *encodedTicket_char = (unsigned char *) encodedTicket.c_str();
     int encodedSize = encodedTicket.size();
     unsigned char *decodedTicket_char = (unsigned char *) calloc(encodedSize, sizeof(unsigned char));
 
+    // AES_Key typed variable initialization
     AES_KEY aes_key;
     unsigned char *AESKey_char = (unsigned char *) AESKey.c_str();
     unsigned char *IV = (unsigned char *) calloc(encodedSize, sizeof(unsigned char));
@@ -207,6 +234,7 @@ bool AuthentificationManager::decodeAndSetTicket(string encodedTicket) {
         Logger::write("Error, cannot set AES decrypt key", LOG_ERROR);
         return false;
     }
+    // Decrypts ticket
     AES_cbc_encrypt(encodedTicket_char, decodedTicket_char, encodedSize, &aes_key, IV, AES_DECRYPT);
 
     clientTicket = (string) (char *) decodedTicket_char;
@@ -215,19 +243,23 @@ bool AuthentificationManager::decodeAndSetTicket(string encodedTicket) {
 }
 
 bool AuthentificationManager::connectGameServer(string address, int port) {
+    // Checks if the client ticket has been initialized
     if(clientTicket.size() == 0) {
         Logger::write("Cannot connect to game server without a client ticket", LOG_ERROR);
         return false;
     }
 
+    // Disconnects from the authentification server
     bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
 
+    // Asks for a connection to the game server
     sp<DofusClientConnection> gameServerConnection (new DofusClientConnection());
     bot->sendMessage(make_shared<ConnectionRequestMessage>(gameServerConnection, address, port), bot->connectionUnitId);
 
     return true;
 }
 
+// TODO : remove
 void AuthentificationManager::interruptConnectGameServer() {
     bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
     dofusConnectionId = -1;
@@ -235,26 +267,29 @@ void AuthentificationManager::interruptConnectGameServer() {
 }
 
 sp<AuthentificationTicketMessage> AuthentificationManager::generateAuthentificationTicketMessage() {
+    // Checks if the client ticket has been initialized
     if(clientTicket.size() == 0) {
         Logger::write("Cannot generate AuthentificationTicketMessage without a ticket", LOG_ERROR);
         return nullptr;
     }
 
+    // Builds AuthentificationTicketMessage
     sp<AuthentificationTicketMessage> atMsg(new AuthentificationTicketMessage(clientTicket));
-    // return bot->sendMessage(make_shared<SendPacketRequestMessage>(atMsg, dofusConnectionId), bot->connectionUnitId);
     return atMsg;
 }
 
 sp<CheckIntegrityMessage> AuthentificationManager::generateCheckIntegrityMessage() {
-    // sp<CheckIntegrityMessage> ciMsg(new CheckIntegrityMessage());
+    // Builds CheckIntegrityMessage
     return make_shared<CheckIntegrityMessage>();
 }
 
+// TODO : remove
 bool AuthentificationManager::sendCharactersListRequestMessage() {
     sp<CharactersListRequestMessage> clrMsg(new CharactersListRequestMessage());
     return bot->sendMessage(make_shared<SendPacketRequestMessage>(clrMsg, dofusConnectionId), bot->connectionUnitId);
 }
 
+// TODO : remove
 bool AuthentificationManager::sendCharacterSelectionMessage(uint64_t id) {
     sp<CharacterSelectionMessage> csMsg(new CharacterSelectionMessage(id));
     return bot->sendMessage(make_shared<SendPacketRequestMessage>(csMsg, dofusConnectionId), bot->connectionUnitId);
