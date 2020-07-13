@@ -36,6 +36,7 @@ public:
     int readVarInt();
     uint64_t readInt64();
     uint64_t readVarInt64();
+    double readDouble();
     string readUTF();
     string readUTFBytes(int length);
 
@@ -47,8 +48,9 @@ public:
     void writeVarShort(int16_t s);
     void writeInt(int i);
     void writeVarInt(int i);
-    void writeInt64(uint64_t d);
-    void writeVarInt64(uint64_t d);
+    void writeInt64(uint64_t i);
+    void writeVarInt64(uint64_t i);
+    void writeDouble(double d);
     void writeUTF(string UTF);
     void writeUTFBytes(string UTF);
 

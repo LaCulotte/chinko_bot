@@ -107,6 +107,12 @@ uint64_t MessageDataBuffer::readVarInt64(){
     return ret;
 }   
 
+double MessageDataBuffer::readDouble() {
+    uint64_t ret = readInt64();
+
+    return *reinterpret_cast<double *>(&ret);
+}
+
 string MessageDataBuffer::readUTF(){
     string ret = "";
     int length = readShort();
@@ -179,24 +185,28 @@ void MessageDataBuffer::writeVarInt(int i){
     }
 }
 
-void MessageDataBuffer::writeInt64(uint64_t d){
+void MessageDataBuffer::writeInt64(uint64_t i){
     for(char k = 7; k >= 0; k--){
-        write((d >> (8 * k)) & 255);
+        write((i >> (8 * k)) & 255);
     }
 }
 
-void MessageDataBuffer::writeVarInt64(uint64_t d){
-    if(d == 0) {
+void MessageDataBuffer::writeVarInt64(uint64_t i){
+    if(i == 0) {
         write(0);
         return;
     }
 
-    while (d > 0){
-        uchar b = d & 127;
-        d >>= 7;
-        b |= (d > 0) << 7;
+    while (i > 0){
+        uchar b = i & 127;
+        i >>= 7;
+        b |= (i > 0) << 7;
         write(b);
     }
+}
+
+void MessageDataBuffer::writeDouble(double d) {
+    writeInt64(*reinterpret_cast<uint64_t *>(&d));
 }
 
 void MessageDataBuffer::writeUTF(string UTF){
