@@ -28,7 +28,7 @@ public:
     // True if a processed message should continue to go through the Frames of a MessagingUnit
     bool keepInLoop = false;
     // Number of loops the message can make without being processed before being deleted
-    int lifetime = 1;
+    int lifetime = 10;
 };
 
 #endif
