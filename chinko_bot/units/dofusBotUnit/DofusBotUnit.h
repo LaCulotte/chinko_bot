@@ -35,4 +35,6 @@ protected:
     int lastPacketId = 0;
 };
 
+#define FINISHED_DOFUSBOT_H
+
 #endif

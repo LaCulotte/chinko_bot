@@ -1,13 +1,16 @@
 #ifndef GAMESERVERCONNECTION_FRAME_H
 #define GAMESERVERCONNECTION_FRAME_H
 
-#include "Frame.h"
+// #include "Frame.h"
+#include "PacketSendingDofusBotFrame.h"
 #include "DofusBotUnit.h"
 #include "AuthentificationManager.h"
+#include "AuthentificationFrame.h"
 #include "CharacterSelectionFrame.h"
 
 #include "BeginGameServerConnectionMessage.h"
 #include "BeginCharacterSelectionMessage.h"
+#include "RetryAuthentificationMessage.h"
 
 #include "SendPacketSuccessMessage.h"
 #include "SendPacketFailureMessage.h"
@@ -19,18 +22,20 @@
 
 enum GameServerConnectionFrameState {
     gcsf_idle = 0,
+    begin_GameServerConnection,
     rcv_HelloGameMessage,
     snd_AuthentificationTicketMessage,
     rcv_RawDataMessage,
     snd_CheckIntegrityMessage,
-    rcv_AuthentificationTicketResponseMessage
+    rcv_AuthentificationTicketResponseMessage,
+    end_GameServerConnection
 };
 
 class AuthentificationManager;
-class GameServerConnectionFrame : public Frame {
+class GameServerConnectionFrame : public PacketSendingDofusBotFrame {
 public:
     // Constructor
-    GameServerConnectionFrame() {};
+    GameServerConnectionFrame() : PacketSendingDofusBotFrame() {};
     // Constructor
     GameServerConnectionFrame(sp<AuthentificationManager> manager) { this->manager = manager; };
     // Copy constructor
@@ -43,8 +48,6 @@ public:
 
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
-    virtual bool setParent(MessagingUnit* parent) override;
-
 protected:
     sp<AuthentificationManager> manager;
 
@@ -54,9 +57,14 @@ protected:
 
     GameServerConnectionFrameState currentState = gcsf_idle;
 
-    bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message);
-    bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message);
+    bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
+    bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
+    bool sendAuthentificationTicketMessage();
+    bool sendCheckIntegrityMessage();
+
+    // TODO : faire des tests
+    void retryAuthentification();
 };
 
 #endif

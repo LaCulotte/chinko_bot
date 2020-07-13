@@ -1,2 +1,4 @@
 .vscode
 cmake
+helpers/MessageGenerator.config
+helpers/NetworkTypeGenerator.config

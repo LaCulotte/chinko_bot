@@ -12,7 +12,7 @@ bool GameServerInfo::serialize(sp<MessageDataBuffer> output) {
     output->writeByte(charactersCount);
     output->writeByte(charactersSlots);
 
-    output->writeInt64(date);
+    output->writeDouble(date);
 
     return true;
 } 
@@ -30,7 +30,7 @@ bool GameServerInfo::deserialize(sp<MessageDataBuffer> input) {
     charactersCount = input->readByte();
     charactersSlots = input->readByte();
 
-    date = input->readInt64();
+    date = input->readDouble();
 
     return true;
 }

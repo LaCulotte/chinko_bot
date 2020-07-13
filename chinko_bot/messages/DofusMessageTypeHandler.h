@@ -40,6 +40,11 @@
 #include "CharacterExperienceGainMessage.h"
 #include "SpellListMessage.h"
 
+#include "GameContextCreateRequestMessage.h"
+#include "GameContextCreateMessage.h"
+#include "CurrentMapMessage.h"
+#include "MapInformationsRequestMessage.h"
+
 class DofusMessageTypeHandler : public MessageTypeHandler {
 public:
     // Constructor

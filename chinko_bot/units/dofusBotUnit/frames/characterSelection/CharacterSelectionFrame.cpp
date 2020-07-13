@@ -1,21 +1,12 @@
 #include "CharacterSelectionFrame.h"
 
-bool CharacterSelectionFrame::setParent(MessagingUnit* parent) {
-    this->dofusBotParent = dynamic_cast<DofusBotUnit *>(parent); 
-    if(dofusBotParent){
-        this->parent = parent;
-        return true;
-    }
-
-    return false;
-}
-
 bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<CharactersListRequestMessage> clrMsg;
     sp<UnknownDofusMessage> udMsg;
     int apiUnitId;
-
+    
+    sp<CharacterSelectionMessage> csMsg;
     sp<CharacterSelectedSuccessMessage> cssMsg;
 
     sp<InventoryContentMessage> icMsg;
@@ -29,14 +20,8 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
     switch (message->getId()) {
     case BeginCharacterSelectionMessage::protocolId:
         if(currentState == csf_idle) {
-
-            clrMsg = make_shared<CharactersListRequestMessage>();
-            if(parent->sendMessage(make_shared<SendPacketRequestMessage>(clrMsg, dofusBotParent->gameServerInfos.connectionId), dofusBotParent->connectionUnitId)) {
+            if(sendCharactersListRequestMessage())
                 currentState = snd_CharactersListRequestMessage;   
-            } else {
-                Logger::write("Cannot send message to connectionUnit", LOG_ERROR);
-                // TODO : reset
-            }
 
         } else {
             Logger::write("Tried to begin character selection while it was already started.", LOG_WARNING);
@@ -63,6 +48,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
                 parent->sendMessage(message, apiUnitId);
             } else {
                 Logger::write("No APIUnit : cannot select character", LOG_ERROR);
+                this->killBot();
             }
         } else {
             Logger::write("Received CharactersListMessage when not supposed to.", LOG_WARNING);
@@ -71,12 +57,8 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case CharacterSelectionMessage::protocolId:
-        if(parent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<ConnectionMessage>(message), dofusBotParent->gameServerInfos.connectionId), dofusBotParent->connectionUnitId)) {
+        if(sendCharacterSelectionMessage(dynamic_pointer_cast<CharacterSelectionMessage>(message)))
             currentState = snd_CharacterSelectionMessage;
-        } else {
-            Logger::write("Cannot send message to connectionUnit", LOG_ERROR);
-            // TODO : reset
-        }
         break;
     
     case CharacterSelectedSuccessMessage::protocolId:
@@ -84,6 +66,10 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
             cssMsg = dynamic_pointer_cast<CharacterSelectedSuccessMessage>(message);
             currentState = rcv_CharacterLoadingCompleteMessage;
             Logger::write("Successfully selected " + cssMsg->infos.name, LOG_INFO);
+
+            if(!sendClientKeyMessageWithHash()) {
+                this->killBot();
+            }
         } else {
             Logger::write("Received CharacterSelectedSuccessMessage when not supposed to.", LOG_WARNING);
         }
@@ -91,6 +77,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     case CharacterSelectedErrorMessage::protocolId:
         if(currentState == rcv_CharacterSelectionResultMessage) {
+            // TODO : Mettre ca en fonction comme un reset ?
             currentState = csf_idle;
             parent->sendSelfMessage(make_shared<BeginCharacterSelectionMessage>());
             Logger::write("Error while selecting requested character. Please select a valid character.", LOG_WARNING);
@@ -103,6 +90,11 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         if(currentState == rcv_CharacterLoadingCompleteMessage) {
             currentState = csf_idle;
             Logger::write("Character loading complete !", LOG_INFO);
+
+            // TODO : mettre ca en fonction?
+            dofusBotParent->addFrame(make_shared<ContextFrame>());
+            dofusBotParent->sendSelfMessage(make_shared<BeginGameContextRequestMessage>());
+            dofusBotParent->removeFrame(this);
         } else {
             Logger::write("Received CharacterLoadingCompleteMessage when not supposed to.", LOG_WARNING);
         }
@@ -159,41 +151,136 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 }
 
 bool CharacterSelectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
-    switch (currentState)
-    {
-    case snd_CharactersListRequestMessage:
-        Logger::write("CharactersListRequestMessage sent.", LOG_INFO);
-        currentState = rcv_CharactersListMessage;
-        break;
-    
-    case snd_CharacterSelectionMessage:
-        Logger::write("CharactersSelectionMessage sent.", LOG_INFO);
-        currentState = rcv_CharacterSelectionResultMessage;
-        break;
-    
-    default:
+    auto it = packetId_to_messageId.find(message->packetId);
+    if(it == packetId_to_messageId.end())
         return false;
+
+    int messageId = it->second;
+
+    switch (messageId)
+    {
+    case CharactersListRequestMessage::protocolId:
+        if(currentState == snd_CharactersListRequestMessage) {
+            Logger::write("CharactersListRequestMessage sent.", LOG_INFO);
+            currentState = rcv_CharactersListMessage;
+        } else {
+            Logger::write("CharacterListRequestMessage was sent but was not supposed to.", LOG_WARNING);
+        }
+        break;
+
+    case CharacterSelectionMessage::protocolId:
+        if(currentState == snd_CharacterSelectionMessage) {
+            Logger::write("CharactersSelectionMessage sent.", LOG_INFO);
+            currentState = rcv_CharacterSelectionResultMessage;
+        } else {
+            Logger::write("CharacterListRequestMessage was sent but was not supposed to.", LOG_WARNING);
+        }
+        break;
+
+    case ClientKeyMessage::protocolId:
+        Logger::write("ClientKeyMessage with hash sent.", LOG_INFO);
+        break;
+
+    default:
+        Logger::write("Message of id " + to_string(messageId) + " was successfully sent.", LOG_INFO);
+        break;
     }
-    
+
+    packetId_to_messageId.erase(it);
+
     return true;
 }
 
 bool CharacterSelectionFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
-    switch (currentState)
+   auto it = packetId_to_messageId.find(message->packetId);
+    if(it == packetId_to_messageId.end())
+        return false;
+
+    int messageId = it->second;
+
+    switch (messageId)
     {
-    case snd_CharactersListRequestMessage:
-        Logger::write("Failed to send CharactersListRequestMessage.", LOG_ERROR);
-        // TODO : reset
+    case CharactersListRequestMessage::protocolId:
+        if(currentState == snd_CharactersListRequestMessage) {
+            Logger::write("CharactersListRequestMessage could not be sent.", LOG_WARNING);
+            this->killBot();
+        } else {
+            Logger::write("CharacterListRequestMessage could not be sent but was not supposed to.", LOG_WARNING);
+        }
         break;
-    
-    case snd_CharacterSelectionMessage:
-        Logger::write("Failed to send CharacterSelectionMessage.", LOG_ERROR);
-        // TODO : reset
+
+    case CharacterSelectionMessage::protocolId:
+        if(currentState == snd_CharacterSelectionMessage) {
+            Logger::write("CharactersSelectionMessage could not be sent.", LOG_WARNING);
+            this->killBot();
+        } else {
+            Logger::write("CharacterListRequestMessage could not be sent but was not supposed to.", LOG_WARNING);
+        }
         break;
-    
+
+    case ClientKeyMessage::protocolId:
+        Logger::write("ClientKeyMessage with a hash could not be sent", LOG_WARNING);
+            this->killBot();
+        break;
+
     default:
+        Logger::write("Message of id " + to_string(messageId) + " could not be sent.", LOG_WARNING);
+        break;
+    }
+
+    packetId_to_messageId.erase(it);
+
+    return true;
+}
+
+bool CharacterSelectionFrame::sendClientKeyMessageWithHash(){
+    sp<ClientKeyMessage> ckMsg(new ClientKeyMessage(true));
+
+    if(!ckMsg) {
+        Logger::write("Cannot generate ClientKeyMessage", LOG_ERROR);
+        this->killBot();
         return false;
     }
     
+    if(!sendPacket(ckMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send ClientKeyMessage with a hash.", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    return true;
+}
+
+bool CharacterSelectionFrame::sendCharactersListRequestMessage() {
+    sp<CharactersListRequestMessage> clrMsg = make_shared<CharactersListRequestMessage>();
+
+    if(!clrMsg) {
+        Logger::write("Cannot build CharactersListRequestMessage.", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    if(!sendPacket(clrMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send message to connectionUnit", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    return true;
+}
+
+bool CharacterSelectionFrame::sendCharacterSelectionMessage(sp<CharacterSelectionMessage> csMsg) {
+    if(!csMsg) {
+        Logger::write("Cannot build CharacterSelectionMessage.", LOG_ERROR);
+        this->killBot();
+        return false;
+    } 
+
+    if(!sendPacket(csMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send CharacterSelectionMessage.", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
     return true;
 }

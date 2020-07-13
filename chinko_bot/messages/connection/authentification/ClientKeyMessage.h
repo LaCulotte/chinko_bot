@@ -9,6 +9,10 @@ public:
 	ClientKeyMessage() {};
 	// Constructor with flash key initialization
 	ClientKeyMessage(string flashKey) { this->flashKey = flashKey; };
+	// Constructor with withHash initialization
+	ClientKeyMessage(bool withHash) { this->withHash = withHash; };
+	// Constructor with flashKey and withHash initialization
+	ClientKeyMessage(string flashKey, bool withHash) { this->flashKey = flashKey; this->withHash = withHash; };
 	// Copy constructor
 	ClientKeyMessage(const ClientKeyMessage& other) = default;
 
@@ -26,6 +30,7 @@ public:
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
 	string flashKey = "GGYo2G8nhIdGynhdd8#01";
+	bool withHash = false;
 
 };
 

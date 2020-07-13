@@ -36,6 +36,10 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[CharacterExperienceGainMessage::protocolId]       = make_shared<CharacterExperienceGainMessage>;
     id_to_builder[SpellListMessage::protocolId]                     = make_shared<SpellListMessage>;
 
+    id_to_builder[GameContextCreateRequestMessage::protocolId]      = make_shared<GameContextCreateRequestMessage>;
+    id_to_builder[GameContextCreateMessage::protocolId]             = make_shared<GameContextCreateMessage>;
+    id_to_builder[CurrentMapMessage::protocolId]                    = make_shared<CurrentMapMessage>;
+
     id_to_builder[UnknownDofusMessage::protocolId]                  = make_shared<UnknownDofusMessage>;
 }
 

@@ -34,7 +34,7 @@ public:
     int charactersCount;
     int charactersSlots;
 
-    uint64_t date;
+    double date;
 };
 
 #endif

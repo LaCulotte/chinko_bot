@@ -93,6 +93,9 @@ bool DofusClientConnection::serializePrefix(sp<MessageDataBuffer> data, sp<Prefi
 
     int typeLen = (length > 255) << 1 | (length <= 255 || length > 65535);
 
+    if(length == 0)
+        typeLen = 0;
+
     // Prefix's first part
     int prefix = id << 2 | typeLen;
 

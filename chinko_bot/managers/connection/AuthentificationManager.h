@@ -45,6 +45,7 @@ public:
     void setCredentials(string username, string password);
     void setBot(DofusBotUnit *bot) { this->bot = bot; };
 
+    bool beginAuthentification();
     bool beginAuthentification(string server, int port);
     void interruptAuthentification();
 
@@ -57,11 +58,13 @@ public:
     // void setState(State_AuthentificationManager new_state);
 
     void setDofusConnectionId(int id) { dofusConnectionId = id; };
+    // int getDofusConnectionId() { return dofusConnectionId; };
 
-    bool sendIdentificationMessage(char * signedKey, int signedKeyLength, string salt);
-    bool sendClientKeyMessage();
-    bool sendAuthentificationTicketMessage();
-    bool sendCheckIntegrityMessage();
+    sp<IdentificationMessage> generateIdentificationMessage(char * signedKey, int signedKeyLength, string salt);
+    sp<ClientKeyMessage> generateClientKeyMessage();
+
+    sp<AuthentificationTicketMessage> generateAuthentificationTicketMessage();
+    sp<CheckIntegrityMessage> generateCheckIntegrityMessage();
     bool sendCharactersListRequestMessage();
     bool sendCharacterSelectionMessage(uint64_t id);
 
@@ -71,6 +74,9 @@ public:
 protected:
     string username;
     string password;
+
+    string authentificationServerAddress = "";
+    int authentificationServerPort = -1;
 
     int dofusConnectionId = -1;
 
@@ -86,6 +92,8 @@ protected:
     string cipherCredentialsRSA(string salt);
 
     string clientTicket = "";
+
+    bool autoConnect = true;
 };
 
 #endif

@@ -1,18 +1,6 @@
 #include "GameServerConnectionFrame.h"
 
-bool GameServerConnectionFrame::setParent(MessagingUnit* parent) {
-    if(dynamic_cast<DofusBotUnit *>(parent)){
-        this->parent = parent;
-        return true;
-    }
-
-    return false;
-}
-
-// TODO : reset propre en cas d'erreur : message?
 bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
-    DofusBotUnit* botParent = dynamic_cast<DofusBotUnit *>(parent);
-
     sp<BeginGameServerConnectionMessage> bgscMsg;
     sp<ConnectionSuccessMessage> csMsg;
     sp<ConnectionFailureMessage> cfMsg;
@@ -29,7 +17,7 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 
             if(!manager) {
                 Logger::write("Cannot begin Game server connection if there is no AuthentificationManager.", LOG_ERROR);
-                // TODO : reset complet (Erreur de progammation, pas de connection/authentification)
+                this->killBot();
                 break;
             }
 
@@ -43,7 +31,9 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
             serverPorts_i = 0;
             
             if(!manager->connectGameServer(serverAddress, serverPorts[0])) {
-                // TODO : reset vers authentification
+                // TODO : reset vers authentification ou bot kill (pas de ticket client)
+            } else {
+                currentState = begin_GameServerConnection;
             }
         } else {
             Logger::write("Tried to begin the GameServer connection while it is already started.", LOG_WARNING);
@@ -52,31 +42,38 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
     
     case ConnectionSuccessMessage::protocolId:
-        csMsg = dynamic_pointer_cast<ConnectionSuccessMessage>(message);
-        manager->setDofusConnectionId(csMsg->connectionId);
+        if(currentState == begin_GameServerConnection) {
+            csMsg = dynamic_pointer_cast<ConnectionSuccessMessage>(message);
 
-        botParent->gameServerInfos.connectionId = csMsg->connectionId;
-        botParent->gameServerInfos.adress = serverAddress;
-        
-        currentState = rcv_HelloGameMessage;
-        Logger::write("Connected to the game server : " + serverAddress, LOG_INFO);
-        break;
+            dofusBotParent->gameServerInfos.connectionId = csMsg->connectionId;
+            dofusBotParent->gameServerInfos.adress = serverAddress;
+            
+            currentState = rcv_HelloGameMessage;
+            Logger::write("Connected to the game server : " + serverAddress, LOG_INFO);
+            break;
+        }
+
+        return false;
 
     case ConnectionFailureMessage::protocolId:
-        cfMsg = dynamic_pointer_cast<ConnectionFailureMessage>(message);
+        if(currentState == begin_GameServerConnection) {
+            cfMsg = dynamic_pointer_cast<ConnectionFailureMessage>(message);
 
-        Logger::write("Failed to connect to " + serverAddress + ":" + to_string(serverPorts[serverPorts_i]) + "; Reason : " + cfMsg->reason, LOG_WARNING);
-        if(++serverPorts_i >= serverPorts.size()) {
-            Logger::write("Cannot connect to the game server", LOG_ERROR);
-            // TODO : reset authentification
-            break;
-        } else {
-            Logger::write("Trying an next port", LOG_WARNING);
-            if(!manager->connectGameServer(serverAddress, serverPorts[serverPorts_i])) {
-                // TODO : reset vers authentification
+            Logger::write("Failed to connect to " + serverAddress + ":" + to_string(serverPorts[serverPorts_i]) + "; Reason : " + cfMsg->reason, LOG_WARNING);
+            if(++serverPorts_i >= serverPorts.size()) {
+                Logger::write("Cannot connect to the game server", LOG_ERROR);
+                // TODO : reset authentification
+                break;
+            } else {
+                Logger::write("Trying an next port", LOG_WARNING);
+                if(!manager->connectGameServer(serverAddress, serverPorts[serverPorts_i])) {
+                    // TODO : reset vers authentification
+                }
             }
+            break;
         }
-        break;
+
+        return false;
 
     case SendPacketSuccessMessage::protocolId:
         if(handleSendPacketSuccessMessage(dynamic_pointer_cast<SendPacketSuccessMessage>(message))) 
@@ -92,6 +89,7 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     case ProtocolRequiredMessage::protocolId:
         prMsg = dynamic_pointer_cast<ProtocolRequiredMessage>(message);
+        // TODO : refuser si mauvaise version
         Logger::write("ProtocolRequiredMessage received", LOG_INFO);
         Logger::write("Required version : " + to_string(prMsg->requiredVersion) + "; Current version : " + to_string(prMsg->currentVersion), LOG_INFO);
         break;
@@ -100,11 +98,8 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         if(currentState == rcv_HelloGameMessage) {
             Logger::write("Received HelloGameMessage", LOG_INFO);
 
-            if(manager->sendAuthentificationTicketMessage()) {
+            if (sendAuthentificationTicketMessage())
                 currentState = snd_AuthentificationTicketMessage;
-            } else {
-                // TODO : reset
-            }
 
         } else {
             Logger::write("Received HelloGameMessage when not supposed to.", LOG_WARNING);
@@ -116,11 +111,9 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         if(currentState == rcv_RawDataMessage) {
             Logger::write("Received RawDataMessage", LOG_INFO);
 
-            if(manager->sendCheckIntegrityMessage()) {
+            if(sendCheckIntegrityMessage())
                 currentState = snd_CheckIntegrityMessage;
-            } else {
-                // TODO : reset
-            }
+
         } else {
             Logger::write("Received RawDataMessage when not supposed to.", LOG_WARNING);
         }
@@ -129,14 +122,17 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     // TODO : cas AuthentificationTicketRefusedMessage
     case AuthentificationTicketAcceptedMessage::protocolId:
         if(currentState == rcv_AuthentificationTicketResponseMessage) {
+            Logger::write("Received AuthentificationTicketAcceptedMessage", LOG_INFO);
+
             sp<CharacterSelectionFrame> csFrame(new CharacterSelectionFrame());
             if(parent->addFrame(csFrame)) {
                 parent->sendSelfMessage(make_shared<BeginCharacterSelectionMessage>());
                 parent->removeFrame(this);
             } else {
                 Logger::write("Could not add CharacterSelectionFrame to parent.", LOG_ERROR);
-                //TODO : reset
+                this->killBot();
             }
+            currentState = end_GameServerConnection;
         } else {
             Logger::write("Received AuthentificationTicketAcceptedMessage when not supposed to.", LOG_WARNING);
         }
@@ -151,35 +147,122 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 }
 
 bool GameServerConnectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
-    switch (currentState) {
-    case snd_AuthentificationTicketMessage:
-        Logger::write("AuthentificationTicketMessage sent.", LOG_INFO);
-        currentState = rcv_RawDataMessage;
+    auto it = packetId_to_messageId.find(message->packetId);
+    if(it == packetId_to_messageId.end())
+        return false;
+
+    int messageId = it->second;
+
+    switch (messageId)
+    {
+    case AuthentificationTicketMessage::protocolId:
+        if(currentState == snd_AuthentificationTicketMessage) {
+            Logger::write("AuthentificationTicketMessage sent.", LOG_INFO);
+            currentState = rcv_RawDataMessage;
+        } else {
+            Logger::write("AuthentificationTicketMessage sent but was not supposed to.", LOG_WARNING);
+        } 
         break;
-    case snd_CheckIntegrityMessage:
-        Logger::write("CheckIntegrityMessage sent.", LOG_INFO);
-        currentState = rcv_AuthentificationTicketResponseMessage;
+    
+    case CheckIntegrityMessage::protocolId:
+        if(currentState == snd_CheckIntegrityMessage) {
+            Logger::write("CheckIntegrityMessage sent.", LOG_INFO);
+            currentState = rcv_AuthentificationTicketResponseMessage;
+        } else {
+            Logger::write("AuthentificationTicketMessage sent but was not supposed to.", LOG_WARNING);
+        }
         break;
+
     default:
+        Logger::write("Message of id " + to_string(messageId) + " was sucessfully sent.", LOG_INFO);
+        break;
+    }
+
+    packetId_to_messageId.erase(it);
+
+   return true;
+}
+
+bool GameServerConnectionFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
+    auto it = packetId_to_messageId.find(message->packetId);
+    if(it == packetId_to_messageId.end())
+        return false;
+
+    int messageId = it->second;
+
+    switch (messageId)
+    {
+    case AuthentificationTicketMessage::protocolId:
+        if(currentState == snd_AuthentificationTicketMessage) {
+            Logger::write("AuthentificationTicketMessage could not be sent. Reason : " + message->reason, LOG_WARNING);
+            this->killBot();
+        } else {
+            Logger::write("AuthentificationTicketMessage could not be but was not supposed to. Reason : " + message->reason, LOG_WARNING);
+        } 
+        break;
+    
+    case CheckIntegrityMessage::protocolId:
+        if(currentState == snd_CheckIntegrityMessage) {
+            Logger::write("CheckIntegrityMessage could not be sent. Reason : " + message->reason, LOG_WARNING);
+            this->killBot();
+        } else {
+            Logger::write("CheckIntegrityMessage could not be but was not supposed to. Reason : " + message->reason, LOG_WARNING);
+        } 
+        break;
+    
+    default:
+        Logger::write("Could not send message of id : " + to_string(messageId), LOG_WARNING);
+        break;
+    }
+
+    packetId_to_messageId.erase(it);
+
+    return true;
+}
+
+bool GameServerConnectionFrame::sendAuthentificationTicketMessage() {
+    sp<AuthentificationTicketMessage> atMsg = manager->generateAuthentificationTicketMessage();
+    if(!atMsg) {
+        Logger::write("Cannot generate AuthentificationTicketMessage", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+    if(!sendPacket(atMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send AuthentificationTicketMessage.", LOG_ERROR); 
+        this->killBot();
         return false;
     }
 
     return true;
 }
 
-bool GameServerConnectionFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
-    switch (currentState) {
-    case snd_AuthentificationTicketMessage:
-        Logger::write("AuthentificationTicketMessage could not be sent. Reason : " + message->reason, LOG_INFO);
-        // TODO : Reset ou retry
-        break;
-    case snd_CheckIntegrityMessage:
-        Logger::write("CheckIntegrityMessage could not be sent. Reason : " + message->reason, LOG_INFO);
-        // TODO : Reset ou retry
-        break;
-    default:
+bool GameServerConnectionFrame::sendCheckIntegrityMessage() {
+    sp<CheckIntegrityMessage> ciMsg = manager->generateCheckIntegrityMessage();
+
+    if(!ciMsg) {
+        Logger::write("Cannot generate CheckIntegrityMessage.", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    if(!sendPacket(ciMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send CheckIntegrityMessage", LOG_ERROR);
+        this->killBot();
         return false;
     }
 
     return true;
+}
+
+void GameServerConnectionFrame::retryAuthentification() {
+    if(!parent)
+        return;
+
+    sp<Frame> oldAuthFrame = parent->getFrame<AuthentificationFrame>();
+    if(oldAuthFrame)
+        parent->removeFrame(oldAuthFrame);
+    
+    parent->addFrame(make_shared<AuthentificationFrame>(manager));
+    parent->sendSelfMessage(make_shared<RetryAuthentificationMessage>());
+    parent->removeFrame(this);
 }

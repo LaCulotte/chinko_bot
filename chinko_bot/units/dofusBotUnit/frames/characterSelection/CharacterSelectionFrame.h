@@ -1,9 +1,10 @@
 #ifndef CHARACTERSELECTION_FRAME_H
 #define CHARACTERSELECTION_FRAME_H
 
-#include "Frame.h"
+#include "PacketSendingDofusBotFrame.h"
 #include "DofusBotUnit.h"
 #include "APIUnit.h"
+
 
 #include "SendPacketRequestMessage.h"
 #include "SendPacketSuccessMessage.h"
@@ -11,6 +12,8 @@
 #include "UnknownDofusMessage.h"
 
 #include "BeginCharacterSelectionMessage.h"
+#include "ContextFrame.h"
+#include "BeginGameContextRequestMessage.h"
 
 #include "CharactersListRequestMessage.h"
 #include "BasicCharactersListMessage.h"
@@ -19,6 +22,7 @@
 #include "CharacterSelectedSuccessMessage.h"
 #include "CharacterSelectedErrorMessage.h"
 #include "CharacterLoadingCompleteMessage.h"
+#include "ClientKeyMessage.h"
 
 // TODO : à enlever
 #include "InventoryContentMessage.h"
@@ -38,10 +42,10 @@ enum CharacterSelectionFrameState {
     rcv_CharacterLoadingCompleteMessage
 };
 
-class CharacterSelectionFrame : public Frame {
+class CharacterSelectionFrame : public PacketSendingDofusBotFrame {
 public: 
     // Constructor
-    CharacterSelectionFrame() : Frame() {};
+    CharacterSelectionFrame() : PacketSendingDofusBotFrame() {};
     // Copy constructor
     CharacterSelectionFrame(const CharacterSelectionFrame& other) = default;
 
@@ -52,14 +56,15 @@ public:
 
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
-    virtual bool setParent(MessagingUnit* parent) override;
-
-    DofusBotUnit *dofusBotParent = nullptr;
 protected: 
     CharacterSelectionFrameState currentState = csf_idle;
 
     bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message);
     bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message);
+
+    bool sendCharactersListRequestMessage();
+    bool sendCharacterSelectionMessage(sp<CharacterSelectionMessage> csMsg);
+    bool sendClientKeyMessageWithHash();
 };
 
 

@@ -12,9 +12,9 @@ bool IdentificationSuccessMessage::serialize(sp<MessageDataBuffer> output) {
 
     output->writeUTF(secretQuestion);
 
-    output->writeInt64(accountCreation);
-    output->writeInt64(subscriptionElapsedDuration);
-    output->writeInt64(subscriptionEndDate);
+    output->writeDouble(accountCreation);
+    output->writeDouble(subscriptionElapsedDuration);
+    output->writeDouble(subscriptionEndDate);
 
     output->writeByte(havenBagAvailableRoom);
 
@@ -34,9 +34,9 @@ bool IdentificationSuccessMessage::deserialize(sp<MessageDataBuffer> input) {
     communityId = input->readByte();
     secretQuestion = input->readUTF();
 
-    accountCreation = input->readInt64();
-    subscriptionElapsedDuration = input->readInt64();
-    subscriptionEndDate = input->readInt64();
+    accountCreation = input->readDouble();
+    subscriptionElapsedDuration = input->readDouble();
+    subscriptionEndDate = input->readDouble();
 
     havenBagAvailableRoom = input->readByte();
 

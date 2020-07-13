@@ -35,9 +35,9 @@ public:
 	
 	string secretQuestion;
 	
-	uint64_t accountCreation;
-	uint64_t subscriptionElapsedDuration;
-	uint64_t subscriptionEndDate;
+	double accountCreation;
+	double subscriptionElapsedDuration;
+	double subscriptionEndDate;
 
 	int havenBagAvailableRoom;
 

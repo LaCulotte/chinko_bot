@@ -1,7 +1,7 @@
 #ifndef BASIC_DOFUSBOT_FRAME_H
 #define BASIC_DOFUSBOT_FRAME_H
 
-#include "Frame.h"
+#include "PacketSendingDofusBotFrame.h"
 
 #include "DofusBotUnit.h"
 
@@ -13,15 +13,10 @@
 #include "SequenceNumberRequestMessage.h"
 #include "SequenceNumberMessage.h"
 
-enum BasicDofusBotFrameState {
-    bdb_idle,
-    snd_SequenceNumberMessage
-};
-
-class BasicDofusBotFrame : public Frame {
+class BasicDofusBotFrame : public PacketSendingDofusBotFrame {
 public: 
     // Constructor
-    BasicDofusBotFrame() : Frame() {};
+    BasicDofusBotFrame() : PacketSendingDofusBotFrame() {};
     // Copy constructor
     BasicDofusBotFrame(const BasicDofusBotFrame& other) = default;
 
@@ -32,18 +27,13 @@ public:
 
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
-    virtual bool setParent(MessagingUnit* parent) override;
-
     int sequenceNumber = 0;
 
-    DofusBotUnit* dofusBotParent = nullptr;
-
 protected:
-    BasicDofusBotFrameState currentState = bdb_idle;
+    bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
+    bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
-    bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message);
-    bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message);
-
+    bool sendSequenceNumberMessage();
 };
 
 #endif

@@ -1,15 +1,5 @@
 #include "BasicDofusBotFrame.h"
 
-bool BasicDofusBotFrame::setParent(MessagingUnit* parent) {
-    this->dofusBotParent = dynamic_cast<DofusBotUnit *>(parent); 
-    if(dofusBotParent){
-        this->parent = parent;
-        return true;
-    }
-
-    return false;
-}
-
 bool BasicDofusBotFrame::computeMessage(sp<Message> message, int srcId) {
     sp<SendPacketFailureMessage> spfMsg;
     
@@ -20,15 +10,12 @@ bool BasicDofusBotFrame::computeMessage(sp<Message> message, int srcId) {
     case UnknownDofusMessage::protocolId:
         udMsg = dynamic_pointer_cast<UnknownDofusMessage>(message);
         Logger::write("Got message of unknown id : " + to_string(udMsg->real_id) + "; Length : " + to_string(udMsg->getLength()) + ";", LOG_DEBUG);
-        // if(udMsg->data)
-        //     Logger::write("Data : " + udMsg->data->toString(), LOG_DEBUG);
         break;
     
     case SequenceNumberRequestMessage::protocolId:
-        snMsg = make_shared<SequenceNumberMessage>(++sequenceNumber);
         Logger::write("Received SequenceNumberRequestMessage", LOG_INFO);
-        parent->sendMessage(make_shared<SendPacketRequestMessage>(snMsg, dofusBotParent->gameServerInfos.connectionId), dofusBotParent->connectionUnitId);
-        currentState = snd_SequenceNumberMessage;
+
+        sendSequenceNumberMessage();
         break;
 
     case SendPacketSuccessMessage::protocolId:
@@ -51,25 +38,58 @@ bool BasicDofusBotFrame::computeMessage(sp<Message> message, int srcId) {
 }
 
 bool BasicDofusBotFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
-    switch(currentState) {
-    case snd_SequenceNumberMessage:
-        Logger::write("SequenceNumberMessage sent", LOG_INFO);
-        currentState = bdb_idle;
+    auto it = packetId_to_messageId.find(message->packetId);
+    if(it == packetId_to_messageId.end())
+        return false;
+
+    int messageId = it->second;
+
+    switch(messageId) {
+    case SequenceNumberMessage::protocolId:
+        Logger::write("SequenceNumberMessage sent.", LOG_INFO);
         break;
     default:
-        return false;
+        break;
     }
+
+    packetId_to_messageId.erase(it);
 
     return true;
 }
 
 bool BasicDofusBotFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) {
-    switch(currentState) {
-    case snd_SequenceNumberMessage:
-        Logger::write("Cannot send SequenceNumberMessag. Reason : " + message->reason, LOG_INFO);
-        // TODO : reset
+    auto it = packetId_to_messageId.find(message->packetId);
+    if(it == packetId_to_messageId.end())
+        return false;
+
+    int messageId = it->second;
+
+    switch(messageId) {
+    case SequenceNumberMessage::protocolId:
+        Logger::write("SequenceNumberMessage could not be sent. Reason : " + message->reason, LOG_INFO);
+        this->killBot();
         break;
     default:
+        break;
+    }
+
+    packetId_to_messageId.erase(it);
+
+    return true;
+}
+
+bool BasicDofusBotFrame::sendSequenceNumberMessage() {
+    sp<SequenceNumberMessage> snMsg = make_shared<SequenceNumberMessage>(++sequenceNumber);
+
+    if(!snMsg) {
+        Logger::write("Cannot build SequenceNumberMessage", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    if(!sendPacket(snMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send SequenceNumberMessage.", LOG_ERROR);
+        this->killBot();
         return false;
     }
 

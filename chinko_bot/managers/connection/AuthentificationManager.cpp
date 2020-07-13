@@ -14,6 +14,36 @@ void AuthentificationManager::setCredentials(string username, string password) {
     this->password = password;
 }
 
+bool AuthentificationManager::beginAuthentification() {
+    if(!bot) {
+        Logger::write("Cannot begin authentification if no BotUnit was linked to the AuthentificationManager.", LOG_WARNING);
+        return false;
+    }
+
+    if(username == "None" && password == "None"){
+        Logger::write("Credentials have most likely not be initialized.", LOG_WARNING);
+        Logger::write("Current username : " + username + "; Current password : " + password, LOG_WARNING);
+    }
+
+    bot->connectionUnitId = bot->getMessageInterfaceOutId<ConnectionUnit>();
+    if(bot->connectionUnitId == -1) {
+        Logger::write("Cannot begin authentification : there is no ConnectionUnit.", LOG_ERROR);
+        return false;
+    }
+
+    if(authentificationServerAddress == "" || authentificationServerPort == -1){
+        Logger::write("Cannot begin authentification : no authentification server address or port has been specified.", LOG_ERROR);
+        return false;
+    }
+
+    sp<DofusClientConnection> connection(new DofusClientConnection());
+
+    bot->sendMessage(make_shared<ConnectionRequestMessage>(connection, authentificationServerAddress, authentificationServerPort), bot->connectionUnitId);
+    this->autoConnect = false;
+
+    return true;
+}
+
 bool AuthentificationManager::beginAuthentification(string address, int port) {
     if(!bot) {
         Logger::write("Cannot begin authentification if no BotUnit was linked to the AuthentificationManager.", LOG_WARNING);
@@ -21,19 +51,22 @@ bool AuthentificationManager::beginAuthentification(string address, int port) {
     }
 
     if(username == "None" && password == "None"){
-        Logger::write("Credentials most likely have not be initialized.", LOG_WARNING);
+        Logger::write("Credentials have most likely not be initialized.", LOG_WARNING);
         Logger::write("Current username : " + username + "; Current password : " + password, LOG_WARNING);
     }
 
     bot->connectionUnitId = bot->getMessageInterfaceOutId<ConnectionUnit>();
     if(bot->connectionUnitId == -1) {
-        Logger::write("Cannot begin authentification if there is no ConnectionUnit.", LOG_ERROR);
+        Logger::write("Cannot begin authentification : there is no ConnectionUnit.", LOG_ERROR);
         return false;
     }
 
-    sp<DofusClientConnection> connection( new DofusClientConnection());
+    sp<DofusClientConnection> connection(new DofusClientConnection());
 
     bot->sendMessage(make_shared<ConnectionRequestMessage>(connection, address, port), bot->connectionUnitId);
+    
+    authentificationServerAddress = address;
+    authentificationServerPort = port;
 
     return true;
 }
@@ -121,33 +154,31 @@ string AuthentificationManager::cipherCredentialsRSA(string salt) {
 
 }
 
-bool AuthentificationManager::sendIdentificationMessage(char *signedKey, int signedKeyLen, string salt) {
+sp<IdentificationMessage> AuthentificationManager::generateIdentificationMessage(char *signedKey, int signedKeyLen, string salt) {
     if(!setPublicKey(signedKey, signedKeyLen)){
         Logger::write("Public key decryption fail.", LOG_ERROR);
-        return false;
+        return nullptr;
     }
     generateAESKey();
     string cipheredCredentials = cipherCredentialsRSA(salt);
 
     sp<IdentificationMessage> idMsg (new IdentificationMessage(cipheredCredentials));
-    if(!idMsg) {
-        Logger::write("Could not create IdentificationMessage.", LOG_ERROR);
-        return false;
-    }
-
-    Logger::write("Sending IdentificationMessage", LOG_INFO);
-    return bot->sendMessage(make_shared<SendPacketRequestMessage>(idMsg, dofusConnectionId), bot->connectionUnitId);
+    idMsg->autoConnect = this->autoConnect;
+    
+    return idMsg;   
 }
 
-bool AuthentificationManager::sendClientKeyMessage() {
-    sp<ClientKeyMessage> ckMsg (new ClientKeyMessage());
-    if(!ckMsg){
-        Logger::write("Could not create ClientKeyMessage.", LOG_ERROR);
-        return false;
-    }
+sp<ClientKeyMessage> AuthentificationManager::generateClientKeyMessage() {
+    // sp<ClientKeyMessage> ckMsg (new ClientKeyMessage());
+    // if(!ckMsg){
+    //     Logger::write("Could not create ClientKeyMessage.", LOG_ERROR);
+    //     return false;
+    // }
 
-    Logger::write("Sending ClientKeyMessage", LOG_INFO);
-    return bot->sendMessage(make_shared<SendPacketRequestMessage>(ckMsg, dofusConnectionId), bot->connectionUnitId);
+    // Logger::write("Sending ClientKeyMessage", LOG_INFO);
+    // return bot->sendMessage(make_shared<SendPacketRequestMessage>(ckMsg, dofusConnectionId), bot->connectionUnitId);
+
+    return make_shared<ClientKeyMessage>();
 }
 
 void AuthentificationManager::interruptAuthentification() {
@@ -184,10 +215,6 @@ bool AuthentificationManager::decodeAndSetTicket(string encodedTicket) {
 }
 
 bool AuthentificationManager::connectGameServer(string address, int port) {
-    if(dofusConnectionId == -1) {
-        Logger::write("Authentification must have begun in order to connect to GameServer.", LOG_ERROR);
-        return false;
-    }
     if(clientTicket.size() == 0) {
         Logger::write("Cannot connect to game server without a client ticket", LOG_ERROR);
         return false;
@@ -207,19 +234,20 @@ void AuthentificationManager::interruptConnectGameServer() {
     clientTicket = "";
 }
 
-bool AuthentificationManager::sendAuthentificationTicketMessage() {
+sp<AuthentificationTicketMessage> AuthentificationManager::generateAuthentificationTicketMessage() {
     if(clientTicket.size() == 0) {
-        Logger::write("Cannot send AuthentificationTicketMessage without a ticket", LOG_ERROR);
-        return false;
+        Logger::write("Cannot generate AuthentificationTicketMessage without a ticket", LOG_ERROR);
+        return nullptr;
     }
 
-    sp<AuthentificationTicketMessage> atMsg( new AuthentificationTicketMessage(clientTicket));
-    return bot->sendMessage(make_shared<SendPacketRequestMessage>(atMsg, dofusConnectionId), bot->connectionUnitId);
+    sp<AuthentificationTicketMessage> atMsg(new AuthentificationTicketMessage(clientTicket));
+    // return bot->sendMessage(make_shared<SendPacketRequestMessage>(atMsg, dofusConnectionId), bot->connectionUnitId);
+    return atMsg;
 }
 
-bool AuthentificationManager::sendCheckIntegrityMessage() {
-    sp<CheckIntegrityMessage> ciMsg(new CheckIntegrityMessage());
-    return bot->sendMessage(make_shared<SendPacketRequestMessage>(ciMsg, dofusConnectionId), bot->connectionUnitId);
+sp<CheckIntegrityMessage> AuthentificationManager::generateCheckIntegrityMessage() {
+    // sp<CheckIntegrityMessage> ciMsg(new CheckIntegrityMessage());
+    return make_shared<CheckIntegrityMessage>();
 }
 
 bool AuthentificationManager::sendCharactersListRequestMessage() {

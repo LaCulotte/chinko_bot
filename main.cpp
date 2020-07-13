@@ -32,7 +32,7 @@ int main(){
     sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage(USERNAME, PASSWORD));
     dbu->sendSelfMessage(baMsg);
 
-    usleep(100000*1000);
+    usleep(1000 * 1000*1000);
 
     cu->stop();
     dbu->stop();
