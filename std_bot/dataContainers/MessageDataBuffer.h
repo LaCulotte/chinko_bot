@@ -37,6 +37,7 @@ public:
     uint64_t readInt64();
     uint64_t readVarInt64();
     double readDouble();
+    float readFloat();
     string readUTF();
     string readUTFBytes(int length);
 
@@ -51,6 +52,7 @@ public:
     void writeInt64(uint64_t i);
     void writeVarInt64(uint64_t i);
     void writeDouble(double d);
+    void writeFloat(float f);
     void writeUTF(string UTF);
     void writeUTFBytes(string UTF);
 

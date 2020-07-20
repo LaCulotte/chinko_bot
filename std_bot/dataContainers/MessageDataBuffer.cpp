@@ -113,6 +113,12 @@ double MessageDataBuffer::readDouble() {
     return *reinterpret_cast<double *>(&ret);
 }
 
+float MessageDataBuffer::readFloat() {
+    uint32_t ret = readInt();
+
+    return *reinterpret_cast<float *>(&ret);
+}
+
 string MessageDataBuffer::readUTF(){
     string ret = "";
     int length = readShort();
@@ -207,6 +213,10 @@ void MessageDataBuffer::writeVarInt64(uint64_t i){
 
 void MessageDataBuffer::writeDouble(double d) {
     writeInt64(*reinterpret_cast<uint64_t *>(&d));
+}
+
+void MessageDataBuffer::writeFloat(float f) {
+    writeInt(*reinterpret_cast<uint32_t *>(&f));
 }
 
 void MessageDataBuffer::writeUTF(string UTF){
