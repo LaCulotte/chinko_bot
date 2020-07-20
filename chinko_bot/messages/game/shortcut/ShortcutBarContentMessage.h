@@ -1,12 +1,14 @@
-#ifndef SHORTCUTBARCONTENT_MESSAGE_H
-#define SHORTCUTBARCONTENT_MESSAGE_H
+#ifndef SHORTCUTBARCONTENTMESSAGE_MESSAGE_H
+#define SHORTCUTBARCONTENTMESSAGE_MESSAGE_H
 
 #include "PrefixedMessage.h"
+
 #include "Shortcut.h"
+
 #include "NetworkTypeHandler.h"
 
 class ShortcutBarContentMessage : public PrefixedMessage {
-public: 
+public:
 	// Constructor
 	ShortcutBarContentMessage() {};
 	// Copy constructor
@@ -25,9 +27,8 @@ public:
 	// Turns the message's attributes into raw data
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
-	int barType;
 	vector<sp<Shortcut>> shortcuts;
-
+	int barType = 0;
 };
 
 #endif

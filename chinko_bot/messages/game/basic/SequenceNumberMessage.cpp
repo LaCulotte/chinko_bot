@@ -1,15 +1,13 @@
 #include "SequenceNumberMessage.h"
 
-bool SequenceNumberMessage::serialize(shared_ptr<MessageDataBuffer> output) {
+bool SequenceNumberMessage::serialize(sp<MessageDataBuffer> output) {
+	output->writeShort(number);
 
-	output->writeShort(sequenceNumber);
-
-	return true;
+    return true;
 }
 
-bool SequenceNumberMessage::deserialize(shared_ptr<MessageDataBuffer> input) {
+bool SequenceNumberMessage::deserialize(sp<MessageDataBuffer> input) {
+	number = input->readShort();
 
-	sequenceNumber = input->readShort();
-
-	return true;
+    return true;
 }

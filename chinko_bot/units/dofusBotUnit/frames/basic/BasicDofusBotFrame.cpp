@@ -91,7 +91,8 @@ bool BasicDofusBotFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMess
 
 bool BasicDofusBotFrame::sendSequenceNumberMessage() {
     // Builds SequenceNumber message
-    sp<SequenceNumberMessage> snMsg = make_shared<SequenceNumberMessage>(++sequenceNumber);
+    sp<SequenceNumberMessage> snMsg = make_shared<SequenceNumberMessage>();
+    snMsg->number = ++sequenceNumber;
 
     // Checks if it is valid
     if(!snMsg) {

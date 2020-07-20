@@ -3,12 +3,11 @@
 
 #include "ShortcutObject.h"
 
+
 class ShortcutObjectIdolsPreset : public ShortcutObject {
-public: 
+public:
 	// Constructor
 	ShortcutObjectIdolsPreset() {};
-	// Constructor with slot and presetId initialization
-	ShortcutObjectIdolsPreset(int slot, int presetId) : ShortcutObject(slot) { this->presetId = presetId; };
 	// Copy constructor
 	ShortcutObjectIdolsPreset(const ShortcutObjectIdolsPreset& other) = default;
 
@@ -17,17 +16,15 @@ public:
 	// Destructor
 	~ShortcutObjectIdolsPreset() = default;
 
-	// Returns the type's id
-	virtual unsigned int getId() { return typeId; };
-	// Type's id
+	virtual unsigned int getId() override { return typeId; };
 	static const unsigned int typeId = 492;
+
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;
 	// Turns the type's attributes into raw data
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
-	int presetId;
-
+	int presetId = 0;
 };
 
 #endif

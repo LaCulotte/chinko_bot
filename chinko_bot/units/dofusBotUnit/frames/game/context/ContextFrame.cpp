@@ -1,9 +1,11 @@
 #include "ContextFrame.h"
+#include "MapInformationsContainer.h"
 
 bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<GameContextCreateMessage> gccMsg;
     sp<CurrentMapMessage> ccMsg;
+    sp<MapComplementaryInformationsDataMessage> mcidMsg;
 
     switch (message->getId())
     {
@@ -40,6 +42,15 @@ bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
 
         // Request for more map infos
         sendMapInformationsRequestMessage(ccMsg->mapId);
+        break;
+
+    case MapComplementaryInformationsDataMessage::protocolId:
+        mcidMsg = dynamic_pointer_cast<MapComplementaryInformationsDataMessage>(message);
+        {
+            MapInformationsContainer infos;
+            infos.loadMapInformations(mcidMsg);
+        }
+        Logger::write("Received MapComplementaryInformationsDataMessage", LOG_INFO);
         break;
 
     default:
@@ -131,7 +142,8 @@ bool ContextFrame::sendGameContextCreateRequestMessage(){
 }
 
 bool ContextFrame::sendMapInformationsRequestMessage(double mapId){
-    sp<MapInformationsRequestMessage> mirMsg(new MapInformationsRequestMessage(mapId));
+    sp<MapInformationsRequestMessage> mirMsg(new MapInformationsRequestMessage());
+    mirMsg->mapId = mapId;
 
     if(!mirMsg) {
         Logger::write("Cannot build MapInformationsRequestMessage.", LOG_ERROR);

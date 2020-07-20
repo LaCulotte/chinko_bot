@@ -1,12 +1,12 @@
-#ifndef SPELLLIST_MESSAGE_H
-#define SPELLLIST_MESSAGE_H
+#ifndef SPELLLISTMESSAGE_MESSAGE_H
+#define SPELLLISTMESSAGE_MESSAGE_H
 
 #include "PrefixedMessage.h"
 
 #include "SpellItem.h"
 
 class SpellListMessage : public PrefixedMessage {
-public: 
+public:
 	// Constructor
 	SpellListMessage() {};
 	// Copy constructor
@@ -25,9 +25,8 @@ public:
 	// Turns the message's attributes into raw data
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
-	bool previsualisation;
 	vector<SpellItem> spells;
-
+	bool spellPrevisualization = false;
 };
 
 #endif

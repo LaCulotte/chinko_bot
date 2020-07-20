@@ -7,7 +7,7 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     sp<BasicCharactersListMessage> bclMsg;
 
     sp<UnknownDofusMessage> udMsg;
-    sp<ProtocolRequiredMessage> prMsg;
+    sp<ProtocolRequired> prMsg;
 
     switch (message->getId())
     {
@@ -98,10 +98,10 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 
         return false;        
 
-    case ProtocolRequiredMessage::protocolId:
-        prMsg = dynamic_pointer_cast<ProtocolRequiredMessage>(message);
+    case ProtocolRequired::protocolId:
+        prMsg = dynamic_pointer_cast<ProtocolRequired>(message);
         // TODO : refuser si mauvaise version
-        Logger::write("ProtocolRequiredMessage received", LOG_INFO);
+        Logger::write("ProtocolRequired received", LOG_INFO);
         Logger::write("Required version : " + to_string(prMsg->requiredVersion) + "; Current version : " + to_string(prMsg->currentVersion), LOG_INFO);
         break;
 
@@ -110,9 +110,9 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         if(currentState == rcv_HelloGameMessage) {
             Logger::write("Received HelloGameMessage", LOG_INFO);
 
-            // Tries to send AuthentificationTicketMessage
-            if (sendAuthentificationTicketMessage())
-                currentState = snd_AuthentificationTicketMessage;
+            // Tries to send AuthenticationTicketMessage
+            if (sendAuthenticationTicketMessage())
+                currentState = snd_AuthenticationTicketMessage;
 
         } else {
             Logger::write("Received HelloGameMessage when not supposed to.", LOG_WARNING);
@@ -134,11 +134,11 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         }
         break;
 
-    // TODO : cas AuthentificationTicketRefusedMessage
-    case AuthentificationTicketAcceptedMessage::protocolId:
+    // TODO : cas AuthenticationTicketRefusedMessage
+    case AuthenticationTicketAcceptedMessage::protocolId:
         // Authentification to the Game server was successful
-        if(currentState == rcv_AuthentificationTicketResponseMessage) {
-            Logger::write("Received AuthentificationTicketAcceptedMessage", LOG_INFO);
+        if(currentState == rcv_AuthenticationTicketResponseMessage) {
+            Logger::write("Received AuthenticationTicketAcceptedMessage", LOG_INFO);
 
             // Removes this frame and replaces it with a Character selection frame
             sp<CharacterSelectionFrame> csFrame(new CharacterSelectionFrame());
@@ -153,7 +153,7 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
             }
             currentState = end_GameServerConnection;
         } else {
-            Logger::write("Received AuthentificationTicketAcceptedMessage when not supposed to.", LOG_WARNING);
+            Logger::write("Received AuthenticationTicketAcceptedMessage when not supposed to.", LOG_WARNING);
         }
 
         break;
@@ -177,21 +177,21 @@ bool GameServerConnectionFrame::handleSendPacketSuccessMessage(sp<SendPacketSucc
     // Logs what message has been sent and changes Frame's state if needed
     switch (messageId)
     {
-    case AuthentificationTicketMessage::protocolId:
-        if(currentState == snd_AuthentificationTicketMessage) {
-            Logger::write("AuthentificationTicketMessage sent.", LOG_INFO);
+    case AuthenticationTicketMessage::protocolId:
+        if(currentState == snd_AuthenticationTicketMessage) {
+            Logger::write("AuthenticationTicketMessage sent.", LOG_INFO);
             currentState = rcv_RawDataMessage;
         } else {
-            Logger::write("AuthentificationTicketMessage sent but was not supposed to.", LOG_WARNING);
+            Logger::write("AuthenticationTicketMessage sent but was not supposed to.", LOG_WARNING);
         } 
         break;
     
     case CheckIntegrityMessage::protocolId:
         if(currentState == snd_CheckIntegrityMessage) {
             Logger::write("CheckIntegrityMessage sent.", LOG_INFO);
-            currentState = rcv_AuthentificationTicketResponseMessage;
+            currentState = rcv_AuthenticationTicketResponseMessage;
         } else {
-            Logger::write("AuthentificationTicketMessage sent but was not supposed to.", LOG_WARNING);
+            Logger::write("AuthenticationTicketMessage sent but was not supposed to.", LOG_WARNING);
         }
         break;
 
@@ -217,12 +217,12 @@ bool GameServerConnectionFrame::handleSendPacketFailureMessage(sp<SendPacketFail
     // Logs what message could not be sent and kills bot if needed
     switch (messageId)
     {
-    case AuthentificationTicketMessage::protocolId:
-        if(currentState == snd_AuthentificationTicketMessage) {
-            Logger::write("AuthentificationTicketMessage could not be sent. Reason : " + message->reason, LOG_WARNING);
+    case AuthenticationTicketMessage::protocolId:
+        if(currentState == snd_AuthenticationTicketMessage) {
+            Logger::write("AuthenticationTicketMessage could not be sent. Reason : " + message->reason, LOG_WARNING);
             this->killBot();
         } else {
-            Logger::write("AuthentificationTicketMessage could not be but was not supposed to. Reason : " + message->reason, LOG_WARNING);
+            Logger::write("AuthenticationTicketMessage could not be but was not supposed to. Reason : " + message->reason, LOG_WARNING);
         } 
         break;
     
@@ -245,15 +245,15 @@ bool GameServerConnectionFrame::handleSendPacketFailureMessage(sp<SendPacketFail
     return true;
 }
 
-bool GameServerConnectionFrame::sendAuthentificationTicketMessage() {
-    sp<AuthentificationTicketMessage> atMsg = manager->generateAuthentificationTicketMessage();
+bool GameServerConnectionFrame::sendAuthenticationTicketMessage() {
+    sp<AuthenticationTicketMessage> atMsg = manager->generateAuthenticationTicketMessage();
     if(!atMsg) {
-        Logger::write("Cannot generate AuthentificationTicketMessage", LOG_ERROR);
+        Logger::write("Cannot generate AuthenticationTicketMessage", LOG_ERROR);
         this->killBot();
         return false;
     }
     if(!sendPacket(atMsg, dofusBotParent->gameServerInfos.connectionId)) {
-        Logger::write("Cannot send AuthentificationTicketMessage.", LOG_ERROR); 
+        Logger::write("Cannot send AuthenticationTicketMessage.", LOG_ERROR); 
         this->killBot();
         return false;
     }

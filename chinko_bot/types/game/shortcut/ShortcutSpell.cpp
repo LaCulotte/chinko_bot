@@ -1,19 +1,17 @@
 #include "ShortcutSpell.h"
 
-bool ShortcutSpell::serialize(shared_ptr<MessageDataBuffer> output) {
-	if(!Shortcut::serialize(output))
-		return false;
+bool ShortcutSpell::serialize(sp<MessageDataBuffer> output) {
+	Shortcut::serialize(output);
 
 	output->writeVarShort(spellId);
 
-	return true;
+    return true;
 }
 
-bool ShortcutSpell::deserialize(shared_ptr<MessageDataBuffer> input) {
-	if(!Shortcut::deserialize(input))
-		return false;
+bool ShortcutSpell::deserialize(sp<MessageDataBuffer> input) {
+	Shortcut::deserialize(input);
 
 	spellId = input->readVarShort();
 
-	return true;
+    return true;
 }

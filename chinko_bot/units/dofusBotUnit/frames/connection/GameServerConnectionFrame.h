@@ -15,19 +15,21 @@
 #include "SendPacketSuccessMessage.h"
 #include "SendPacketFailureMessage.h"
 
-#include "ProtocolRequiredMessage.h"
+#include "ProtocolRequired.h"
 #include "HelloGameMessage.h"
-#include "AuthentificationTicketMessage.h"
+#include "RawDataMessage.h"
+#include "AuthenticationTicketMessage.h"
+#include "AuthenticationTicketAcceptedMessage.h"
 
 // States that the frame can be in; Keeps track of what to do next and if every thing is going in the right order
 enum GameServerConnectionFrameState {
     gcsf_idle = 0,
     begin_GameServerConnection,
     rcv_HelloGameMessage,
-    snd_AuthentificationTicketMessage,
+    snd_AuthenticationTicketMessage,
     rcv_RawDataMessage,
     snd_CheckIntegrityMessage,
-    rcv_AuthentificationTicketResponseMessage,
+    rcv_AuthenticationTicketResponseMessage,
     end_GameServerConnection
 };
 
@@ -65,8 +67,8 @@ protected:
     bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
-    // Sends AuthentificationTicketMessage
-    bool sendAuthentificationTicketMessage();
+    // Sends AuthenticationTicketMessage
+    bool sendAuthenticationTicketMessage();
     // Sends CheckIntegrityMessage
     bool sendCheckIntegrityMessage();
 

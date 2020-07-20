@@ -9,6 +9,7 @@
 #include "GameContextCreateMessage.h"
 #include "CurrentMapMessage.h"
 #include "MapInformationsRequestMessage.h"
+#include "MapComplementaryInformationsDataMessage.h"
 
 class ContextFrame : public PacketSendingDofusBotFrame {
 public:

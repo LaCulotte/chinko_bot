@@ -10,6 +10,10 @@
 #include "SendPacketRequestMessage.h"
 #include "IdentificationMessage.h"
 #include "ClientKeyMessage.h"
+#include "AuthenticationTicketMessage.h"
+#include "CheckIntegrityMessage.h"
+#include "CharactersListRequestMessage.h"
+#include "CharacterSelectionMessage.h"
 
 #include "base64.h"
 #include "openssl/rsa.h"
@@ -69,8 +73,8 @@ public:
     // Builds ClientKeyMessage
     sp<ClientKeyMessage> generateClientKeyMessage();
 
-    // Builds AuthentificationTicketMessage
-    sp<AuthentificationTicketMessage> generateAuthentificationTicketMessage();
+    // Builds AuthenticationTicketMessage
+    sp<AuthenticationTicketMessage> generateAuthenticationTicketMessage();
     // Builds CheckIntegrityMessage
     sp<CheckIntegrityMessage> generateCheckIntegrityMessage();
     // TODO : remove

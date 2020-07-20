@@ -1,21 +1,19 @@
 #include "ShortcutObjectItem.h"
 
-bool ShortcutObjectItem::serialize(shared_ptr<MessageDataBuffer> output) {
-	if(!ShortcutObject::serialize(output))
-		return false;
+bool ShortcutObjectItem::serialize(sp<MessageDataBuffer> output) {
+	ShortcutObject::serialize(output);
 
 	output->writeInt(itemUID);
 	output->writeInt(itemGID);
 
-	return true;
+    return true;
 }
 
-bool ShortcutObjectItem::deserialize(shared_ptr<MessageDataBuffer> input) {
-	if(!ShortcutObject::deserialize(input))
-		return false;
+bool ShortcutObjectItem::deserialize(sp<MessageDataBuffer> input) {
+	ShortcutObject::deserialize(input);
 
 	itemUID = input->readInt();
 	itemGID = input->readInt();
 
-	return true;
+    return true;
 }

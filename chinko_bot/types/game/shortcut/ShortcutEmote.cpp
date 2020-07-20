@@ -1,19 +1,17 @@
 #include "ShortcutEmote.h"
 
-bool ShortcutEmote::serialize(shared_ptr<MessageDataBuffer> output) {
-	if(!Shortcut::serialize(output))
-		return false;
+bool ShortcutEmote::serialize(sp<MessageDataBuffer> output) {
+	Shortcut::serialize(output);
 
 	output->writeByte(emoteId);
 
-	return true;
+    return true;
 }
 
-bool ShortcutEmote::deserialize(shared_ptr<MessageDataBuffer> input) {
-	if(!Shortcut::deserialize(input))
-		return false;
+bool ShortcutEmote::deserialize(sp<MessageDataBuffer> input) {
+	Shortcut::deserialize(input);
 
 	emoteId = input->readByte();
 
-	return true;
+    return true;
 }

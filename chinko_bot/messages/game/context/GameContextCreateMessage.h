@@ -1,10 +1,11 @@
-#ifndef GAMECONTEXTCREATE_MESSAGE_H
-#define GAMECONTEXTCREATE_MESSAGE_H
+#ifndef GAMECONTEXTCREATEMESSAGE_MESSAGE_H
+#define GAMECONTEXTCREATEMESSAGE_MESSAGE_H
 
 #include "PrefixedMessage.h"
 
+
 class GameContextCreateMessage : public PrefixedMessage {
-public: 
+public:
 	// Constructor
 	GameContextCreateMessage() {};
 	// Copy constructor
@@ -23,8 +24,7 @@ public:
 	// Turns the message's attributes into raw data
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
-	int context;
-
+	int context = 1;
 };
 
 #endif

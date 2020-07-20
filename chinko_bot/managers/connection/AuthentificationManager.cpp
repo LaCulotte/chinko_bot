@@ -193,8 +193,9 @@ sp<IdentificationMessage> AuthentificationManager::generateIdentificationMessage
     string cipheredCredentials = cipherCredentialsRSA(salt);
 
     // Builds IdentificationMessage
-    sp<IdentificationMessage> idMsg (new IdentificationMessage(cipheredCredentials));
-    idMsg->autoConnect = this->autoConnect;
+    sp<IdentificationMessage> idMsg (new IdentificationMessage());
+    idMsg->credentials = vector<char>(cipheredCredentials.begin(), cipheredCredentials.end());
+    idMsg->autoconnect = this->autoConnect;
     
     return idMsg;   
 }
@@ -266,15 +267,17 @@ void AuthentificationManager::interruptConnectGameServer() {
     clientTicket = "";
 }
 
-sp<AuthentificationTicketMessage> AuthentificationManager::generateAuthentificationTicketMessage() {
+sp<AuthenticationTicketMessage> AuthentificationManager::generateAuthenticationTicketMessage() {
     // Checks if the client ticket has been initialized
     if(clientTicket.size() == 0) {
-        Logger::write("Cannot generate AuthentificationTicketMessage without a ticket", LOG_ERROR);
+        Logger::write("Cannot generate AuthenticationTicketMessage without a ticket", LOG_ERROR);
         return nullptr;
     }
 
-    // Builds AuthentificationTicketMessage
-    sp<AuthentificationTicketMessage> atMsg(new AuthentificationTicketMessage(clientTicket));
+    // Builds AuthenticationTicketMessage
+    sp<AuthenticationTicketMessage> atMsg(new AuthenticationTicketMessage());
+    atMsg->ticket = clientTicket;
+
     return atMsg;
 }
 
@@ -291,6 +294,8 @@ bool AuthentificationManager::sendCharactersListRequestMessage() {
 
 // TODO : remove
 bool AuthentificationManager::sendCharacterSelectionMessage(uint64_t id) {
-    sp<CharacterSelectionMessage> csMsg(new CharacterSelectionMessage(id));
+    sp<CharacterSelectionMessage> csMsg(new CharacterSelectionMessage());
+    csMsg->id = id;
+    
     return bot->sendMessage(make_shared<SendPacketRequestMessage>(csMsg, dofusConnectionId), bot->connectionUnitId);
 }

@@ -1,13 +1,13 @@
 #include "Shortcut.h"
 
-bool Shortcut::serialize(shared_ptr<MessageDataBuffer> output) {
+bool Shortcut::serialize(sp<MessageDataBuffer> output) {
 	output->writeByte(slot);
 
-	return true;
+    return true;
 }
 
-bool Shortcut::deserialize(shared_ptr<MessageDataBuffer> input) {
+bool Shortcut::deserialize(sp<MessageDataBuffer> input) {
 	slot = input->readByte();
 
-	return true;
+    return true;
 }

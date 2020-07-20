@@ -1,19 +1,17 @@
 #include "ShortcutObjectIdolsPreset.h"
 
-bool ShortcutObjectIdolsPreset::serialize(shared_ptr<MessageDataBuffer> output) {
-	if(!ShortcutObject::serialize(output))
-		return false;
+bool ShortcutObjectIdolsPreset::serialize(sp<MessageDataBuffer> output) {
+	ShortcutObject::serialize(output);
 
 	output->writeShort(presetId);
 
-	return true;
+    return true;
 }
 
-bool ShortcutObjectIdolsPreset::deserialize(shared_ptr<MessageDataBuffer> input) {
-	if(!ShortcutObject::deserialize(input))
-		return false;
+bool ShortcutObjectIdolsPreset::deserialize(sp<MessageDataBuffer> input) {
+	ShortcutObject::deserialize(input);
 
 	presetId = input->readShort();
 
-	return true;
+    return true;
 }

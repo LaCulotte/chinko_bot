@@ -1,19 +1,17 @@
 #include "ShortcutSmiley.h"
 
-bool ShortcutSmiley::serialize(shared_ptr<MessageDataBuffer> output) {
-	if(!Shortcut::serialize(output))
-		return false;
+bool ShortcutSmiley::serialize(sp<MessageDataBuffer> output) {
+	Shortcut::serialize(output);
 
 	output->writeVarShort(smileyId);
 
-	return true;
+    return true;
 }
 
-bool ShortcutSmiley::deserialize(shared_ptr<MessageDataBuffer> input) {
-	if(!Shortcut::deserialize(input))
-		return false;
+bool ShortcutSmiley::deserialize(sp<MessageDataBuffer> input) {
+	Shortcut::deserialize(input);
 
 	smileyId = input->readVarShort();
 
-	return true;
+    return true;
 }

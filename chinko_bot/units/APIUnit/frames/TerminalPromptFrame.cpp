@@ -32,7 +32,8 @@ bool TerminalPromptFrame::computeMessage(sp<Message> message, int srcId) {
             cin >> selectedCharacterId;
         } while (selectedCharacterId < 0 || selectedCharacterId >= bclMsg->characters.size());
 
-        csMsg = make_shared<CharacterSelectionMessage>(bclMsg->characters[selectedCharacterId]->id);
+        csMsg = make_shared<CharacterSelectionMessage>();
+        csMsg->id = bclMsg->characters[selectedCharacterId]->id;
         parent->sendMessage(csMsg, srcId);
 
         break;

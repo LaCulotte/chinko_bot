@@ -1,31 +1,25 @@
 #include "SpellListMessage.h"
 
-bool SpellListMessage::serialize(shared_ptr<MessageDataBuffer> output) {
-
-	output->writeBool(previsualisation);
-
+bool SpellListMessage::serialize(sp<MessageDataBuffer> output) {
+	output->writeBool(spellPrevisualization);
 	output->writeShort(spells.size());
-	for(SpellItem spell : spells){
-		if(!spell.serialize(output))
-			return false;
+	for(int i = 0; i < spells.size(); i++) {
+		spells[i].serialize(output);
 	}
 
-	return true;
+    return true;
 }
 
-bool SpellListMessage::deserialize(shared_ptr<MessageDataBuffer> input) {
-
-	previsualisation = input->readBool();
-
-	int spellsLength = input->readShort();
-	for(int i = 0; i < spellsLength; i++) {
+bool SpellListMessage::deserialize(sp<MessageDataBuffer> input) {
+	spellPrevisualization = input->readBool();
+	int spells_size = input->readShort();
+	for(int i = 0; i < spells_size; i++) {
 		SpellItem spell;
-		if(spell.deserialize(input)){
-			spells.push_back(spell);
-		} else {
+
+		if(!spell.deserialize(input))
 			return false;
-		}
+		spells.push_back(spell);
 	}
 
-	return true;
+    return true;
 }

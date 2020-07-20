@@ -1,14 +1,13 @@
-#ifndef SEQUENCENUMBER_MESSAGE_H
-#define SEQUENCENUMBER_MESSAGE_H
+#ifndef SEQUENCENUMBERMESSAGE_MESSAGE_H
+#define SEQUENCENUMBERMESSAGE_MESSAGE_H
 
 #include "PrefixedMessage.h"
 
+
 class SequenceNumberMessage : public PrefixedMessage {
-public: 
+public:
 	// Constructor
 	SequenceNumberMessage() {};
-	// Constructor with sequenceNumber initialization
-	SequenceNumberMessage(int sequenceNumber) { this->sequenceNumber = sequenceNumber; };
 	// Copy constructor
 	SequenceNumberMessage(const SequenceNumberMessage& other) = default;
 
@@ -25,8 +24,7 @@ public:
 	// Turns the message's attributes into raw data
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
-	int sequenceNumber;
-
+	int number = 0;
 };
 
 #endif

@@ -1,39 +1,30 @@
 #include "ShortcutBarContentMessage.h"
 
-bool ShortcutBarContentMessage::serialize(shared_ptr<MessageDataBuffer> output) {
-
+bool ShortcutBarContentMessage::serialize(sp<MessageDataBuffer> output) {
 	output->writeByte(barType);
-
 	output->writeShort(shortcuts.size());
-	for(sp<Shortcut> shortcut : shortcuts) {
-		output->writeShort(shortcut->getId());
-		shortcut->deserialize(output);
+	for(int i = 0; i < shortcuts.size(); i++) {
+		output->writeShort(shortcuts[i]->getId());
+		shortcuts[i]->serialize(output);
 	}
 
-	return true;
+    return true;
 }
 
-bool ShortcutBarContentMessage::deserialize(shared_ptr<MessageDataBuffer> input) {
-
+bool ShortcutBarContentMessage::deserialize(sp<MessageDataBuffer> input) {
 	barType = input->readByte();
+	int shortcuts_size = input->readShort();
+	for(int i = 0; i < shortcuts_size; i++) {
+		sp<Shortcut> shortcut(new Shortcut());
 
-	int shortcutsSize = input->readShort();
-	for(int i = 0; i < shortcutsSize; i++) {
-		int shortcutId = input->readShort();
-		sp<Shortcut> shortcut = dynamic_pointer_cast<Shortcut>(NetworkTypeHandler::getInstance()->getTypeById(shortcutId));
-
-		if(!shortcut) {
-			Logger::write("Error on ShortcutBarContentMessage deserialize : wrong shortcut id", LOG_ERROR);
+		int shortcut_TypeId = input->readShort();
+		shortcut = dynamic_pointer_cast<Shortcut>(NetworkTypeHandler::getInstance()->getTypeById(shortcut_TypeId));
+	
+		if(!shortcut || !shortcut->deserialize(input))
 			return false;
-		}
-
-		if(shortcut->deserialize(input)) {
-			shortcuts.push_back(shortcut);
-		} else {
-			Logger::write("Error on ShortcutBarContentMessage deserialize : cannot deserialize shortcut", LOG_ERROR);
-			return false;
-		}
+	
+		shortcuts.push_back(shortcut);
 	}
 
-	return true;
+    return true;
 }

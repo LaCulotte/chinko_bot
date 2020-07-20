@@ -3,12 +3,11 @@
 
 #include "Shortcut.h"
 
+
 class ShortcutObject : public Shortcut {
-public: 
+public:
 	// Constructor
 	ShortcutObject() {};
-	// Constructor with slot initialization
-	ShortcutObject(int slot) : Shortcut(slot) {};
 	// Copy constructor
 	ShortcutObject(const ShortcutObject& other) = default;
 
@@ -17,15 +16,13 @@ public:
 	// Destructor
 	~ShortcutObject() = default;
 
-	// Returns the type's id
-	virtual unsigned int getId() { return typeId; };
-	// Type's id
+	virtual unsigned int getId() override { return typeId; };
 	static const unsigned int typeId = 367;
-	// Turns raw data into the usable data (type's attributes)
-	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;
-	// Turns the type's attributes into raw data
-	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
+	// Turns raw data into the usable data (type's attributes)
+	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override{ return true; };
+	// Turns the type's attributes into raw data
+	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override{ return true; };
 
 };
 

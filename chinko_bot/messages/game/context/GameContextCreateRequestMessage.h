@@ -1,10 +1,11 @@
-#ifndef GAMECONTEXTCREATEREQUEST_MESSAGE_H
-#define GAMECONTEXTCREATEREQUEST_MESSAGE_H
+#ifndef GAMECONTEXTCREATEREQUESTMESSAGE_MESSAGE_H
+#define GAMECONTEXTCREATEREQUESTMESSAGE_MESSAGE_H
 
 #include "PrefixedMessage.h"
 
+
 class GameContextCreateRequestMessage : public PrefixedMessage {
-public: 
+public:
 	// Constructor
 	GameContextCreateRequestMessage() {};
 	// Copy constructor
@@ -19,10 +20,9 @@ public:
 	static const unsigned int protocolId = 250;
 
 	// Turns raw data into the usable data (message's attributes)
-	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override { return true; };
+	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override{ return true; };
 	// Turns the message's attributes into raw data
-	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override { return true; };
-
+	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override{ return true; };
 
 };
 

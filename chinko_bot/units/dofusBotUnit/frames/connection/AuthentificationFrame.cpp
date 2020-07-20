@@ -26,7 +26,7 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     sp<ConnectionFailureMessage> cfMsg;
     sp<SendPacketFailureMessage> spfMsg;
 
-    sp<ProtocolRequiredMessage> prMsg;
+    sp<ProtocolRequired> prMsg;
     sp<HelloConnectMessage> hcMsg;
     sp<IdentificationMessage> idMsg;
     sp<ClientKeyMessage> ckMsg;
@@ -110,11 +110,11 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
         return false;
 
-    case ProtocolRequiredMessage::protocolId:
+    case ProtocolRequired::protocolId:
         // TODO : vérifier si on est au bon state ?
-        prMsg = dynamic_pointer_cast<ProtocolRequiredMessage>(message);
+        prMsg = dynamic_pointer_cast<ProtocolRequired>(message);
         // TODO : refuser si mauvaise version
-        Logger::write("ProtocolRequiredMessage received.", LOG_INFO);
+        Logger::write("ProtocolRequired received.", LOG_INFO);
         Logger::write("Required version : " + to_string(prMsg->requiredVersion) + "; Current version : " + to_string(prMsg->currentVersion), LOG_INFO);
         break;
 
@@ -179,7 +179,7 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         Logger::write("Selected server : " + ssdeMsg->address, LOG_INFO);
 
         // Gets ticket 
-        if(!manager->decodeAndSetTicket(ssdeMsg->ticket)){
+        if(!manager->decodeAndSetTicket(string(ssdeMsg->ticket.begin(), ssdeMsg->ticket.end()))){
             Logger::write("Error on AES decoding.", LOG_ERROR);
             this->killBot();
             break;
@@ -273,7 +273,7 @@ bool AuthentificationFrame::handleSendPacketFailureMessage(sp<SendPacketFailureM
 }
 
 bool AuthentificationFrame::sendIdentificationMessage(sp<HelloConnectMessage> hcMsg) {
-    sp<IdentificationMessage> idMsg = manager->generateIdentificationMessage(hcMsg->key, hcMsg->keyLength, hcMsg->salt);
+    sp<IdentificationMessage> idMsg = manager->generateIdentificationMessage(hcMsg->key.data(), hcMsg->key.size(), hcMsg->salt);
     
     if(!idMsg) {
         Logger::write("Cannot build IdentificationMessage.", LOG_ERROR);

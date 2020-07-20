@@ -3,12 +3,11 @@
 
 #include "NetworkType.h"
 
+
 class Shortcut : public NetworkType {
-public: 
+public:
 	// Constructor
 	Shortcut() {};
-	// Constructor
-	Shortcut(int slot) { this->slot = slot; };
 	// Copy constructor
 	Shortcut(const Shortcut& other) = default;
 
@@ -17,17 +16,15 @@ public:
 	// Destructor
 	~Shortcut() = default;
 
-	// Returns the type's id
-	virtual unsigned int getId() { return typeId; };
-	// Type's id
+	virtual unsigned int getId() override { return typeId; };
 	static const unsigned int typeId = 369;
+
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;
 	// Turns the type's attributes into raw data
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
-	int slot;
-
+	int slot = 0;
 };
 
 #endif

@@ -141,7 +141,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
     case InventoryWeightMessage::protocolId:
         iwMsg = dynamic_pointer_cast<InventoryWeightMessage>(message);
         Logger::write("Received JobExperienceMultiUpdateMessage", LOG_INFO);
-        Logger::write("Current weight : " + to_string(iwMsg->inventoryWeight) + "/" + to_string(iwMsg->maxWeight), LOG_INFO);
+        Logger::write("Current weight : " + to_string(iwMsg->inventoryWeight) + "/" + to_string(iwMsg->weightMax), LOG_INFO);
         break;
 
     // TODO : à enlever

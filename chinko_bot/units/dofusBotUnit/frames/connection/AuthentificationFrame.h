@@ -12,7 +12,11 @@
 #include "ConnectionFailureMessage.h"
 #include "BeginGameServerConnectionMessage.h"
 
-#include "ProtocolRequiredMessage.h"
+#include "SelectedServerDataExtendedMessage.h"
+#include "CredentialsAcknowledgementMessage.h"
+#include "IdentificationSuccessMessage.h"
+
+#include "ProtocolRequired.h"
 #include "HelloConnectMessage.h"
 #include "ClientKeyMessage.h"
 

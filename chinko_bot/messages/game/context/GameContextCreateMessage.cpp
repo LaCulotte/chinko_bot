@@ -1,13 +1,13 @@
 #include "GameContextCreateMessage.h"
 
-bool GameContextCreateMessage::serialize(shared_ptr<MessageDataBuffer> output) {
+bool GameContextCreateMessage::serialize(sp<MessageDataBuffer> output) {
 	output->writeByte(context);
 
-	return true;
+    return true;
 }
 
-bool GameContextCreateMessage::deserialize(shared_ptr<MessageDataBuffer> input) {
+bool GameContextCreateMessage::deserialize(sp<MessageDataBuffer> input) {
 	context = input->readByte();
 
-	return true;
+    return true;
 }

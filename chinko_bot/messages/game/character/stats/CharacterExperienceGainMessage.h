@@ -1,10 +1,11 @@
-#ifndef CHARACTEREXPERIENCEGAIN_MESSAGE_H
-#define CHARACTEREXPERIENCEGAIN_MESSAGE_H
+#ifndef CHARACTEREXPERIENCEGAINMESSAGE_MESSAGE_H
+#define CHARACTEREXPERIENCEGAINMESSAGE_MESSAGE_H
 
 #include "PrefixedMessage.h"
 
+
 class CharacterExperienceGainMessage : public PrefixedMessage {
-public: 
+public:
 	// Constructor
 	CharacterExperienceGainMessage() {};
 	// Copy constructor
@@ -23,11 +24,10 @@ public:
 	// Turns the message's attributes into raw data
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
-	uint64_t experienceCharacter;
-	uint64_t experienceMount;
-	uint64_t experienceGuild;
-	uint64_t experienceIncarnation;
-
+	uint64_t experienceGuild = 0;
+	uint64_t experienceIncarnation = 0;
+	uint64_t experienceMount = 0;
+	uint64_t experienceCharacter = 0;
 };
 
 #endif
