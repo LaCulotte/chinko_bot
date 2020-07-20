@@ -1,0 +1,11 @@
+@include_header
+
+@serialize_beg
+@serialize_fields
+    return true;
+}
+
+@deserialize_beg
+@deserialize_fields
+    return true;
+}

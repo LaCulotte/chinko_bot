@@ -1,0 +1,137 @@
+{
+    "ifndef_message" : {
+        "string" : "#ifndef {}_MESSAGE_H",
+        "format" : ["defineName"]
+    },
+
+    "define_message" : {
+        "string" : "#define {}_MESSAGE_H",
+        "format" : ["defineName"]
+    }, 
+
+    "ifndef_type" : {
+        "string" : "#ifndef {}_H",
+        "format" : ["defineName"]
+    },
+
+    "define_type" : {
+        "string" : "#define {}_H",
+        "format" : ["defineName"]
+    }, 
+
+    "endif" : {
+        "string" : "#endif",
+        "format" : []
+    },
+
+    "include_super" : {
+        "string" : "{}",
+        "format" : ["include_super"]
+    },
+
+    "include_fields" : {
+        "string" : "{}",
+        "format" : ["include_fields"]
+    },
+
+    "class_def" : {
+        "string" : "class {} {{",
+        "format" : ["nameAndImplement"]
+    },
+
+    "constructor" : {
+        "string" : "\t// Constructor\n\t{}() {{}};",
+        "format" : ["name"]
+    },
+
+    "copy_constructor" : {
+        "string" : "\t// Copy constructor\n\t{}(const {}& other) = default;",
+        "format" : ["name", "name"]
+    },
+
+    "copy_operator" : {
+        "string" : "\t// Copy operator\n\t{}& operator=(const {}& other) = default;",
+        "format" : ["name", "name"]
+    },
+
+    "destructor" : {
+        "string" : "\t// Destructor\n\t~{}() = default;",
+        "format" : ["name"]
+    },
+
+    "getId_message" : {
+        "string" : "\tvirtual unsigned int getId() override {{ return protocolId; }};",
+        "format" : []
+    },
+
+    "protocolId_message" : {
+        "string" : "\tstatic const unsigned int protocolId = {};",
+        "format" : ["protocolID"]
+    },
+
+    "getId_type" : {
+        "string" : "\tvirtual unsigned int getId() override {{ return typeId; }};",
+        "format" : []
+    },
+
+    "protocolId_type" : {
+        "string" : "\tstatic const unsigned int typeId = {};",
+        "format" : ["protocolID"]
+    },
+
+    "serialize_definition_message" : {
+        "string" : "{}",
+        "format" : ["serialize_definition_message"]
+    },
+
+    "deserialize_definition_message" : {
+        "string" : "{}",
+        "format" : ["deserialize_definition_message"]
+    },
+
+    "serialize_definition_type" : {
+        "string" : "{}",
+        "format" : ["serialize_definition_type"]
+    },
+
+    "deserialize_definition_type" : {
+        "string" : "{}",
+        "format" : ["deserialize_definition_type"]
+    },
+
+    "define_fields" : {
+        "string" : "{}",
+        "format" : ["define_fields"]
+    },
+
+    "include_header" : {
+        "string" : "#include \"{}.h\"",
+        "format" : ["name"]
+    },
+
+    "serialize_beg" : {
+        "string" : "bool {}::serialize(sp<MessageDataBuffer> output) {{",
+        "format" : ["name"]
+    },
+
+    "deserialize_beg" : {
+        "string" : "bool {}::deserialize(sp<MessageDataBuffer> input) {{",
+        "format" : ["name"]
+    },
+
+    "serialize_fields" : {
+        "string" : "{}",
+        "format" : ["serialize_fields"]
+    },
+    
+    "deserialize_fields" : {
+        "string" : "{}",
+        "format" : ["deserialize_fields"]
+    },
+
+    "name" : {
+        "string" : "",
+        "format" : []
+    },
+    "":""
+}
