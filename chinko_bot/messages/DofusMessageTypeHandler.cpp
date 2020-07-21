@@ -7,6 +7,8 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[HelloConnectMessage::protocolId]                  = make_shared<HelloConnectMessage>;
     id_to_builder[IdentificationMessage::protocolId]                = make_shared<IdentificationMessage>;
     id_to_builder[IdentificationSuccessMessage::protocolId]         = make_shared<IdentificationSuccessMessage>;
+	id_to_builder[IdentificationFailedMessage::protocolId]	        = make_shared<IdentificationFailedMessage>;
+	id_to_builder[IdentificationFailedForBadVersionMessage::protocolId]	= make_shared<IdentificationFailedForBadVersionMessage>;
     id_to_builder[ClientKeyMessage::protocolId]                     = make_shared<ClientKeyMessage>;
     id_to_builder[CredentialsAcknowledgementMessage::protocolId]    = make_shared<CredentialsAcknowledgementMessage>;
     id_to_builder[LoginQueueStatusMessage::protocolId]              = make_shared<LoginQueueStatusMessage>;

@@ -19,3 +19,7 @@ bool Version::deserialize(sp<MessageDataBuffer> input) {
 
     return true;
 }
+
+string Version::toString() {
+	return to_string(major) + "." + to_string(minor) + "." + to_string(code) + ":" + to_string(build) + "." + to_string(buildType);
+}

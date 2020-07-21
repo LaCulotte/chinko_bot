@@ -6,6 +6,8 @@
 #include "HelloConnectMessage.h"
 #include "IdentificationMessage.h"
 #include "IdentificationSuccessMessage.h"
+#include "IdentificationFailedMessage.h"
+#include "IdentificationFailedForBadVersionMessage.h"
 #include "ClientKeyMessage.h"
 #include "CredentialsAcknowledgementMessage.h"
 #include "LoginQueueStatusMessage.h"

@@ -33,6 +33,9 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     sp<LoginQueueStatusMessage> lqsMsg;
     sp<SelectedServerDataExtendedMessage> ssdeMsg;
 
+    sp<IdentificationFailedMessage> ifMsg;
+    sp<IdentificationFailedForBadVersionMessage> iffbvMsg;
+
     switch (message->getId()) {
     case BeginAuthentificationMessage::protocolId:
         // Message that requests the beginning of the authentification
@@ -170,6 +173,15 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
             Logger::write("Received IdentificationSucessMessage when not supposed to.", LOG_WARNING);
         }
         
+        break;
+    
+    case IdentificationFailedForBadVersionMessage::protocolId:
+        iffbvMsg = dynamic_pointer_cast<IdentificationFailedForBadVersionMessage>(message);
+        Logger::write("Required version : " + iffbvMsg->requiredVersion.toString(), LOG_ERROR);
+    case IdentificationFailedMessage::protocolId:
+        ifMsg = dynamic_pointer_cast<IdentificationFailedMessage>(message);
+        Logger::write("Identification failed. Reason id : " + to_string(ifMsg->reason), LOG_ERROR);
+        this->killBot();
         break;
 
     // TODO : A mettre dans le GameServerConnectionFrame ? -> Lancer GameServerConnectionFrame à la reception de IdentificationSuccessMessage

@@ -26,6 +26,8 @@ public:
 	// Turns the type's attributes into raw data
 	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
+	string toString();
+
 	int buildType = 0;
 	int build = 0;
 	int minor = 0;

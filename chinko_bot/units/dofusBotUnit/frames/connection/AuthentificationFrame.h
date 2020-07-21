@@ -15,6 +15,7 @@
 #include "SelectedServerDataExtendedMessage.h"
 #include "CredentialsAcknowledgementMessage.h"
 #include "IdentificationSuccessMessage.h"
+#include "IdentificationFailedForBadVersionMessage.h"
 
 #include "ProtocolRequired.h"
 #include "HelloConnectMessage.h"
