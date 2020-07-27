@@ -6,7 +6,8 @@
 #include "QueueFrame.h"
 // #include "AuthentificationFrame.h"
 
-#include "GameServerInformationsContainer.h"
+#include "GameServerData.h"
+#include "CurrentMapManager.h"
 
 #include "SendPacketRequestMessage.h"
 #include "SendPacketSuccessMessage.h"
@@ -35,7 +36,9 @@ public:
     int connectionUnitId = -1;
 
     // Informations of the current GameServer 
-    GameServerInformationsContainer gameServerInfos;
+    GameServerData gameServerInfos;
+    CurrentMapManager mapInfos;
+    sp<CharacterData> playedCharacer = nullptr;
 
 protected:
     // Id of the last packet sent

@@ -3,13 +3,28 @@
 
 #include "PacketSendingDofusBotFrame.h"
 
+#include "TempDialogFrame.h"
+#include "MovementFrame.h"
+#include "CharacterData.h"
+
 #include "BeginGameContextRequestMessage.h"
+#include "TimedMessage.h"
 
 #include "GameContextCreateRequestMessage.h"
 #include "GameContextCreateMessage.h"
 #include "CurrentMapMessage.h"
 #include "MapInformationsRequestMessage.h"
 #include "MapComplementaryInformationsDataMessage.h"
+#include "GameMapMovementMessage.h"
+#include "GameMapMovementConfirmMessage.h"
+#include "GameContextRemoveElementMessage.h"
+#include "GameRolePlayShowActorMessage.h"
+#include "GameMapChangeOrientationMessage.h"
+#include "SetCharacterRestrictionsMessage.h"
+
+#include "StatedElementUpdatedMessage.h"
+#include "InteractiveElementUpdatedMessage.h"
+#include "InteractiveUsedMessage.h"
 
 class ContextFrame : public PacketSendingDofusBotFrame {
 public:
@@ -31,6 +46,8 @@ protected:
 
     // Sends GameContextCreateRequestMessage
     bool sendGameContextCreateRequestMessage();
+    // Sends GameMapMovementConfirmMessage
+    bool sendGameMapMovementConfirmMessage();
     // Sends MapInformationsRequestMessage
     bool sendMapInformationsRequestMessage(double mapId);
 };

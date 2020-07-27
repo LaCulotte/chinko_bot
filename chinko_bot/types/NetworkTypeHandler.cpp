@@ -128,6 +128,7 @@ NetworkTypeHandler::NetworkTypeHandler() {
 	id_to_builder[HouseInformationsForGuild::typeId]	= make_shared<HouseInformationsForGuild>;
 	id_to_builder[FightEntityDispositionInformations::typeId]	= make_shared<FightEntityDispositionInformations>;
 
+    id_to_builder[ActorOrientation::typeId] = make_shared<ActorOrientation>;
 }
 
 NetworkTypeHandler * NetworkTypeHandler::getInstance() {

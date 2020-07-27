@@ -5,17 +5,21 @@
 #include "AuthentificationFrame.h"
 #include "TerminalPromptFrame.h"
 #include "BasicDofusBotFrame.h"
+#include "TimeFrame.h"
+// #include "MapInformationsContainer.h"
+// #include <math.h>
 
 #define USERNAME "OMAGAAD"
 #define PASSWORD "420Blazeit"
 
 int main(){    
     Logger::beginInstance();
-
+    
     sp<ConnectionUnit> cu (new ConnectionUnit());
     sp<DofusBotUnit> dbu (new DofusBotUnit());
     sp<APIUnit> au(new APIUnit());
 
+    dbu->addFrame(make_shared<TimeFrame>());
     dbu->addFrame(make_shared<AuthentificationFrame>());
     dbu->addFrame(make_shared<BasicDofusBotFrame>());
     dbu->initFrames();

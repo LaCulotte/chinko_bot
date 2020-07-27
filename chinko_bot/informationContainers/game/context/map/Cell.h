@@ -16,14 +16,13 @@ public:
     ~Cell() = default;
 
     bool mov = false;
+    bool isBlockedByObstacle = false;
     int floor = 0;
     int moveZone = 0;
     int speed = 0;
 
     int mapChangeData = 0;
     int linkedZone = 0;
-
-    // sp<ActorOnTop>;
 };
 
 #endif

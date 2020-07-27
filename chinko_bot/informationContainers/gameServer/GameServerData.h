@@ -3,17 +3,17 @@
 
 #include "std_include.h"
 
-class GameServerInformationsContainer {
+class GameServerData {
 public:
     // Constructor
-    GameServerInformationsContainer() {};
+    GameServerData() {};
     // Copy constructor
-    GameServerInformationsContainer(const GameServerInformationsContainer& other) = default;
+    GameServerData(const GameServerData& other) = default;
 
     // Copy operator
-    GameServerInformationsContainer& operator=(const GameServerInformationsContainer& other) = default;
+    GameServerData& operator=(const GameServerData& other) = default;
     // Destructor
-    ~GameServerInformationsContainer() = default;
+    ~GameServerData() = default;
 
     // Game Server Informations
 

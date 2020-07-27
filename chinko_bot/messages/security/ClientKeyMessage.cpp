@@ -3,6 +3,11 @@
 bool ClientKeyMessage::serialize(sp<MessageDataBuffer> output) {
 	output->writeUTF(key);
 
+    if(withHash) {
+        for(int i = 0; i < 48; i++)
+            output->writeByte(rand() % 256);
+    }
+
     return true;
 }
 

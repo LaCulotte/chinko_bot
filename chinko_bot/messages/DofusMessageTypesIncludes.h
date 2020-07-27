@@ -44,5 +44,17 @@
 #include "MapInformationsRequestMessage.h"
 
 #include "MapComplementaryInformationsDataMessage.h"
+#include "GameMapMovementMessage.h"
+#include "StatedElementUpdatedMessage.h"
+#include "InteractiveElementUpdatedMessage.h"
+#include "InteractiveUsedMessage.h"
+#include "GameContextRemoveElementMessage.h"
+#include "GameRolePlayShowActorMessage.h"
+#include "GameMapChangeOrientationMessage.h"
+#include "SetCharacterRestrictionsMessage.h"
+#include "GameMapNoMovementMessage.h"
+
+#include "ChatAbstractServerMessage.h"
+#include "ChatServerMessage.h"
 
 #endif

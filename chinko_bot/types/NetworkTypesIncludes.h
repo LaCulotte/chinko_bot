@@ -126,4 +126,6 @@
 #include "HouseInformationsForGuild.h"
 #include "FightEntityDispositionInformations.h"
 
+#include "ActorOrientation.h"
+
 #endif

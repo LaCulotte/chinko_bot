@@ -44,6 +44,19 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[CurrentMapMessage::protocolId]                    = make_shared<CurrentMapMessage>;
 
     id_to_builder[MapComplementaryInformationsDataMessage::protocolId]	= make_shared<MapComplementaryInformationsDataMessage>;
+    id_to_builder[GameMapMovementMessage::protocolId]       = make_shared<GameMapMovementMessage>;
+    id_to_builder[StatedElementUpdatedMessage::protocolId]  = make_shared<StatedElementUpdatedMessage>;
+    id_to_builder[InteractiveElementUpdatedMessage::protocolId]     = make_shared<InteractiveElementUpdatedMessage>;
+    id_to_builder[InteractiveUsedMessage::protocolId]       = make_shared<InteractiveUsedMessage>;
+    id_to_builder[GameContextRemoveElementMessage::protocolId]      = make_shared<GameContextRemoveElementMessage>;
+    id_to_builder[GameRolePlayShowActorMessage::protocolId] = make_shared<GameRolePlayShowActorMessage>;
+    id_to_builder[GameMapChangeOrientationMessage::protocolId]      = make_shared<GameMapChangeOrientationMessage>;
+    id_to_builder[SetCharacterRestrictionsMessage::protocolId]      = make_shared<SetCharacterRestrictionsMessage>;
+
+    id_to_builder[GameMapNoMovementMessage::protocolId]     = make_shared<GameMapNoMovementMessage>;
+
+    id_to_builder[ChatAbstractServerMessage::protocolId]    = make_shared<ChatAbstractServerMessage>;
+    id_to_builder[ChatServerMessage::protocolId]            = make_shared<ChatServerMessage>;
 
     id_to_builder[UnknownDofusMessage::protocolId]                  = make_shared<UnknownDofusMessage>;
 }
