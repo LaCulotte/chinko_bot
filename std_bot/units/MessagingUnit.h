@@ -8,6 +8,7 @@
 #include <map>
 #include <unordered_set>
 #include <functional>
+#include <unistd.h>
 
 class Frame;
 class UpdatingFrame;

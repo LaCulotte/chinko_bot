@@ -13,6 +13,7 @@ set(SRCS
     connection/ClientConnection.cpp
     connection/ServerConnection.cpp
     connection/ListeningServer.cpp
+    frames/basicFrames/TimeFrame.cpp
     frames/connectionFrames/BasicConnectionUnitFrame.cpp
     units/WorkingUnit.cpp
     units/MessagingUnit.cpp
@@ -26,8 +27,10 @@ target_include_directories(std_bot PUBLIC ./std_include)
 target_include_directories(std_bot PUBLIC ./dataContainers)
 target_include_directories(std_bot PUBLIC ./logger)
 target_include_directories(std_bot PUBLIC ./messaging)
+target_include_directories(std_bot PUBLIC ./messaging/basicMessages)
 target_include_directories(std_bot PUBLIC ./messaging/connectionMessages)
 target_include_directories(std_bot PUBLIC ./frames)
+target_include_directories(std_bot PUBLIC ./frames/basicFrames)
 target_include_directories(std_bot PUBLIC ./frames/connectionFrames)
 target_include_directories(std_bot PUBLIC ./connection)
 target_include_directories(std_bot PUBLIC ./units)

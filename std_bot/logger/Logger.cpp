@@ -40,7 +40,7 @@ void Logger::init(){
     // Build log file's path with current date and time
     time_t currentTime = time(NULL);
     tm *localCurrentTime = localtime(&currentTime);
-    fullLogPath = currPath + "/logs/log" + "_" + \
+    fullLogPath = currPath + "/cmake/logs/log" + "_" + \
         (localCurrentTime->tm_mday<10?"0":"") + to_string(localCurrentTime->tm_mday) + "-" + \
         (localCurrentTime->tm_mon<10?"0":"") + to_string(localCurrentTime->tm_mon) + "-" + \
         to_string(localCurrentTime->tm_year%100) + "_" + \
