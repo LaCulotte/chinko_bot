@@ -36,7 +36,6 @@ bool MessagingUnit::addFrame(sp<Frame> frame, bool alwaysUpdates){
 
     // Insert frame in the correct containers
     addedFrames.insert(frame);
-
     frames.insert(pair<int, sp<Frame>>(frame->getPriority(), frame));
 
     if(alwaysUpdates){
@@ -277,4 +276,6 @@ void MessagingUnit::tick(){
     // Updates the frames to update
     for(unordered_set<sp<UpdatingFrame>>::iterator it = toUpdateFrames.begin(); it != toUpdateFrames.end(); it++)
         (*it)->update(); 
+
+    usleep(1);
 }
