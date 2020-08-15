@@ -14,6 +14,8 @@
 #include "ChangeToUpMapMessage.h"
 #include "ChangeToDownMapMessage.h"
 
+#include "CollectInteractiveTypeIdMessage.h"
+
 class TempDialogFrame : public PacketSendingDofusBotFrame {
 public:
     // Constructor

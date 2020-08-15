@@ -178,7 +178,10 @@ class MacroFunctions:
         if inFlags:
             inFlags = False
             ret = ret[:-3] + ";\n"
-            ret += "\toutput->writeByte(flags{});\n\n".format(inFlagsPosition)
+            ret += "\toutput->writeByte(flags{});\n".format(inFlagsPosition)
+
+        if(protocol_dict["use_hash_function"]):
+            ret += "\n\tfor(int i = 0; i < 48; i++)\n\t\toutput->writeByte(rand() % 256);\n"
 
         return ret
 

@@ -1,9 +1,10 @@
+#include "Frame.h"
+#ifdef FINISHED_FRAME_H
+
 #ifndef UPDATINGFRAME_H
 #define UPDATINGFRAME_H
 
 
-#include "Frame.h"
-#ifdef FINISHED_FRAME_H
 
 // Frame that has updates if it computes a message
 class UpdatingFrame : public virtual Frame {

@@ -16,6 +16,7 @@ bool MovementFrame::setParent(MessagingUnit *parent){
 
 bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
     sp<MoveToCellMessage> mtcMsg;
+    sp<ChangeToMapMessage> ctmMsg;
 
     switch (message->getId())
     {
@@ -34,115 +35,59 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
     case MoveToCellMessage::protocolId:
         mtcMsg = dynamic_pointer_cast<MoveToCellMessage>(message);
 
-        if(dofusBotParent->playedCharacer) {
-            Logger::write("Pathfinding : " + to_string(dofusBotParent->playedCharacer->cellId) + " to " + to_string(mtcMsg->destinationCellId), LOG_INFO);
-            MovementPath movPath = PathFinding::findPath(&dofusBotParent->mapInfos, dofusBotParent->playedCharacer->cellId, mtcMsg->destinationCellId);
-            
-            if(movPath.toKeyMovements().size() > 0) {
-                sp<GameMapMovementRequestMessage> gmmrMsg(new GameMapMovementRequestMessage());
-                gmmrMsg->keyMovements = movPath.toKeyMovements();
-                gmmrMsg->mapId = dofusBotParent->mapInfos.getMapId();
-                sendPacket(gmmrMsg, dofusBotParent->gameServerInfos.connectionId);
-
-                // for(auto key : gmmrMsg->keyMovements) {
-                //     cout << dofusBotParent->mapInfos.cellId_to_XPosition(key & 0xFFF) << "; " << dofusBotParent->mapInfos.cellId_to_YPosition(key & 0xFFF) << endl;
-                // }
+        if(dofusBotParent->playedCharacter) {
+            if(dofusBotParent->playedCharacter->cellId == mtcMsg->destinationCellId) {
+                dofusBotParent->sendSelfMessage(make_shared<PlayerMovementEndedMessage>());
+            } else {
+                Logger::write("Pathfinding : " + to_string(dofusBotParent->playedCharacter->cellId) + " to " + to_string(mtcMsg->destinationCellId), LOG_INFO);
+                MovementPath movPath = PathFinding::findPath(&dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, mtcMsg->destinationCellId);
+                
+                if(movPath.toKeyMovements().size() > 1) {
+                    sendGameMapMovementRequestMessage(&movPath);
+                } else {
+                    dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
+                }
             }
+
         } else {
             Logger::write("Cannot pathfind : no played character.", LOG_WARNING);
         }
 
         break;
+
+    case MoveToTopSideMessage::protocolId:
+        if(!moveToRandomCellInVector(dofusBotParent->mapInfos.upChangeMapCellsId)) {
+            dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
+        }
+        break;
     
-    case ChangeToRightMapMessage::protocolId:
-        // manager
-        if(!manager) {
-            Logger::write("Cannot change map : no MovementManager.", LOG_ERROR);
-            break;
-        }
-        {
-            int destId = manager->pathfindToCellInVectorRandom(dofusBotParent->mapInfos.rightChangeMapCellsId);
-            if(destId != -1) {
-                dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(destId));
-                newMapId = dofusBotParent->mapInfos.rightMapId;
-                currentState = mfs_changingmap;
-            } else {
-                Logger::write("Cannot move to right map.", LOG_WARNING);
-            }
+    case MoveToBottomSideMessage::protocolId:
+        if(!moveToRandomCellInVector(dofusBotParent->mapInfos.downChangeMapCellsId)) {
+            dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
-
-    case ChangeToLeftMapMessage::protocolId:
-        // manager
-        if(!manager) {
-            Logger::write("Cannot change map : no MovementManager.", LOG_ERROR);
-            break;
-        }
-        {
-            int destId = manager->pathfindToCellInVectorRandom(dofusBotParent->mapInfos.leftChangeMapCellsId);
-            if(destId != -1) {
-                dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(destId));
-                newMapId = dofusBotParent->mapInfos.leftMapId;
-                currentState = mfs_changingmap;
-            } else {
-                Logger::write("Cannot move to left map.", LOG_WARNING);
-            }
+    
+    case MoveToRightSideMessage::protocolId:
+        if(!moveToRandomCellInVector(dofusBotParent->mapInfos.rightChangeMapCellsId)) {
+            dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
-
-    case ChangeToUpMapMessage::protocolId:
-        // manager
-        if(!manager) {
-            Logger::write("Cannot change map : no MovementManager.", LOG_ERROR);
-            break;
-        }
-        {
-            int destId = manager->pathfindToCellInVectorRandom(dofusBotParent->mapInfos.upChangeMapCellsId);
-            if(destId != -1) {
-                dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(destId));
-                newMapId = dofusBotParent->mapInfos.upMapId;
-                currentState = mfs_changingmap;
-            } else {
-                Logger::write("Cannot move to up map.", LOG_WARNING);
-            }
+    
+    case MoveToLeftSideMessage::protocolId:
+        if(!moveToRandomCellInVector(dofusBotParent->mapInfos.leftChangeMapCellsId)) {
+            dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
-
-    case ChangeToDownMapMessage::protocolId:
-        // manager
-        if(!manager) {
-            Logger::write("Cannot change map : no MovementManager.", LOG_ERROR);
-            break;
-        }
-        {
-            int destId = manager->pathfindToCellInVectorRandom(dofusBotParent->mapInfos.downChangeMapCellsId);
-            if(destId != -1) {
-                dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(destId));
-                newMapId = dofusBotParent->mapInfos.downMapId;
-                currentState = mfs_changingmap;
-            } else {
-                Logger::write("Cannot move to down map.", LOG_WARNING);
-            }
-        }
+    
+    case ChangeToMapMessage::protocolId:
+        ctmMsg = dynamic_pointer_cast<ChangeToMapMessage>(message);
+        sendChangeMapMessage(ctmMsg->mapId);
         break;
-
-    case PlayerMoved::protocolId:
-        if(currentState == mfs_changingmap) {
-            // dofusBotParent->
-            sp<ChangeMapMessage> cmMsg(new ChangeMapMessage());
-            cmMsg->mapId = newMapId;
-
-            sendPacket(cmMsg, dofusBotParent->gameServerInfos.connectionId);
-            currentState = mfs_idle;
-
-            Logger::write("Changing to map : " + to_string(cmMsg->mapId), LOG_INFO);
-        }
-        message->keepInLoop = true;
-        return true;
-        // break;
+        
     default:
         return false;
     }
+    
     return true;
 }
 
@@ -160,6 +105,10 @@ bool MovementFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> 
     {
     case GameMapMovementRequestMessage::protocolId:
         Logger::write("GameMapMovementRequestMessage sent.", LOG_INFO);
+        break;
+    
+    case ChangeMapMessage::protocolId:
+        Logger::write("ChangeMapMessage sent.", LOG_INFO);
         break;
     
     default:
@@ -189,6 +138,11 @@ bool MovementFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> 
         // A voir si bot kill
         break;
     
+    case ChangeMapMessage::protocolId:
+        Logger::write("ChangeMapMessage could not be sent.", LOG_WARNING);
+        // A voir si bot kill
+        break;
+    
     default:
         Logger::write("Message of id " + to_string(messageId) + " was could not be sent. Reason : " + message->reason, LOG_WARNING);
         // A voir si bot kill
@@ -199,3 +153,96 @@ bool MovementFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessage> 
 
     return true;
 }
+
+bool MovementFrame::moveToRandomCellInVector(vector<int> cells) {
+    if(!manager) {
+        Logger::write("Cannot move wihtout a Movement Manager", LOG_ERROR);
+        return false;
+    }
+
+    int destId = manager->pathfindToCellInVectorRandom(cells);
+    if(destId != -1) {
+        dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(destId));
+        return true;
+    } else {
+        Logger::write("Cannot pathfind to any available cell.", LOG_WARNING);
+    }
+
+    return false;
+
+}
+
+bool MovementFrame::sendGameMapMovementRequestMessage(MovementPath* path) {
+    sp<GameMapMovementRequestMessage> gmmrMsg(new GameMapMovementRequestMessage());
+
+    if(!gmmrMsg) {
+        Logger::write("Cannot build GameMapMovementRequestMessage.", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    gmmrMsg->keyMovements = path->toKeyMovements();
+    gmmrMsg->mapId = dofusBotParent->mapInfos.mapId;
+
+    if(!sendPacket(gmmrMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send GameMapMovementRequestMessage.", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    return true;
+}
+
+bool MovementFrame::sendChangeMapMessage(double mapId) {
+    sp<ChangeMapMessage> cmmMsg(new ChangeMapMessage());
+
+    if(!cmmMsg) {
+        Logger::write("Cannot build ChangeMapMessage.", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    cmmMsg->mapId = mapId;
+
+    if(!sendPacket(cmmMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send ChangeMapMessage.", LOG_ERROR);
+        this->killBot();
+        return false;
+    }
+
+    return true;
+}
+
+/*
+    // case PlayerMoved::protocolId:
+    //     if(currentState == mfs_changingmap) {
+    //         // dofusBotParent->
+    //         sp<ChangeMapMessage> cmMsg(new ChangeMapMessage());
+    //         cmMsg->mapId = newMapId;
+
+    //         sendPacket(cmMsg, dofusBotParent->gameServerInfos.connectionId);
+    //         currentState = mfs_idle;
+
+    //         Logger::write("Changing to map : " + to_string(cmMsg->mapId), LOG_INFO);
+    //     } else if (currentState == mfs_pathfindToIron) {
+    //         // Attention : plein de problèmes. A ne pas copier (enfin pas tout)
+    //         if(dofusBotParent->playedCharacter->cellId == destCellId) {
+    //             sp<InteractiveUseRequestMessage> iurMsg(new InteractiveUseRequestMessage());
+    //             iurMsg->elemId = elementId;
+    //             iurMsg->skillInstanceUid = skillId;
+
+    //             sendPacket(iurMsg, dofusBotParent->gameServerInfos.connectionId);
+    //             currentState = mfs_mining;
+
+    //             Logger::write("Begin mining", LOG_INFO);
+    //         } else {
+    //             currentState = mfs_idle;
+    //             Logger::write("Cannot pathfind to iron.", LOG_INFO);
+    //         }
+    //     }
+    //     message->keepInLoop = true;
+    //     return true;
+        // return false;
+
+
+*/

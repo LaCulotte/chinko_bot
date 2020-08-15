@@ -128,6 +128,20 @@ NetworkTypeHandler::NetworkTypeHandler() {
 	id_to_builder[HouseInformationsForGuild::typeId]	= make_shared<HouseInformationsForGuild>;
 	id_to_builder[FightEntityDispositionInformations::typeId]	= make_shared<FightEntityDispositionInformations>;
 
+	id_to_builder[GameFightMinimalStatsPreparation::typeId]	= make_shared<GameFightMinimalStatsPreparation>;
+	id_to_builder[GameFightFighterNamedInformations::typeId]	= make_shared<GameFightFighterNamedInformations>;
+	id_to_builder[GameContextBasicSpawnInformation::typeId]	= make_shared<GameContextBasicSpawnInformation>;
+	id_to_builder[GameFightAIInformations::typeId]	= make_shared<GameFightAIInformations>;
+	id_to_builder[GameFightFighterInformations::typeId]	= make_shared<GameFightFighterInformations>;
+	id_to_builder[GameFightTaxCollectorInformations::typeId]	= make_shared<GameFightTaxCollectorInformations>;
+	id_to_builder[GameFightMutantInformations::typeId]	= make_shared<GameFightMutantInformations>;
+	id_to_builder[GameFightEntityInformation::typeId]	= make_shared<GameFightEntityInformation>;
+	id_to_builder[PlayerStatus::typeId]	= make_shared<PlayerStatus>;
+	id_to_builder[GameFightMonsterWithAlignmentInformations::typeId]	= make_shared<GameFightMonsterWithAlignmentInformations>;
+	id_to_builder[GameFightMonsterInformations::typeId]	= make_shared<GameFightMonsterInformations>;
+	id_to_builder[GameFightMinimalStats::typeId]	= make_shared<GameFightMinimalStats>;
+	id_to_builder[GameFightCharacterInformations::typeId]	= make_shared<GameFightCharacterInformations>;
+
     id_to_builder[ActorOrientation::typeId] = make_shared<ActorOrientation>;
 }
 

@@ -128,4 +128,18 @@
 
 #include "ActorOrientation.h"
 
+#include "GameFightMinimalStatsPreparation.h"
+#include "GameFightFighterNamedInformations.h"
+#include "GameContextBasicSpawnInformation.h"
+#include "GameFightAIInformations.h"
+#include "GameFightFighterInformations.h"
+#include "GameFightTaxCollectorInformations.h"
+#include "GameFightMutantInformations.h"
+#include "GameFightEntityInformation.h"
+#include "PlayerStatus.h"
+#include "GameFightMonsterWithAlignmentInformations.h"
+#include "GameFightMonsterInformations.h"
+#include "GameFightMinimalStats.h"
+#include "GameFightCharacterInformations.h"
+
 #endif

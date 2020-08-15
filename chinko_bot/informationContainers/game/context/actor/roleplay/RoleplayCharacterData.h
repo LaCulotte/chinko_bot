@@ -5,17 +5,17 @@
 
 #include "ActorRestrictionsInformations.h"
 
-class CharacterData : public ActorData {
+class RoleplayCharacterData : public ActorData {
 public:
     // Constructor
-    CharacterData() {};
+    RoleplayCharacterData() : ActorData() {};
     // Copy constructor
-    CharacterData(const CharacterData& other) = default;
+    RoleplayCharacterData(const RoleplayCharacterData& other) = default;
 
     // Copy operator
-    virtual CharacterData& operator=(const CharacterData& other) = default;
+    virtual RoleplayCharacterData& operator=(const RoleplayCharacterData& other) = default;
     // Destructor
-    virtual ~CharacterData() = default;
+    virtual ~RoleplayCharacterData() = default;
 
     string name;
     ActorRestrictionsInformations restrictions;

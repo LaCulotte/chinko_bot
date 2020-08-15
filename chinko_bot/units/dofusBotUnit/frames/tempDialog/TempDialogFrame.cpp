@@ -3,13 +3,13 @@
 bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<ChatServerMessage> csMsg;
-    sp<CharacterData> caller;
-    sp<CharacterData> player;
+    sp<RoleplayCharacterData> caller;
+    sp<RoleplayCharacterData> player;
 
     switch (message->getId())
     {
     case ChatServerMessage::protocolId:
-        if(!dofusBotParent->playedCharacer) {
+        if(!dofusBotParent->playedCharacter) {
             Logger::write("Cannot pathfind : played character is not initialiazed", LOG_WARNING);
             break;
         }
@@ -28,12 +28,15 @@ bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
         } else if(csMsg->content == "bas")  {
             dofusBotParent->sendSelfMessage(make_shared<ChangeToDownMapMessage>());
             Logger::write("Moving to down map.", LOG_INFO);
+        } else if (csMsg->content == "collect") {
+            dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(17));
+            Logger::write("Collecting.", LOG_INFO);
         } else {
             caller = dofusBotParent->mapInfos.getPlayer(csMsg->senderId);
-            // player = dofusBotParent->mapInfos.getPlayer(dofusBotParent->playedCharacer->contextualId);
+            // player = dofusBotParent->mapInfos.getPlayer(dofusBotParent->playedCharacter->contextualId);
 
             Logger::write("[Chat][Channel " + to_string(csMsg->channel) + "] " + csMsg->senderName + " : " + csMsg->content, LOG_INFO);
-            if(caller && dofusBotParent->playedCharacer) {
+            if(caller && dofusBotParent->playedCharacter) {
                 Logger::write(caller->name + " called.", LOG_INFO);
                 dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(caller->cellId));
             } 

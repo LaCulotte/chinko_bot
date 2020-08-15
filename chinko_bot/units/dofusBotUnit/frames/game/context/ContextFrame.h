@@ -5,10 +5,17 @@
 
 #include "TempDialogFrame.h"
 #include "MovementFrame.h"
-#include "CharacterData.h"
+#include "BasicActionsFrame.h"
+
+#include "RoleplayCharacterData.h"
 
 #include "BeginGameContextRequestMessage.h"
 #include "TimedMessage.h"
+
+#include "SendMovementConfirmMessage.h"
+#include "PlayerMovementEndedMessage.h"
+#include "PlayerMovementErrorMessage.h"
+#include "CurrentMapChangedMessage.h"
 
 #include "GameContextCreateRequestMessage.h"
 #include "GameContextCreateMessage.h"
@@ -16,6 +23,7 @@
 #include "MapInformationsRequestMessage.h"
 #include "MapComplementaryInformationsDataMessage.h"
 #include "GameMapMovementMessage.h"
+#include "GameMapNoMovementMessage.h"
 #include "GameMapMovementConfirmMessage.h"
 #include "GameContextRemoveElementMessage.h"
 #include "GameRolePlayShowActorMessage.h"

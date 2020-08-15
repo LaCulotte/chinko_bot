@@ -38,7 +38,7 @@ public:
     // Informations of the current GameServer 
     GameServerData gameServerInfos;
     CurrentMapManager mapInfos;
-    sp<CharacterData> playedCharacer = nullptr;
+    sp<ActorData> playedCharacter = nullptr;
 
 protected:
     // Id of the last packet sent

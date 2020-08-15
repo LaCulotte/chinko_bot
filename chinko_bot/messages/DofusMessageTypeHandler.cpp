@@ -3,17 +3,17 @@
 
 DofusMessageTypeHandler::DofusMessageTypeHandler(){
     // Inits the map : message's id -> message builder
-    id_to_builder[ProtocolRequired::protocolId]                     = make_shared<ProtocolRequired>;
-    id_to_builder[HelloConnectMessage::protocolId]                  = make_shared<HelloConnectMessage>;
-    id_to_builder[IdentificationMessage::protocolId]                = make_shared<IdentificationMessage>;
-    id_to_builder[IdentificationSuccessMessage::protocolId]         = make_shared<IdentificationSuccessMessage>;
-	id_to_builder[IdentificationFailedMessage::protocolId]	        = make_shared<IdentificationFailedMessage>;
+    id_to_builder[ProtocolRequired::protocolId]                         = make_shared<ProtocolRequired>;
+    id_to_builder[HelloConnectMessage::protocolId]                      = make_shared<HelloConnectMessage>;
+    id_to_builder[IdentificationMessage::protocolId]                    = make_shared<IdentificationMessage>;
+    id_to_builder[IdentificationSuccessMessage::protocolId]             = make_shared<IdentificationSuccessMessage>;
+	id_to_builder[IdentificationFailedMessage::protocolId]	            = make_shared<IdentificationFailedMessage>;
 	id_to_builder[IdentificationFailedForBadVersionMessage::protocolId]	= make_shared<IdentificationFailedForBadVersionMessage>;
-    id_to_builder[ClientKeyMessage::protocolId]                     = make_shared<ClientKeyMessage>;
-    id_to_builder[CredentialsAcknowledgementMessage::protocolId]    = make_shared<CredentialsAcknowledgementMessage>;
-    id_to_builder[LoginQueueStatusMessage::protocolId]              = make_shared<LoginQueueStatusMessage>;
-    id_to_builder[SelectedServerDataMessage::protocolId]            = make_shared<SelectedServerDataMessage>;
-    id_to_builder[SelectedServerDataExtendedMessage::protocolId]    = make_shared<SelectedServerDataExtendedMessage>;
+    id_to_builder[ClientKeyMessage::protocolId]                         = make_shared<ClientKeyMessage>;
+    id_to_builder[CredentialsAcknowledgementMessage::protocolId]        = make_shared<CredentialsAcknowledgementMessage>;
+    id_to_builder[LoginQueueStatusMessage::protocolId]                  = make_shared<LoginQueueStatusMessage>;
+    id_to_builder[SelectedServerDataMessage::protocolId]                = make_shared<SelectedServerDataMessage>;
+    id_to_builder[SelectedServerDataExtendedMessage::protocolId]        = make_shared<SelectedServerDataExtendedMessage>;
 
     id_to_builder[HelloGameMessage::protocolId]                         = make_shared<HelloGameMessage>;
     id_to_builder[AuthenticationTicketMessage::protocolId]              = make_shared<AuthenticationTicketMessage>;
@@ -44,19 +44,29 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[CurrentMapMessage::protocolId]                    = make_shared<CurrentMapMessage>;
 
     id_to_builder[MapComplementaryInformationsDataMessage::protocolId]	= make_shared<MapComplementaryInformationsDataMessage>;
-    id_to_builder[GameMapMovementMessage::protocolId]       = make_shared<GameMapMovementMessage>;
-    id_to_builder[StatedElementUpdatedMessage::protocolId]  = make_shared<StatedElementUpdatedMessage>;
-    id_to_builder[InteractiveElementUpdatedMessage::protocolId]     = make_shared<InteractiveElementUpdatedMessage>;
-    id_to_builder[InteractiveUsedMessage::protocolId]       = make_shared<InteractiveUsedMessage>;
-    id_to_builder[GameContextRemoveElementMessage::protocolId]      = make_shared<GameContextRemoveElementMessage>;
-    id_to_builder[GameRolePlayShowActorMessage::protocolId] = make_shared<GameRolePlayShowActorMessage>;
-    id_to_builder[GameMapChangeOrientationMessage::protocolId]      = make_shared<GameMapChangeOrientationMessage>;
-    id_to_builder[SetCharacterRestrictionsMessage::protocolId]      = make_shared<SetCharacterRestrictionsMessage>;
+    id_to_builder[GameMapMovementMessage::protocolId]                   = make_shared<GameMapMovementMessage>;
+    id_to_builder[StatedElementUpdatedMessage::protocolId]              = make_shared<StatedElementUpdatedMessage>;
+    id_to_builder[InteractiveElementUpdatedMessage::protocolId]         = make_shared<InteractiveElementUpdatedMessage>;
+    id_to_builder[InteractiveUsedMessage::protocolId]                   = make_shared<InteractiveUsedMessage>;
+    id_to_builder[GameContextRemoveElementMessage::protocolId]          = make_shared<GameContextRemoveElementMessage>;
+    id_to_builder[GameRolePlayShowActorMessage::protocolId]             = make_shared<GameRolePlayShowActorMessage>;
+    id_to_builder[GameMapChangeOrientationMessage::protocolId]          = make_shared<GameMapChangeOrientationMessage>;
+    id_to_builder[SetCharacterRestrictionsMessage::protocolId]          = make_shared<SetCharacterRestrictionsMessage>;
+    id_to_builder[GameMapNoMovementMessage::protocolId]                 = make_shared<GameMapNoMovementMessage>;
+	id_to_builder[GameEntitiesDispositionMessage::protocolId]       	= make_shared<GameEntitiesDispositionMessage>;
 
-    id_to_builder[GameMapNoMovementMessage::protocolId]     = make_shared<GameMapNoMovementMessage>;
+    id_to_builder[InteractiveUseRequestMessage::protocolId]     = make_shared<InteractiveUseRequestMessage>;
+    id_to_builder[InteractiveUseEndedMessage::protocolId]       = make_shared<InteractiveUseEndedMessage>;
 
     id_to_builder[ChatAbstractServerMessage::protocolId]    = make_shared<ChatAbstractServerMessage>;
     id_to_builder[ChatServerMessage::protocolId]            = make_shared<ChatServerMessage>;
+
+	id_to_builder[GameRolePlayPlayerFightFriendlyRequestedMessage::protocolId]	= make_shared<GameRolePlayPlayerFightFriendlyRequestedMessage>;
+	id_to_builder[GameFightShowFighterMessage::protocolId]	= make_shared<GameFightShowFighterMessage>;
+    id_to_builder[GameFightUpdateTeamMessage::protocolId]   = make_shared<GameFightUpdateTeamMessage>;
+
+	id_to_builder[GameFightStartingMessage::protocolId] = make_shared<GameFightStartingMessage>;
+	id_to_builder[GameFightJoinMessage::protocolId]	    = make_shared<GameFightJoinMessage>;
 
     id_to_builder[UnknownDofusMessage::protocolId]                  = make_shared<UnknownDofusMessage>;
 }

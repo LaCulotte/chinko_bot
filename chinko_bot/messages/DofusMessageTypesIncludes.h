@@ -53,8 +53,20 @@
 #include "GameMapChangeOrientationMessage.h"
 #include "SetCharacterRestrictionsMessage.h"
 #include "GameMapNoMovementMessage.h"
+#include "GameEntitiesDispositionMessage.h"
+
+#include "InteractiveUseRequestMessage.h"
+#include "InteractiveUseEndedMessage.h"
 
 #include "ChatAbstractServerMessage.h"
 #include "ChatServerMessage.h"
+
+#include "GameRolePlayPlayerFightFriendlyRequestedMessage.h"
+#include "GameFightShowFighterMessage.h"
+#include "GameFightUpdateTeamMessage.h"
+
+#include "GameFightStartingMessage.h"
+#include "GameFightJoinMessage.h"
+
 
 #endif

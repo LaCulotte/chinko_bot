@@ -15,9 +15,9 @@
 
 #include <unordered_map>
 #include "Cell.h"
-#include "CharacterData.h"
-#include "NpcWithQuestData.h"
-#include "MonsterGroupData.h"
+#include "RoleplayCharacterData.h"
+#include "RoleplayNpcWithQuestData.h"
+#include "RoleplayMonsterGroupData.h"
 
 class CurrentMapManager {
 public:
@@ -64,9 +64,9 @@ public:
     void addActor(const sp<GameRolePlayActorInformations> actorInfos);
     sp<ActorData> getActor(double actorId);
     void removeActor(double actorID);
-    sp<CharacterData> getPlayer(double playerId);
-    sp<NpcData> getNpc(double npcId);
-    sp<MonsterGroupData> getMonsterGroup(double monsterGroupId);
+    sp<RoleplayCharacterData> getPlayer(double playerId);
+    sp<RoleplayNpcData> getNpc(double npcId);
+    sp<RoleplayMonsterGroupData> getMonsterGroup(double monsterGroupId);
 
 protected:
     // TODO : fichier de configurations où placer mapsFolder
@@ -90,12 +90,12 @@ public:
     double leftMapId = 0;
     double upMapId = 0;
 
-protected:
+// protected:
 	// vector<sp<GameRolePlayActorInformations>> actors;
     unordered_map<double, sp<ActorData>> allActors;
-    unordered_map<double, weak_ptr<CharacterData>> players;
-    unordered_map<double, weak_ptr<MonsterGroupData>> monsterGroups;
-    unordered_map<double, weak_ptr<NpcData>> npcs;
+    unordered_map<double, weak_ptr<RoleplayCharacterData>> players;
+    unordered_map<double, weak_ptr<RoleplayMonsterGroupData>> monsterGroups;
+    unordered_map<double, weak_ptr<RoleplayNpcData>> npcs;
 
 	unordered_map<int, sp<InteractiveElement>> interactiveElements;
 	unordered_map<int, StatedElement> statedElements;

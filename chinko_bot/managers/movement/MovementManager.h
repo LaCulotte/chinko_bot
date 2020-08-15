@@ -20,6 +20,7 @@ public:
     ~MovementManager() = default;
 
     int pathfindToCellInVectorRandom(vector<int> cells);
+    int cellIdWithOffset(int cellId, int xOffset, int yOffset);
 
     void setBot(DofusBotUnit* bot) { this->bot = bot; };
 

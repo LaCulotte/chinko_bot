@@ -7,21 +7,23 @@
 #include "MovementManager.h"
 
 #include "MoveToCellMessage.h"
-#include "PlayerMoved.h"
+#include "ChangeToMapMessage.h"
+#include "PlayerMovementEndedMessage.h"
+#include "PlayerMovementErrorMessage.h"
+
+#include "MoveToRightSideMessage.h"
+#include "MoveToLeftSideMessage.h"
+#include "MoveToTopSideMessage.h"
+#include "MoveToBottomSideMessage.h"
 
 #include "GameMapMovementRequestMessage.h" 
-#include "ChangeToRightMapMessage.h"
-#include "ChangeToLeftMapMessage.h"
-#include "ChangeToUpMapMessage.h"
-#include "ChangeToDownMapMessage.h"
+#include "GameMapNoMovementMessage.h"
+#include "InteractiveUseRequestMessage.h"
+#include "InteractiveUseEndedMessage.h"
+
 
 #include "ChangeMapMessage.h"
 #include "GameMapNoMovementMessage.h"
-
-enum MovementFrameState {
-    mfs_idle,
-    mfs_changingmap
-};
 
 class MovementFrame : public PacketSendingDofusBotFrame {
 public:
@@ -43,10 +45,13 @@ protected:
     virtual bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     virtual bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
+    bool sendGameMapMovementRequestMessage(MovementPath* path);
+    bool sendChangeMapMessage(double mapId);
+
     sp<MovementManager> manager;
 
-    MovementFrameState currentState = mfs_idle;
-    double newMapId = 0;
-};
+    bool moveToRandomCellInVector(vector<int> cells);
+
+ };
 
 #endif

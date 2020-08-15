@@ -53,6 +53,7 @@ bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
 
         // Request for more map infos
         sendMapInformationsRequestMessage(ccMsg->mapId);
+        dofusBotParent->sendSelfMessage(make_shared<CurrentMapChangedMessage>());
         break;
 
     case MapComplementaryInformationsDataMessage::protocolId:
@@ -62,17 +63,23 @@ bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
             // infos->loadMapInformations(mcidMsg);
 
             dofusBotParent->mapInfos.loadMapInformations(mcidMsg);
-            if(dofusBotParent->playedCharacer && dofusBotParent->mapInfos.getPlayer(dofusBotParent->playedCharacer->contextualId)) {
-                dofusBotParent->playedCharacer = dofusBotParent->mapInfos.getPlayer(dofusBotParent->playedCharacer->contextualId);
-                Logger::write("Played character : " + dofusBotParent->playedCharacer->name + ".", LOG_INFO);
+            // sp<RoleplayCharacterData> playedCharacter = dofusBotParent
+            if(dofusBotParent->playedCharacter && dofusBotParent->mapInfos.getPlayer(dofusBotParent->playedCharacter->contextualId)) {
+                dofusBotParent->playedCharacter = dofusBotParent->mapInfos.getPlayer(dofusBotParent->playedCharacter->contextualId);
+                Logger::write("Played character : " + dofusBotParent->mapInfos.getPlayer(dofusBotParent->playedCharacter->contextualId)->name + ".", LOG_INFO);
             } else {
                 Logger::write("Cannot locate played character.", LOG_WARNING);
             }
 
             if(!dofusBotParent->getFrame<TempDialogFrame>())
                 dofusBotParent->addFrame(make_shared<TempDialogFrame>());
-            if(!dofusBotParent->getFrame<MovementFrame>())
-                dofusBotParent->addFrame(make_shared<MovementFrame>());
+            if(!dofusBotParent->getFrame<MovementFrame>()) {
+                sp<MovementFrame> mf(new MovementFrame());
+                // mf->setPriority(-1);
+                dofusBotParent->addFrame(mf, true);
+            }
+            if(!dofusBotParent->getFrame<BasicActionsFrame>())
+                dofusBotParent->addFrame(make_shared<BasicActionsFrame>());
 
             // int playerCellId = -1;
             // for(auto actor : mcidMsg->actors) {
@@ -99,14 +106,14 @@ bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
         {    
             gmmMsg = dynamic_pointer_cast<GameMapMovementMessage>(message);
             string actorName = "";
-            if (dynamic_pointer_cast<CharacterData>(dofusBotParent->mapInfos.getActor(gmmMsg->actorId)))
-                actorName = " (" + dynamic_pointer_cast<CharacterData>(dofusBotParent->mapInfos.getActor(gmmMsg->actorId))->name + ")";
+            if (dynamic_pointer_cast<RoleplayCharacterData>(dofusBotParent->mapInfos.getActor(gmmMsg->actorId)))
+                actorName = " (" + dynamic_pointer_cast<RoleplayCharacterData>(dofusBotParent->mapInfos.getActor(gmmMsg->actorId))->name + ")";
             dofusBotParent->mapInfos.updateActorPosition(gmmMsg->actorId, gmmMsg->keyMovements.back() & 0xFFF);
             Logger::write("Actor " + to_string(gmmMsg->actorId) + actorName + + " moved from cell " + to_string(gmmMsg->keyMovements.front() & 0xFFF) + " to cell " + to_string(gmmMsg->keyMovements.back() & 0xFFF) + ".", LOG_DEBUG);
         }
 
 
-        if(dofusBotParent->playedCharacer && gmmMsg->actorId == dofusBotParent->playedCharacer->contextualId) {
+        if(dofusBotParent->playedCharacter && gmmMsg->actorId == dofusBotParent->playedCharacter->contextualId) {
             int time = 0;
             for (int i = 0; i < gmmMsg->keyMovements.size() - 1; i++) {
                 int cell1Id = gmmMsg->keyMovements[i]; 
@@ -114,16 +121,23 @@ bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
                 time += 200 * dofusBotParent->mapInfos.getEuclidianDistance(cell1Id, cell2Id);
             }
 
-            dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<PlayerMoved>(), time));
+            if(time < 1000) time = 1000;
+
+            dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<SendMovementConfirmMessage>(), time));
         }
 
         break;
 
-    case PlayerMoved::protocolId:
-        // sendPacket(make_shared<GameMapMovementConfirmMessage>(), dofusBotParent->gameServerInfos.connectionId);
+    case SendMovementConfirmMessage::protocolId:
         sendGameMapMovementConfirmMessage();
-        message->keepInLoop = true;
-        return true;
+        dofusBotParent->sendSelfMessage(make_shared<PlayerMovementEndedMessage>());
+        break;
+
+    case GameMapNoMovementMessage::protocolId:
+        gmnmMsg = dynamic_pointer_cast<GameMapNoMovementMessage>(message);
+        Logger::write("No movement : (" + to_string(gmnmMsg->cellX) + "; " + to_string(gmnmMsg->cellY) + ").", LOG_WARNING);
+        dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
+        break;
 
     case StatedElementUpdatedMessage::protocolId:
         seuMsg = dynamic_pointer_cast<StatedElementUpdatedMessage>(message);
@@ -177,11 +191,6 @@ bool ContextFrame::computeMessage(sp<Message> message, int srcId) {
         scrMsg = dynamic_pointer_cast<SetCharacterRestrictionsMessage>(message);
         if (dofusBotParent->mapInfos.getPlayer(scrMsg->actorId))
             dofusBotParent->mapInfos.getPlayer(scrMsg->actorId)->restrictions = scrMsg->restrictions;
-        break;
-
-    case GameMapNoMovementMessage::protocolId:
-        gmnmMsg = dynamic_pointer_cast<GameMapNoMovementMessage>(message);
-        Logger::write("No movement : (" + to_string(gmnmMsg->cellX) + "; " + to_string(gmnmMsg->cellY) + ").", LOG_WARNING);
         break;
 
     default:
@@ -301,13 +310,14 @@ bool ContextFrame::sendGameMapMovementConfirmMessage(){
 
 bool ContextFrame::sendMapInformationsRequestMessage(double mapId){
     sp<MapInformationsRequestMessage> mirMsg(new MapInformationsRequestMessage());
-    mirMsg->mapId = mapId;
 
     if(!mirMsg) {
         Logger::write("Cannot build MapInformationsRequestMessage.", LOG_ERROR);
         this->killBot();
         return false;
     }
+    
+    mirMsg->mapId = mapId;
 
     if(!sendPacket(mirMsg, dofusBotParent->gameServerInfos.connectionId)) {
         Logger::write("Cannot send MapInformationRequestMessage.", LOG_ERROR);

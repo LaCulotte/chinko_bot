@@ -43,7 +43,7 @@ void CurrentMapManager::addActor(const sp<GameRolePlayActorInformations> actorIn
     case GameRolePlayHumanoidInformations::typeId:
         {
             sp<GameRolePlayHumanoidInformations> grphInfos = dynamic_pointer_cast<GameRolePlayHumanoidInformations>(actorInfos);
-            sp<CharacterData> characterData(new CharacterData());
+            sp<RoleplayCharacterData> characterData(new RoleplayCharacterData());
             
             characterData->accountId = grphInfos->accountId;
             characterData->restrictions = grphInfos->humanoidInfo->restrictions;
@@ -57,7 +57,7 @@ void CurrentMapManager::addActor(const sp<GameRolePlayActorInformations> actorIn
     case GameRolePlayGroupMonsterInformations::typeId:
         {
             sp<GameRolePlayGroupMonsterInformations> grpgmInfos = dynamic_pointer_cast<GameRolePlayGroupMonsterInformations>(actorInfos);
-            sp<MonsterGroupData> monsterGroupData(new MonsterGroupData());
+            sp<RoleplayMonsterGroupData> monsterGroupData(new RoleplayMonsterGroupData());
 
             monsterGroupData->mainMonster = grpgmInfos->staticInfos->mainCreatureLightInfos;
             for (auto underling : grpgmInfos->staticInfos->underlings) 
@@ -71,7 +71,7 @@ void CurrentMapManager::addActor(const sp<GameRolePlayActorInformations> actorIn
     case GameRolePlayNpcWithQuestInformations::typeId:
         {
             sp<GameRolePlayNpcWithQuestInformations> grpnwqInfos = dynamic_pointer_cast<GameRolePlayNpcWithQuestInformations>(actorInfos);
-            sp<NpcWithQuestData> npcWithQuestData(new NpcWithQuestData());
+            sp<RoleplayNpcWithQuestData> npcWithQuestData(new RoleplayNpcWithQuestData());
 
             npcWithQuestData->questFlag = grpnwqInfos->questFlag;
             npcWithQuestData->npcId = grpnwqInfos->npcId;
@@ -84,7 +84,7 @@ void CurrentMapManager::addActor(const sp<GameRolePlayActorInformations> actorIn
     case GameRolePlayNpcInformations::typeId:
         {
             sp<GameRolePlayNpcInformations> grpnInfos = dynamic_pointer_cast<GameRolePlayNpcInformations>(actorInfos);
-            sp<NpcData> npcData(new NpcData());
+            sp<RoleplayNpcData> npcData(new RoleplayNpcData());
 
             npcData->npcId = grpnInfos->npcId;
 
@@ -235,14 +235,7 @@ bool CurrentMapManager::canMove(int cellId, int previousCellId, bool avoidObstac
 
     // TODO : slightly different when in battle; see scripts/com/ankamagames/atouin/utils/DataMapProvider.as:138 
     bool mov = cells[cellId]->mov && !cells[cellId]->isBlockedByObstacle; 
-
-    // Peut être alléger en ajoutant hasObstacleOnTop comme attribut de Cell
-    // for (MapObstacle obstacle : obstacles) {
-    //     // Le 1 correspond à MapObstacleStateEnum.OBSTACLE_OPEN -> à implémenter
-    //     if(obstacle.obstacleCellId == cellId && obstacle.state != 1)
-    //         mov = false;
-    // }
-
+    
     if(mov && previousCellId != -1 && previousCellId != cellId) {
         sp<Cell> cell = cells[cellId];
         sp<Cell> previousCell = cells[previousCellId];
@@ -314,7 +307,7 @@ void CurrentMapManager::removeActor(double actorId) {
     npcs.erase(actorId);
 }
 
-sp<CharacterData> CurrentMapManager::getPlayer(double playerId) {
+sp<RoleplayCharacterData> CurrentMapManager::getPlayer(double playerId) {
     auto playerIt = players.find(playerId);
     if(playerIt != players.end())
         return playerIt->second.lock();
@@ -322,7 +315,7 @@ sp<CharacterData> CurrentMapManager::getPlayer(double playerId) {
     return nullptr;
 }
 
-sp<NpcData> CurrentMapManager::getNpc(double npcId) {
+sp<RoleplayNpcData> CurrentMapManager::getNpc(double npcId) {
     auto npcIt = npcs.find(npcId);
     if(npcIt != npcs.end())
         return npcIt->second.lock();
@@ -330,7 +323,7 @@ sp<NpcData> CurrentMapManager::getNpc(double npcId) {
     return nullptr;
 }
 
-sp<MonsterGroupData> CurrentMapManager::getMonsterGroup(double monsterGroupId) {
+sp<RoleplayMonsterGroupData> CurrentMapManager::getMonsterGroup(double monsterGroupId) {
     auto monsterGroupIt = monsterGroups.find(monsterGroupId);
     if(monsterGroupIt != monsterGroups.end())
         return monsterGroupIt->second.lock();

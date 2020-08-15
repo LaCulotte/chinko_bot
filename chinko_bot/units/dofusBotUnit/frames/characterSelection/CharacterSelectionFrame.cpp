@@ -79,8 +79,8 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
             currentState = rcv_CharacterLoadingCompleteMessage;
             Logger::write("Successfully selected " + cssMsg->infos.name, LOG_INFO);
             
-            dofusBotParent->playedCharacer = make_shared<CharacterData>();
-            dofusBotParent->playedCharacer->contextualId = cssMsg->infos.id;
+            dofusBotParent->playedCharacter = make_shared<RoleplayCharacterData>();
+            dofusBotParent->playedCharacter->contextualId = cssMsg->infos.id;
             // dofusBotParent->playerId = cssMsg->infos.id;
 
             // Sends ClientKeyMessage with a 'hash' at the end 

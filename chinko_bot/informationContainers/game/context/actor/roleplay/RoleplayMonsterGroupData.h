@@ -5,17 +5,17 @@
 
 #include "MonsterInGroupLightInformations.h"
 
-class MonsterGroupData : public ActorData{
+class RoleplayMonsterGroupData : public ActorData{
 public:
     // Constructor
-    MonsterGroupData() {};
+    RoleplayMonsterGroupData() : ActorData() {};
     // Copy constructor
-    MonsterGroupData(const MonsterGroupData& other) = default;
+    RoleplayMonsterGroupData(const RoleplayMonsterGroupData& other) = default;
 
     // Copy operator
-    virtual MonsterGroupData& operator=(const MonsterGroupData& other) = default;
+    virtual RoleplayMonsterGroupData& operator=(const RoleplayMonsterGroupData& other) = default;
     // Destructor
-    virtual ~MonsterGroupData() = default;
+    virtual ~RoleplayMonsterGroupData() = default;
 
     MonsterInGroupLightInformations mainMonster;
     vector<MonsterInGroupLightInformations> underlings;

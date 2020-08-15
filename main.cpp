@@ -6,8 +6,11 @@
 #include "TerminalPromptFrame.h"
 #include "BasicDofusBotFrame.h"
 #include "TimeFrame.h"
+// #include "BasicActionsFrame.h"
 // #include "MapInformationsContainer.h"
 // #include <math.h>
+
+#include "FightFrame.h"
 
 #define USERNAME "OMAGAAD"
 #define PASSWORD "420Blazeit"
@@ -22,6 +25,7 @@ int main(){
     dbu->addFrame(make_shared<TimeFrame>());
     dbu->addFrame(make_shared<AuthentificationFrame>());
     dbu->addFrame(make_shared<BasicDofusBotFrame>());
+    dbu->addFrame(make_shared<FightFrame>());
     dbu->initFrames();
     cu->initFrames();
     au->addFrame(make_shared<TerminalPromptFrame>());
@@ -36,7 +40,8 @@ int main(){
     sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage(USERNAME, PASSWORD));
     dbu->sendSelfMessage(baMsg);
 
-    usleep(1000 * 1000*1000);
+    // usleep(1000 * 1000*1000);
+    while(true);
 
     cu->stop();
     dbu->stop();

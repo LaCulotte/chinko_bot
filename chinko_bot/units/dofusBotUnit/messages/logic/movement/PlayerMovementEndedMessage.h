@@ -4,17 +4,17 @@
 #include "Message.h"
 
 // Message to request the beginning of the character selection
-class PlayerMoved : public Message {
+class PlayerMovementEndedMessage : public Message {
 public: 
 	// Constructor
-	PlayerMoved() {};
+	PlayerMovementEndedMessage() {};
 	// Copy constructor
-	PlayerMoved(const PlayerMoved& other) = default;
+	PlayerMovementEndedMessage(const PlayerMovementEndedMessage& other) = default;
 
 	// Copy operator
-	PlayerMoved& operator=(const PlayerMoved& other) = default;
+	PlayerMovementEndedMessage& operator=(const PlayerMovementEndedMessage& other) = default;
 	// Destructor
-	~PlayerMoved() = default;
+	~PlayerMovementEndedMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
 	static const unsigned int protocolId = 655;

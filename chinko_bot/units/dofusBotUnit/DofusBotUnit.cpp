@@ -7,7 +7,7 @@ int DofusBotUnit::sendPacket(sp<ConnectionMessage> message, int connectionId) {
         connectionUnitId = getMessageInterfaceOutId<ConnectionUnit>();
         if(connectionUnitId == -1) {
             // Error if there is not ConnectionUnit linked to the bot 
-            Logger::write("Cannot send packet : the is no ConnectionUnit linked to the current DofusBotUnit", LOG_ERROR);
+            Logger::write("Cannot send packet : there is no ConnectionUnit linked to the current DofusBotUnit", LOG_ERROR);
             return -1;
         }
     }
