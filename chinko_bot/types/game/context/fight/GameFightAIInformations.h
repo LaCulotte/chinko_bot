@@ -17,7 +17,7 @@ public:
 	~GameFightAIInformations() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 151;
+	static const unsigned int typeId = 950;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override { return GameFightFighterInformations::deserialize(input); };

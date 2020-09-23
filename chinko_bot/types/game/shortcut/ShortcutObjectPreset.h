@@ -17,7 +17,7 @@ public:
 	~ShortcutObjectPreset() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 370;
+	static const unsigned int typeId = 1783;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;
