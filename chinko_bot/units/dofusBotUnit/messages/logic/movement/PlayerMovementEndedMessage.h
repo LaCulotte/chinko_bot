@@ -17,7 +17,7 @@ public:
 	~PlayerMovementEndedMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 655;
+	static const unsigned int protocolId = 10055;
 };
 
 #endif

@@ -17,7 +17,7 @@ public:
 	~BeginCharacterSelectionMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 642;
+	static const unsigned int protocolId = 10042;
 
 
 };

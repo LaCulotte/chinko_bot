@@ -17,7 +17,7 @@ public:
 	~ChangeToDownMapMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 652;
+	static const unsigned int protocolId = 10052;
 };
 
 #endif

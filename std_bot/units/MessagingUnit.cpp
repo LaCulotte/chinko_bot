@@ -71,7 +71,8 @@ sp<Frame> MessagingUnit::removeFrame(sp<Frame> frame) {
     // Finds and remove the frame
     for(multimap<int, sp<Frame>>::iterator it = frames.lower_bound(frame->getPriority()); it != frames.upper_bound(frame->getPriority()); it++){
         if(it->second == frame) {
-            removeFrameFromArrays(it);
+            // removeFrameFromArrays(it);
+            markFrameToRemove(it->second);
             return it->second;
         }
     }
@@ -83,7 +84,8 @@ sp<Frame> MessagingUnit::removeFrame(Frame * frame) {
     // Finds and remove the frame
     for(multimap<int, sp<Frame>>::iterator it = frames.lower_bound(frame->getPriority()); it != frames.upper_bound(frame->getPriority()); it++){
         if(it->second.get() == frame) {
-            removeFrameFromArrays(it);
+            // removeFrameFromArrays(it);
+            markFrameToRemove(it->second.get());
             return it->second;
         }
     }
@@ -248,7 +250,7 @@ void MessagingUnit::tick(){
 
         // Submit it to all the frames until a frame can process it and 'keepInLoop' attribute is false
         for(multimap<int, sp<Frame>>::iterator it = frames.begin(); it != frames.end(); it++) {
-            if(it->second->computeMessage(message, messagesToProcess[i].first)) {
+            if(!it->second->toRemove && it->second->computeMessage(message, messagesToProcess[i].first)) {
                 processed = true;
 
                 // If the message has been proccessed and the frame can update, then it will be updated
@@ -277,5 +279,30 @@ void MessagingUnit::tick(){
     for(unordered_set<sp<UpdatingFrame>>::iterator it = toUpdateFrames.begin(); it != toUpdateFrames.end(); it++)
         (*it)->update(); 
 
+    for(multimap<int, sp<Frame>>::iterator it = frames.begin(); it != frames.end(); it++) {
+        if(it->second->toRemove) {
+            auto nextIt = it;
+            nextIt++;
+            removeFrameFromArrays(it);
+            it = nextIt;
+        }
+    }
+
     usleep(1);
+}
+
+bool MessagingUnit::markFrameToRemove(sp<Frame> frame) {
+    if(frame && !frame->toRemove){
+        frame->toRemove = true;
+        return true;
+    }
+    return false;
+}
+
+bool MessagingUnit::markFrameToRemove(Frame* frame) {
+    if(frame && !frame->toRemove){
+        frame->toRemove = true;
+        return true;
+    }
+    return false;
 }

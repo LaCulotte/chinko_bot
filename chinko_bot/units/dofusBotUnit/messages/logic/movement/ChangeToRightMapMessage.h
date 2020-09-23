@@ -17,7 +17,7 @@ public:
 	~ChangeToRightMapMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 651;
+	static const unsigned int protocolId = 10051;
 };
 
 #endif

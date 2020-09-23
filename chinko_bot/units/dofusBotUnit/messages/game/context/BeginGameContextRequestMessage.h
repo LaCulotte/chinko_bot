@@ -17,7 +17,7 @@ public:
 	~BeginGameContextRequestMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 643;
+	static const unsigned int protocolId = 10043;
 };
 
 #endif

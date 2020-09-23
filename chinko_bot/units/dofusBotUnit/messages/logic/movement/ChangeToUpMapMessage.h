@@ -17,7 +17,7 @@ public:
 	~ChangeToUpMapMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 654;
+	static const unsigned int protocolId = 10054;
 };
 
 #endif

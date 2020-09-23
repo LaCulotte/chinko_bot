@@ -17,7 +17,7 @@ public:
 	~MoveToLeftSideMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 658;
+	static const unsigned int protocolId = 10058;
 };
 
 #endif

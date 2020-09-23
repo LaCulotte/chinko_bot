@@ -19,7 +19,7 @@ public:
 	~MoveToCellMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 650;
+	static const unsigned int protocolId = 10050;
 
     int destinationCellId = -1;
 };

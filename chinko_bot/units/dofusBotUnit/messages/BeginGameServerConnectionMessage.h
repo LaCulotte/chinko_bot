@@ -22,7 +22,7 @@ public:
     // Protocol id getter
     unsigned int getId() override { return protocolId; };
     // Message's protocol Id
-    static const unsigned int protocolId = 641;
+    static const unsigned int protocolId = 10041;
 
     sp<SelectedServerDataMessage> ssdMsg;
 };

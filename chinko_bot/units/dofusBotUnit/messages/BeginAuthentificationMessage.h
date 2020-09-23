@@ -21,7 +21,7 @@ public :
     // Protocol id getter
     unsigned int getId() override { return protocolId; };
     // Message's protocol Id
-    static const unsigned int protocolId = 640;
+    static const unsigned int protocolId = 10040;
 
     string username;
     string password;

@@ -17,7 +17,7 @@ public:
 	~PlayerMovementErrorMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 656;
+	static const unsigned int protocolId = 10056;
 };
 
 #endif
