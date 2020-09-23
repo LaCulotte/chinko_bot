@@ -143,6 +143,16 @@ NetworkTypeHandler::NetworkTypeHandler() {
 	id_to_builder[GameFightCharacterInformations::typeId]	= make_shared<GameFightCharacterInformations>;
 
     id_to_builder[ActorOrientation::typeId] = make_shared<ActorOrientation>;
+
+    id_to_builder[Idol::typeId] = make_shared<Idol>;
+
+    id_to_builder[ActorExtendedAlignmentInformations::typeId]       = make_shared<ActorExtendedAlignmentInformations>;
+    id_to_builder[CharacterBaseCharacteristic::typeId]      = make_shared<CharacterBaseCharacteristic>;
+    id_to_builder[CharacterCharacteristicsInformations::typeId]     = make_shared<CharacterCharacteristicsInformations>;
+    id_to_builder[CharacterSpellModification::typeId]       = make_shared<CharacterSpellModification>;
+
+    id_to_builder[GameActionMarkedCell::typeId]     = make_shared<GameActionMarkedCell>;
+    id_to_builder[GameActionMark::typeId]   = make_shared<GameActionMark>;
 }
 
 NetworkTypeHandler * NetworkTypeHandler::getInstance() {

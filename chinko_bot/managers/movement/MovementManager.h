@@ -2,7 +2,7 @@
 #define MOVEMENT_MANAGER_H
 
 #include "Pathfinding.h"
-#include "CurrentMapManager.h"
+#include "AbstractMapManager.h"
 #include "DofusBotUnit.h"
 
 class MovementManager {

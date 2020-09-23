@@ -8,10 +8,17 @@
 #include "GameRolePlayPlayerFightFriendlyAnswerMessage.h"
 
 #include "GameFightStartingMessage.h"
+#include "GameFightTurnFinishMessage.h"
 #include "GameFightJoinMessage.h"
 #include "GameEntitiesDispositionMessage.h"
 #include "GameFightShowFighterMessage.h"
 #include "GameFightUpdateTeamMessage.h"
+#include "GameFightReadyMessage.h"
+#include "GameFightTurnStartMessage.h"
+
+#include "TimedMessage.h"
+#include "GetFightReadyMessage.h"
+#include "EndTurnMessage.h"
 
 class FightFrame : public PacketSendingDofusBotFrame {
 public:

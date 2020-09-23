@@ -7,7 +7,9 @@
 // #include "AuthentificationFrame.h"
 
 #include "GameServerData.h"
-#include "CurrentMapManager.h"
+#include "AbstractMapManager.h"
+#include "RoleplayMapManager.h"
+#include "FightMapManager.h"
 
 #include "SendPacketRequestMessage.h"
 #include "SendPacketSuccessMessage.h"
@@ -35,10 +37,17 @@ public:
     // ConnectionUnit's MessagingInterface's id
     int connectionUnitId = -1;
 
+    // Sets the played character to a blank ActorData but containing its contextualId
+    void resetPlayedCharacter();
+
     // Informations of the current GameServer 
     GameServerData gameServerInfos;
-    CurrentMapManager mapInfos;
     sp<ActorData> playedCharacter = nullptr;
+
+    double currentMapId = 0;
+    sp<AbstractMapManager> mapInfos;
+    sp<RoleplayMapManager> getMapInfosAsRoleplay() { return dynamic_pointer_cast<RoleplayMapManager>(this->mapInfos); };
+    sp<FightMapManager> getMapInfosAsFight() { return dynamic_pointer_cast<FightMapManager>(this->mapInfos); };
 
 protected:
     // Id of the last packet sent

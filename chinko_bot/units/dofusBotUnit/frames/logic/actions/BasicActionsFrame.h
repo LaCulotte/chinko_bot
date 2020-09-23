@@ -21,10 +21,9 @@
 
 #include "InteractiveUseRequestMessage.h"
 #include "InteractiveUseEndedMessage.h"
+#include "CurrentMapMessage.h"
 
 #include "Pathfinding.h"
-
-#include "CurrentMapMessage.h"
 
 #include <unordered_set>
 
@@ -62,7 +61,7 @@ protected:
 
     int elementToCollectId = 0;
     int skillToUseId = 0;
-    void collectElementOfTypeId(int elementTypeId);
+    bool collectElementOfTypeId(int elementTypeId);
     bool collectElement(int elementId);
 
     bool sendInteractiveUseRequestMessage(int elementId, int skillId);

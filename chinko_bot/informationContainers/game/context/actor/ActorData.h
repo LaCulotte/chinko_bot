@@ -18,6 +18,10 @@ public:
     double contextualId = 0;
 
     bool allowMovementThrough = false;
+
+    bool canWalkTo = false;
+    bool canWalkTrough = false;
+    bool canSeeTrough = false;
     
     int cellId = 0;
     int direction = 0;

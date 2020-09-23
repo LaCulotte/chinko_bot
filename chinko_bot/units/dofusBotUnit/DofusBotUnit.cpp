@@ -26,3 +26,12 @@ int DofusBotUnit::sendPacket(sp<ConnectionMessage> message, int connectionId) {
 
     return lastPacketId++;
 }
+
+void DofusBotUnit::resetPlayedCharacter() {
+    if(playedCharacter) {
+        double id = playedCharacter->contextualId;
+
+        playedCharacter = make_shared<ActorData>();
+        playedCharacter->contextualId = id;
+    }
+}

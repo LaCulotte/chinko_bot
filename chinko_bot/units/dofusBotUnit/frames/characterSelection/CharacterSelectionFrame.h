@@ -12,7 +12,7 @@
 #include "UnknownDofusMessage.h"
 
 #include "BeginCharacterSelectionMessage.h"
-#include "ContextFrame.h"
+#include "SwitchContextFrame.h"
 #include "BeginGameContextRequestMessage.h"
 
 #include "CharactersListRequestMessage.h"

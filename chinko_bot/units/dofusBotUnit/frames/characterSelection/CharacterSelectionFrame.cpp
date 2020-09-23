@@ -114,7 +114,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 
             // TODO : mettre ca en fonction?
             // Delete this Frame (self destruct) and introduces a brand new ContextFrame
-            dofusBotParent->addFrame(make_shared<ContextFrame>());
+            dofusBotParent->addFrame(make_shared<SwitchContextFrame>());
             // Requests GameContext building
             dofusBotParent->sendSelfMessage(make_shared<BeginGameContextRequestMessage>());
             dofusBotParent->removeFrame(this);

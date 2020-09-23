@@ -7,7 +7,7 @@ int MovementManager::pathfindToCellInVectorRandom(vector<int> cells) {
     while(cells.size() > 0) {
         int destinationCell_i = rand() % cells.size();
         int destinationCellId = cells[destinationCell_i];
-        MovementPath path = PathFinding::findPath(&bot->mapInfos, bot->playedCharacter->cellId, destinationCellId);
+        MovementPath path = PathFinding::findPath(bot->mapInfos, bot->playedCharacter->cellId, destinationCellId);
 
         if((path.toKeyMovements().back() & 0xFFF) == destinationCellId)
             return destinationCellId;
@@ -19,15 +19,15 @@ int MovementManager::pathfindToCellInVectorRandom(vector<int> cells) {
 }
 
 int MovementManager::cellIdWithOffset(int cellId, int xOffset, int yOffset) {
-    if(!bot) 
+    if(!bot || !bot->mapInfos) 
         return -1;
 
-    int x = bot->mapInfos.cellId_to_XPosition(cellId) + xOffset; 
-    int y = bot->mapInfos.cellId_to_YPosition(cellId) + yOffset; 
+    int x = bot->mapInfos->cellId_to_XPosition(cellId) + xOffset; 
+    int y = bot->mapInfos->cellId_to_YPosition(cellId) + yOffset; 
 
-    if(bot->mapInfos.isCoordsInMap(x, y)) {
-        int offsetCellId = bot->mapInfos.position_to_cellId(x, y);
-        if(bot->mapInfos.isInMap(offsetCellId))
+    if(bot->mapInfos->isCoordsInMap(x, y)) {
+        int offsetCellId = bot->mapInfos->position_to_cellId(x, y);
+        if(bot->mapInfos->isInMap(offsetCellId))
             return offsetCellId;
     }
 

@@ -4,33 +4,33 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
 
     switch(message->getId()) {
     case ChangeToUpMapMessage::protocolId:
-        if(currentState == baf_idle) {
+        if(currentState == baf_idle && dofusBotParent->mapInfos) {
             dofusBotParent->sendSelfMessage(make_shared<MoveToTopSideMessage>());
-            changeMapId = dofusBotParent->mapInfos.upMapId;
+            changeMapId = dofusBotParent->mapInfos->upMapId;
             currentState = baf_pathfindToSide;
         }
         break;
 
     case ChangeToDownMapMessage::protocolId:
-        if(currentState == baf_idle) {
+        if(currentState == baf_idle && dofusBotParent->mapInfos) {
             dofusBotParent->sendSelfMessage(make_shared<MoveToBottomSideMessage>());
-            changeMapId = dofusBotParent->mapInfos.downMapId;
+            changeMapId = dofusBotParent->mapInfos->downMapId;
             currentState = baf_pathfindToSide;
         }
         break;
 
     case ChangeToRightMapMessage::protocolId:
-        if(currentState == baf_idle) {
+        if(currentState == baf_idle && dofusBotParent->mapInfos) {
             dofusBotParent->sendSelfMessage(make_shared<MoveToRightSideMessage>());
-            changeMapId = dofusBotParent->mapInfos.rightMapId;
+            changeMapId = dofusBotParent->mapInfos->rightMapId;
             currentState = baf_pathfindToSide;
         }
         break;
 
     case ChangeToLeftMapMessage::protocolId:
-        if(currentState == baf_idle) {
+        if(currentState == baf_idle && dofusBotParent->mapInfos) {
             dofusBotParent->sendSelfMessage(make_shared<MoveToLeftSideMessage>());
-            changeMapId = dofusBotParent->mapInfos.leftMapId;
+            changeMapId = dofusBotParent->mapInfos->leftMapId;
             currentState = baf_pathfindToSide;
         }
         break;
@@ -69,8 +69,9 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case CollectInteractiveTypeIdMessage::protocolId:
-        if(currentState == baf_idle) {
-            collectElementOfTypeId(dynamic_pointer_cast<CollectInteractiveTypeIdMessage>(message)->elementTypeId);
+        if(currentState == baf_idle && dofusBotParent->getMapInfosAsRoleplay()) {
+            if(!collectElementOfTypeId(dynamic_pointer_cast<CollectInteractiveTypeIdMessage>(message)->elementTypeId) && dynamic_pointer_cast<CollectInteractiveTypeIdMessage>(message)->elementTypeId == 17)
+                dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(53));
         }
         break;
     
@@ -81,32 +82,34 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
     return true;
 }
 
-void BasicActionsFrame::collectElementOfTypeId(int elementTypeId) {
-    for (auto interactiveElementIt : dofusBotParent->mapInfos.interactiveElements) {
+bool BasicActionsFrame::collectElementOfTypeId(int elementTypeId) {
+    for (auto interactiveElementIt : dofusBotParent->getMapInfosAsRoleplay()->interactiveElements) {
         // auto interactiveElement = interactiveElementIt.second;
         if(interactiveElementIt.second->elementTypeId == elementTypeId && interactiveElementIt.second->onCurrentMap && interactiveElementIt.second->enabledSkills.size() > 0 && inaccessibleElements.find(interactiveElementIt.second->elementId) == inaccessibleElements.end()) {
-            auto statedElement = dofusBotParent->mapInfos.statedElements[interactiveElementIt.second->elementId];
-            if(statedElement.elementState == 0 && statedElement.onCurrentMap) {
+            auto statedElement = dofusBotParent->getMapInfosAsRoleplay()->statedElements[interactiveElementIt.second->elementId];
+            if(statedElement.elementState == 0) {
                 if(collectElement(statedElement.elementId))
-                    return;
+                    return true;
             }
         }
     }
 
     Logger::write("No element of id " + to_string(elementTypeId) + " is currently available", LOG_WARNING);
+
+    return false;
 }
 
 bool BasicActionsFrame::collectElement(int elementId) {
-    auto interactiveElement = dofusBotParent->mapInfos.interactiveElements[elementId];
-    auto statedElement = dofusBotParent->mapInfos.statedElements[elementId];
+    auto interactiveElement = dofusBotParent->getMapInfosAsRoleplay()->interactiveElements[elementId];
+    auto statedElement = dofusBotParent->getMapInfosAsRoleplay()->statedElements[elementId];
     
-    MovementPath movPath = PathFinding::findPath(&dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, statedElement.elementCellId);
+    MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, statedElement.elementCellId);
 
     // if(movPath)
     int lastCellId = movPath.toKeyMovements().back() & 0xFFF;
 
-    int dX = abs(dofusBotParent->mapInfos.cellId_to_XPosition(statedElement.elementCellId) - dofusBotParent->mapInfos.cellId_to_XPosition(lastCellId)); 
-    int dY = abs(dofusBotParent->mapInfos.cellId_to_YPosition(statedElement.elementCellId) - dofusBotParent->mapInfos.cellId_to_YPosition(lastCellId)); 
+    int dX = abs(dofusBotParent->mapInfos->cellId_to_XPosition(statedElement.elementCellId) - dofusBotParent->mapInfos->cellId_to_XPosition(lastCellId)); 
+    int dY = abs(dofusBotParent->mapInfos->cellId_to_YPosition(statedElement.elementCellId) - dofusBotParent->mapInfos->cellId_to_YPosition(lastCellId)); 
 
     if(dX < 2 && dY < 2) {
         dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(statedElement.elementCellId));

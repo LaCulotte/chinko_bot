@@ -59,7 +59,7 @@ sp<MessageDataBuffer> DofusClientConnection::readPrefix() {
 sp<PrefixedMessage> DofusClientConnection::deserializePrefix(sp<MessageDataBuffer> prefixData) {
 
     // Gets prefix data
-    int id = prefixData->readShort() >> 2;
+    int id = ((unsigned short) prefixData->readShort()) >> 2;
     int length = 0;
     while(prefixData->remainingDataSize()){
         length <<= 8;

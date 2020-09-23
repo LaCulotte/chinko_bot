@@ -40,6 +40,7 @@
 
 #include "GameContextCreateRequestMessage.h"
 #include "GameContextCreateMessage.h"
+#include "GameContextDestroyMessage.h"
 #include "CurrentMapMessage.h"
 #include "MapInformationsRequestMessage.h"
 
@@ -64,9 +65,37 @@
 #include "GameRolePlayPlayerFightFriendlyRequestedMessage.h"
 #include "GameFightShowFighterMessage.h"
 #include "GameFightUpdateTeamMessage.h"
+#include "FighterStatsListMessage.h"
 
 #include "GameFightStartingMessage.h"
 #include "GameFightJoinMessage.h"
+#include "GameFightHumanReadyStateMessage.h"
 
+#include "GameFightStartMessage.h"
+#include "GameFightTurnReadyRequestMessage.h"
+#include "GameFightNewRoundMessage.h"
+#include "GameFightSynchronizeMessage.h"
+#include "GameFightTurnListMessage.h"
+#include "GameFightTurnStartMessage.h"
+
+#include "GameFightRefreshFighterMessage.h"
+#include "AbstractGameActionMessage.h"
+#include "AbstractGameActionFightTargetedAbilityMessage.h"
+#include "GameActionFightCloseCombatMessage.h"
+#include "GameActionFightSpellCastMessage.h"
+#include "GameActionFightPointsVariationMessage.h"
+#include "GameActionFightLifeAndShieldPointsLostMessage.h"
+#include "GameActionFightLifePointsLostMessage.h"
+#include "GameActionFightLifePointsGainMessage.h"
+
+#include "GameActionFightTeleportOnSameMapMessage.h"
+#include "GameActionFightExchangePositionsMessage.h"
+#include "GameActionFightSlideMessage.h"
+#include "GameActionFightMarkCellsMessage.h"
+#include "GameActionFightUnmarkCellsMessage.h"
+#include "GameActionFightDeathMessage.h"
+#include "GameActionFightKillMessage.h"
+
+#include "SequenceEndMessage.h"
 
 #endif

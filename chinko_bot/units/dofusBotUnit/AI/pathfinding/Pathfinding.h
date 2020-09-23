@@ -1,7 +1,7 @@
 #ifndef PATHFINDING_H
 #define PATHFINDING_H
 
-#include "CurrentMapManager.h"
+#include "AbstractMapManager.h"
 #include "MovementPath.h"
 
 #include <unordered_set>
@@ -9,7 +9,7 @@
 
 class PathFinding {
 public:
-    static MovementPath findPath(CurrentMapManager* map, int startCellId, int endCellId, bool allowDiags = true, bool avoidObstacles = true, bool allowThroughEntities = true);
+    static MovementPath findPath(sp<AbstractMapManager> map, int startCellId, int endCellId, bool allowDiags = true, bool avoidObstacles = true, bool allowThroughEntities = true);
 
 private:
     // Constructor
@@ -23,7 +23,7 @@ private:
     ~PathFinding() = default;
 
 protected:
-    static float alternativePointWeight(int cellId, CurrentMapManager* map, bool allowThroughEntity);
+    static float alternativePointWeight(int cellId, sp<AbstractMapManager> map, bool allowThroughEntity = true);
 };
 
 #endif

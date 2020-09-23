@@ -1,24 +1,17 @@
-#ifndef CONTEXT_FRAME_H
-#define CONTEXT_FRAME_H
+#ifndef ROLEPLAY_CONTEXT_FRAME_H
+#define ROLEPLAY_CONTEXT_FRAME_H
 
 #include "PacketSendingDofusBotFrame.h"
+
+#include "TimedMessage.h"
 
 #include "TempDialogFrame.h"
 #include "MovementFrame.h"
 #include "BasicActionsFrame.h"
 
-#include "RoleplayCharacterData.h"
+#include "SwitchContextFrame.h"
+#include "GameContextDestroyMessage.h"
 
-#include "BeginGameContextRequestMessage.h"
-#include "TimedMessage.h"
-
-#include "SendMovementConfirmMessage.h"
-#include "PlayerMovementEndedMessage.h"
-#include "PlayerMovementErrorMessage.h"
-#include "CurrentMapChangedMessage.h"
-
-#include "GameContextCreateRequestMessage.h"
-#include "GameContextCreateMessage.h"
 #include "CurrentMapMessage.h"
 #include "MapInformationsRequestMessage.h"
 #include "MapComplementaryInformationsDataMessage.h"
@@ -34,17 +27,22 @@
 #include "InteractiveElementUpdatedMessage.h"
 #include "InteractiveUsedMessage.h"
 
-class ContextFrame : public PacketSendingDofusBotFrame {
+#include "SendMovementConfirmMessage.h"
+#include "PlayerMovementEndedMessage.h"
+#include "PlayerMovementErrorMessage.h"
+#include "CurrentMapChangedMessage.h"
+
+class RoleplayContextFrame : public PacketSendingDofusBotFrame {
 public:
     // Constructor
-    ContextFrame() : PacketSendingDofusBotFrame() {}; 
+    RoleplayContextFrame() : PacketSendingDofusBotFrame() {}; 
     // Copy constructor
-    ContextFrame(const ContextFrame& other) = default;
+    RoleplayContextFrame(const RoleplayContextFrame& other) = default;
 
     // Copy operator
-    ContextFrame& operator=(const ContextFrame& other) = default;
+    RoleplayContextFrame& operator=(const RoleplayContextFrame& other) = default;
     // Destructor
-    ~ContextFrame() = default;
+    ~RoleplayContextFrame() = default;
 
     bool computeMessage(sp<Message> message, int srcId) override;
 
@@ -52,8 +50,6 @@ protected:
     virtual bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     virtual bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
-    // Sends GameContextCreateRequestMessage
-    bool sendGameContextCreateRequestMessage();
     // Sends GameMapMovementConfirmMessage
     bool sendGameMapMovementConfirmMessage();
     // Sends MapInformationsRequestMessage

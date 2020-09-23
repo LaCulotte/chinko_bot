@@ -8,6 +8,10 @@ bool MovementFrame::setParent(MessagingUnit *parent){
         
         manager->setBot(dynamic_cast<DofusBotUnit*>(parent));
 
+        if(!dofusBotParent->mapInfos) {
+            Logger::write("The bot don't have any initialized map : no movement will be possible.", LOG_WARNING);
+        }
+
         return true;
     }
 
@@ -40,7 +44,9 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
                 dofusBotParent->sendSelfMessage(make_shared<PlayerMovementEndedMessage>());
             } else {
                 Logger::write("Pathfinding : " + to_string(dofusBotParent->playedCharacter->cellId) + " to " + to_string(mtcMsg->destinationCellId), LOG_INFO);
-                MovementPath movPath = PathFinding::findPath(&dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, mtcMsg->destinationCellId);
+
+                // TODO : séparer le findPath de Roleplay & de Fight
+                MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, mtcMsg->destinationCellId, !dofusBotParent->mapInfos->isFight(), true, !dofusBotParent->mapInfos->isFight());
                 
                 if(movPath.toKeyMovements().size() > 1) {
                     sendGameMapMovementRequestMessage(&movPath);
@@ -56,25 +62,25 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case MoveToTopSideMessage::protocolId:
-        if(!moveToRandomCellInVector(dofusBotParent->mapInfos.upChangeMapCellsId)) {
+        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(dofusBotParent->mapInfos->upChangeMapCellsId)) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
     
     case MoveToBottomSideMessage::protocolId:
-        if(!moveToRandomCellInVector(dofusBotParent->mapInfos.downChangeMapCellsId)) {
+        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(dofusBotParent->mapInfos->downChangeMapCellsId)) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
     
     case MoveToRightSideMessage::protocolId:
-        if(!moveToRandomCellInVector(dofusBotParent->mapInfos.rightChangeMapCellsId)) {
+        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(dofusBotParent->mapInfos->rightChangeMapCellsId)) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
     
     case MoveToLeftSideMessage::protocolId:
-        if(!moveToRandomCellInVector(dofusBotParent->mapInfos.leftChangeMapCellsId)) {
+        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(dofusBotParent->mapInfos->leftChangeMapCellsId)) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
@@ -180,9 +186,10 @@ bool MovementFrame::sendGameMapMovementRequestMessage(MovementPath* path) {
         this->killBot();
         return false;
     }
-
+    
     gmmrMsg->keyMovements = path->toKeyMovements();
-    gmmrMsg->mapId = dofusBotParent->mapInfos.mapId;
+    // mapInfos == nullptr n'est pas possible car on entre jamais ici si len(path) < 1
+    gmmrMsg->mapId = dofusBotParent->mapInfos->mapId;
 
     if(!sendPacket(gmmrMsg, dofusBotParent->gameServerInfos.connectionId)) {
         Logger::write("Cannot send GameMapMovementRequestMessage.", LOG_ERROR);

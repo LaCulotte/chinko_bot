@@ -5,6 +5,9 @@ bool FightFrame::computeMessage(sp<Message> message, int srcId) {
     sp<GameFightStartingMessage> gfsMsg;
     sp<GameFightJoinMessage> gfjMsg;
 
+    sp<GameFightReadyMessage> gfrMsg;
+    sp<GameFightTurnStartMessage> gftsMsg;
+
     // TO REMOVE
     sp<GameRolePlayPlayerFightFriendlyRequestedMessage> grpffrMsg;
     sp<GameRolePlayPlayerFightFriendlyAnswerMessage> grpffaMsg;
@@ -24,28 +27,28 @@ bool FightFrame::computeMessage(sp<Message> message, int srcId) {
         
         break;
 
-    case GameFightStartingMessage::protocolId:
-        gfsMsg = dynamic_pointer_cast<GameFightStartingMessage>(message);
-        // gfsMsg->fightId
-        Logger::write("Figth (" + to_string(gfsMsg->fightId) + ") of type " + to_string(gfsMsg->fightType) + " started.", LOG_INFO);
-        break;
+    // case GameFightStartingMessage::protocolId:
+    //     gfsMsg = dynamic_pointer_cast<GameFightStartingMessage>(message);
+    //     // gfsMsg->fightId
+    //     Logger::write("Fight (" + to_string(gfsMsg->fightId) + ") of type " + to_string(gfsMsg->fightType) + " started.", LOG_INFO);
+    //     break;
 
-    case GameFightJoinMessage::protocolId:
-        gfjMsg = dynamic_pointer_cast<GameFightJoinMessage>(message);
-        Logger::write("Fight starting in " + to_string(gfjMsg->timeMaxBeforeFightStart) + ".", LOG_INFO);
-        break;
+    // case GameFightJoinMessage::protocolId:
+    //     gfjMsg = dynamic_pointer_cast<GameFightJoinMessage>(message);
+    //     Logger::write("Fight starting in " + to_string(gfjMsg->timeMaxBeforeFightStart) + ".", LOG_INFO);
+    //     break;
 
-    case GameEntitiesDispositionMessage::protocolId:
-        Logger::write("GameEntitiesDispositionMessage received", LOG_DEBUG);
-        break;
+    // case GameEntitiesDispositionMessage::protocolId:
+    //     Logger::write("GameEntitiesDispositionMessage received", LOG_DEBUG);
+    //     break;
 
-    case GameFightShowFighterMessage::protocolId:
-        Logger::write("GameFightShowFighterMessage received.", LOG_DEBUG);
-        break;
+    // case GameFightShowFighterMessage::protocolId:
+    //     Logger::write("GameFightShowFighterMessage received.", LOG_DEBUG);
+    //     break;
         
-    case GameFightUpdateTeamMessage::protocolId:
-        Logger::write("GameFightUpdateTeamMessage received.", LOG_DEBUG);
-        break;
+    // case GameFightUpdateTeamMessage::protocolId:
+    //     Logger::write("GameFightUpdateTeamMessage received.", LOG_DEBUG);
+    //     break;
         
     // TO REMOVE
     case GameRolePlayPlayerFightFriendlyRequestedMessage::protocolId:
@@ -56,6 +59,26 @@ bool FightFrame::computeMessage(sp<Message> message, int srcId) {
         grpffaMsg->accept = true;
         grpffaMsg->fightId = grpffrMsg->fightId;
         sendPacket(grpffaMsg, dofusBotParent->gameServerInfos.connectionId);
+        break;
+
+    case GetFightReadyMessage::protocolId:
+        Logger::write("Getting ready.", LOG_INFO);
+        gfrMsg = make_shared<GameFightReadyMessage>();
+        gfrMsg->isReady = true;
+        sendPacket(gfrMsg, dofusBotParent->gameServerInfos.connectionId);
+        break;
+
+    case GameFightTurnStartMessage::protocolId:
+        gftsMsg = dynamic_pointer_cast<GameFightTurnStartMessage>(message);
+        if(gftsMsg->id == dofusBotParent->playedCharacter->contextualId) {
+            Logger::write("Beginning turn.", LOG_INFO);
+            // dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<EndTurnMessage>(), 1000));
+        }
+        break;
+
+    case EndTurnMessage::protocolId:
+        Logger::write("Ending turn.", LOG_INFO);
+        sendPacket(make_shared<GameFightTurnFinishMessage>(), dofusBotParent->gameServerInfos.connectionId);
         break;
 
     default:

@@ -16,6 +16,8 @@
 
 #include "CollectInteractiveTypeIdMessage.h"
 
+#include "RoleplayMapManager.h"
+
 class TempDialogFrame : public PacketSendingDofusBotFrame {
 public:
     // Constructor

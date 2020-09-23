@@ -5,6 +5,7 @@
 #include "GameFightMinimalStats.h"
 
 class FighterData : public ActorData {
+public:
     // Constructor
     FighterData() : ActorData() {};
     // Copy constructor
@@ -16,6 +17,9 @@ class FighterData : public ActorData {
     virtual ~FighterData() = default;
 
    	sp<GameFightMinimalStats> stats;
+    int teamId = -1;
+
+    bool alive = true;
 };
 
 #endif

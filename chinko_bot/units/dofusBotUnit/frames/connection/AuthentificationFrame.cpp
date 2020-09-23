@@ -118,7 +118,7 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         prMsg = dynamic_pointer_cast<ProtocolRequired>(message);
         // TODO : refuser si mauvaise version
         Logger::write("ProtocolRequired received.", LOG_INFO);
-        Logger::write("Required version : " + to_string(prMsg->requiredVersion) + "; Current version : " + to_string(prMsg->currentVersion), LOG_INFO);
+        Logger::write("Required version : " + prMsg->version, LOG_INFO);
         break;
 
     case HelloConnectMessage::protocolId:

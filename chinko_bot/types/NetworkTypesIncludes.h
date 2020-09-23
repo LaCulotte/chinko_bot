@@ -142,4 +142,14 @@
 #include "GameFightMinimalStats.h"
 #include "GameFightCharacterInformations.h"
 
+#include "ActorExtendedAlignmentInformations.h"
+#include "CharacterBaseCharacteristic.h"
+#include "CharacterCharacteristicsInformations.h"
+#include "CharacterSpellModification.h"
+
+#include "GameActionMarkedCell.h"
+#include "GameActionMark.h"
+
+#include "Idol.h"
+
 #endif

@@ -12,7 +12,12 @@ int as3_round(double x) {
 }
 
 // TODO : support allowThroughEntitites = false
-MovementPath PathFinding::findPath(CurrentMapManager* map, int startCellId, int endCellId, bool allowDiags, bool avoidObstacles, bool allowThroughEntities){
+MovementPath PathFinding::findPath(sp<AbstractMapManager> map, int startCellId, int endCellId, bool allowDiags, bool avoidObstacles, bool allowThroughEntities){
+    if(!map) {
+        Logger::write("Cannot pathfind : no map provided.", LOG_ERROR);
+        return MovementPath();
+    }
+    
     if(!allowThroughEntities)
         Logger::write("Trying to pathfind with 'allowThroughEntities = false'. This case is not complete : the behaviour is unknown.", LOG_ERROR);
 
@@ -86,13 +91,34 @@ MovementPath PathFinding::findPath(CurrentMapManager* map, int startCellId, int 
                     } else  {
                         int speed = map->getCell(cellId)->speed;
                         if(allowThroughEntities) {
-                            if(map->isThereBlockingEntityOn(cellId)) 
+                            if(map->isThereBlockingEntityOn(cellId, allowThroughEntities)) 
                                 tileWeight = 20;
                             else if (speed >= 0)
                                 tileWeight = 6 - speed;
                             else 
                                 tileWeight = 12 + abs(speed);
-                        } // TODO : else {}
+                        } else {
+                            tileWeight = 1;
+                            if(map->isThereBlockingEntityOn(cellId)) {
+                                tileWeight += 0.3;
+                            }
+                            if(map->isCoordsInMap(x+1, y) && map->isThereBlockingEntityOn(map->position_to_cellId(x+1, y))) {
+                                tileWeight += 0.3;
+                            }
+                            if(map->isCoordsInMap(x, y+1) && map->isThereBlockingEntityOn(map->position_to_cellId(x, y+1))) {
+                                tileWeight += 0.3;
+                            }
+                            if(map->isCoordsInMap(x-1, y) && map->isThereBlockingEntityOn(map->position_to_cellId(x-1, y))) {
+                                tileWeight += 0.3;
+                            }
+                            if(map->isCoordsInMap(x, y-1) && map->isThereBlockingEntityOn(map->position_to_cellId(x, y-1))) {
+                                tileWeight += 0.3;
+                            }
+                            // TODO : ne pas oublier ca
+                            if (map->cellSpecialEffects(x, y) & 2 == 2) {
+                                tileWeight += 0.3;
+                            }
+                        }
                     }
 
                     float movementCost = parent->cost + ((x == parentX || y == parentY)?HV_COST:DIAG_COST) * tileWeight;
@@ -166,7 +192,7 @@ MovementPath PathFinding::findPath(CurrentMapManager* map, int startCellId, int 
                 int interX = tileX + as3_round(((float) (ggparentX - tileX)) / 2);
                 int interY = tileY + as3_round(((float) (ggparentY - tileY)) / 2);
 
-                if(map->canMove(map->position_to_cellId(interX, interY), tile->cellId, avoidObstacles, allowThroughEntities) && alternativePointWeight(tile->cellId, map, allowThroughEntities) < 2)
+                if(map->canMove(map->position_to_cellId(interX, interY), tile->cellId, avoidObstacles, allowThroughEntities) && alternativePointWeight(tile->cellId, map) < 2)
                     tile->parentTile = tiles[map->position_to_cellId(interX, interY)];
 
             } else if(grandParent && map->getManhattanDistance(tile->cellId, grandParent->cellId) == 1) {
@@ -180,9 +206,9 @@ MovementPath PathFinding::findPath(CurrentMapManager* map, int startCellId, int 
                     tile->parentTile = grandParent;
                 else if(tileX - tileY == gparentX - gparentY && tileX - tileY != interX - interY && !map->isChangeZone(tile->cellId, interCellId) && !map->isChangeZone(grandParent->cellId, interCellId))
                     tile->parentTile = grandParent;
-                else if(tileX == gparentX && tileX != interX && alternativePointWeight(map->position_to_cellId(tileX, interY), map, allowThroughEntities) < 2 && map->canMove(map->position_to_cellId(tileX, interY), tile->cellId, avoidObstacles, allowThroughEntities))
+                else if(tileX == gparentX && tileX != interX && alternativePointWeight(map->position_to_cellId(tileX, interY), map) < 2 && map->canMove(map->position_to_cellId(tileX, interY), tile->cellId, avoidObstacles, allowThroughEntities))
                     tile->parentTile = tiles[map->position_to_cellId(tileX, interY)];
-                else if(tileY == gparentY && tileY != interY && alternativePointWeight(map->position_to_cellId(interX, tileY), map, allowThroughEntities) < 2 && map->canMove(map->position_to_cellId(interX, tileY), tile->cellId, avoidObstacles, allowThroughEntities))
+                else if(tileY == gparentY && tileY != interY && alternativePointWeight(map->position_to_cellId(interX, tileY), map) < 2 && map->canMove(map->position_to_cellId(interX, tileY), tile->cellId, avoidObstacles, allowThroughEntities))
                     tile->parentTile = tiles[map->position_to_cellId(interX, tileY)];
             }
 
@@ -201,7 +227,7 @@ MovementPath PathFinding::findPath(CurrentMapManager* map, int startCellId, int 
     return MovementPath(endTile);
 }
 
-float PathFinding::alternativePointWeight(int cellId, CurrentMapManager* map, bool allowThroughEntities) {
+float PathFinding::alternativePointWeight(int cellId, sp<AbstractMapManager> map, bool allowThroughEntities) {
     if(!map->isInMap(cellId)){
         Logger::write("Tried to compute the weight of an invalid cell", LOG_WARNING);
         return 10;
@@ -214,10 +240,10 @@ float PathFinding::alternativePointWeight(int cellId, CurrentMapManager* map, bo
         } else {
             weight += 11 + abs(speed);
         }
-        if(map->isThereBlockingEntityOn(cellId)) {
+        if(map->isThereBlockingEntityOn(cellId, allowThroughEntities)) {
             weight = 20;
         }
-    } // TODO : else {}
+    } // TODO : else {}  <- never used
 
     return weight;
 }

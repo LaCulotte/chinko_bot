@@ -16,6 +16,7 @@ public:
     ~Cell() = default;
 
     bool mov = false;
+    bool nonWalkableDuringFight = false;
     bool isBlockedByObstacle = false;
     int floor = 0;
     int moveZone = 0;
@@ -23,6 +24,9 @@ public:
 
     int mapChangeData = 0;
     int linkedZone = 0;
+
+    int nbMarks = 0;
+    int specialEffects = 0;
 };
 
 #endif
