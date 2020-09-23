@@ -1,15 +1,13 @@
 #include "ProtocolRequired.h"
 
 bool ProtocolRequired::serialize(sp<MessageDataBuffer> output) {
-	output->writeInt(requiredVersion);
-	output->writeInt(currentVersion);
+	output->writeUTF(version);
 
     return true;
 }
 
 bool ProtocolRequired::deserialize(sp<MessageDataBuffer> input) {
-	requiredVersion = input->readInt();
-	currentVersion = input->readInt();
-
+	version = input->readUTF();
+	
     return true;
 }

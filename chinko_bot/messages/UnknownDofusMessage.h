@@ -18,7 +18,7 @@ public:
     ~UnknownDofusMessage() = default;
 
     virtual unsigned int getId() override { return protocolId; };
-    static const unsigned int protocolId = 630;
+    static const unsigned int protocolId = 10030;
 
     // Data that was contained in the base message
     sp<MessageDataBuffer> data = nullptr;
