@@ -7,7 +7,7 @@
 class PongMessage : public Message {
 public : 
     virtual unsigned int getId() override { return protocolId; };
-    static const unsigned int protocolId = 601;
+    static const unsigned int protocolId = 10001;
 };
 
 #endif

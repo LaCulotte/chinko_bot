@@ -26,7 +26,7 @@ public:
     // Protocol id getter
     unsigned int getId() override { return protocolId; };
     // Message's protocol Id
-    static const unsigned int protocolId = 621;
+    static const unsigned int protocolId = 10021;
 
     // Ids of the connections to disconnect
     vector<int> connectionIds = {};

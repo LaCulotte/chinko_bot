@@ -22,7 +22,7 @@ public:
     // Protocol id getter
     unsigned int getId() override { return protocolId; }
     // Message's protocol Id
-    static const unsigned int protocolId = 615;
+    static const unsigned int protocolId = 10015;
 
     // Reason that the packet send was not successful
     string reason = "Fail";

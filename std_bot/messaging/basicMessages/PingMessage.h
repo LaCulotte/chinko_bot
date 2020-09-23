@@ -7,7 +7,7 @@
 class PingMessage : public Message {
 public: 
     virtual unsigned int getId() override { return protocolId; };
-    static const unsigned int protocolId = 600;
+    static const unsigned int protocolId = 10000;
 };
 
 #endif

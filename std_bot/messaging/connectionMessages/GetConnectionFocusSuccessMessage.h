@@ -21,7 +21,7 @@ public:
     // Protocol id getter
     unsigned int getId() override { return protocolId; };
     // Message's protocol Id
-    static const unsigned int protocolId = 619;
+    static const unsigned int protocolId = 10019;
 
     // Ids of the connection whose focus was changed
     vector<int> connectionIds = {};

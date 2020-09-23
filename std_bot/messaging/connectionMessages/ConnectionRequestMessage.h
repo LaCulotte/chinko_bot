@@ -25,7 +25,7 @@ public:
     unsigned int getId() override { return protocolId; }
 
     // Message's protocol Id
-    static const unsigned int protocolId = 613;
+    static const unsigned int protocolId = 10013;
 
     // Connection to connect with ConnectionUnit
     sp<ClientConnection> toConnect;

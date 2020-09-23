@@ -18,6 +18,9 @@ public:
     // Destructor
     virtual ~TimedMessage() = default;
 
+    unsigned int getId() override { return protocolId; };
+    static const unsigned int protocolId = 10003;
+
     chrono::time_point<chrono::steady_clock> beginTime;
     chrono::duration<double> waitTime;
 

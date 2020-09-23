@@ -23,7 +23,7 @@ public:
     // Protocol id getter
     unsigned int getId() override { return protocolId; };
     // Message's protocol Id
-    static const unsigned int protocolId = 616;
+    static const unsigned int protocolId = 10016;
 
     // Filter : will only return a connection only if the filter returns true with it as argument
     function<bool(sp<Connection>)> filter;

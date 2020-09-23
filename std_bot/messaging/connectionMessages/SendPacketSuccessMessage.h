@@ -22,7 +22,7 @@ public:
     unsigned int getId() override { return protocolId; }
 
     // Message's protocol Id
-    static const unsigned int protocolId = 611;
+    static const unsigned int protocolId = 10011;
     // Id of the packet that was successfully sent
     int packetId = -1;
 };

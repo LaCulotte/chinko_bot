@@ -66,7 +66,7 @@ sp<ConnectionMessage> PrefixNetworkConnection::readMessage() {
                     timeLastPendingUpdate = chrono::system_clock::now();
 
                     // Logs state and returns
-                    Logger::write("Message too long; Connection state switched to pending");
+                    Logger::write("Message (id : " + to_string(message->getId()) + ") too long (" + to_string(message->getLength()) + "); Connection state switched to pending");
                     return nullptr;
                 }
 

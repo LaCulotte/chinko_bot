@@ -36,6 +36,8 @@ public:
     // Returns Frame's priority
     int getPriority() { return priority; }; 
 
+    bool toRemove = false;
+
 protected:
     // Frame's parent. Basically the object that calls 'computeMessage'
     MessagingUnit* parent = nullptr;

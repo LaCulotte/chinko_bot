@@ -23,7 +23,7 @@ public:
     // Protocol id getter
     unsigned int getId() override { return protocolId; };
     // Message's protocol Id
-    static const unsigned int protocolId = 610;
+    static const unsigned int protocolId = 10010;
 
     // Packet to send through the ConnectionUnit
     sp<ConnectionMessage> message; 

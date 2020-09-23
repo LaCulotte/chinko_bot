@@ -22,7 +22,7 @@ public:
     // Protocol id getter
     unsigned int getId() override { return protocolId; };
     // Message's protocol Id
-    static const unsigned int protocolId = 617;
+    static const unsigned int protocolId = 10017;
 
     // Ids of the connections asked in a ConnectionIdGetMessage
     vector<int> ids;

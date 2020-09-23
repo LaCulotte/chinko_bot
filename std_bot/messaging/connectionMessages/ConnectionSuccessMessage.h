@@ -22,7 +22,7 @@ public:
     unsigned int getId() override { return protocolId; }
 
     // Message's protocol Id
-    static const unsigned int protocolId = 614;
+    static const unsigned int protocolId = 10014;
 
     // Id of the connection just made
     int connectionId = -1;

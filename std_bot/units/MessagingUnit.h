@@ -112,6 +112,10 @@ protected:
     unordered_set<sp<Frame>> addedFrames;
     // Frames that are updated each tick
     vector<sp<UpdatingFrame>> alwaysUptadingFrames;  
+    // Marks frame in order to remove it when possible
+    bool markFrameToRemove(sp<Frame> frame);
+    // Marks frame in order to remove it when possible
+    bool markFrameToRemove(Frame* frame);
     // Removes a Frame from all arrays
     void removeFrameFromArrays(multimap<int, sp<Frame>>::iterator itr);  
 
@@ -135,8 +139,9 @@ template<typename T>
 sp<Frame> MessagingUnit::popFrame(){
     for(multimap<int, sp<Frame>>::iterator it = frames.begin(); it != frames.end(); it++){
         if(dynamic_pointer_cast<T>(it->second)) {
-            removeFrameFromArrays(it);
-            return it->second;
+            // removeFrameFromArrays(it);
+            if(markFrameToRemove(it->second))
+                return it->second;
         }
     }
 
@@ -147,12 +152,17 @@ template<typename T>
 vector<sp<Frame>> MessagingUnit::popFrames(int n, bool fill){
     vector<sp<Frame>> ret;
 
-    for(multimap<int, sp<Frame>>::iterator it = frames.begin(); it != frames.end() && ret.size() < n; it++){
-        if(dynamic_pointer_cast<T>(it->second)) {
-            ret.push_back(it->second);
-            removeFrameFromArrays(it);
-            it--;
-        }
+    // for(multimap<int, sp<Frame>>::iterator it = frames.begin(); it != frames.end() && ret.size() < n; it++){
+    //     if(dynamic_pointer_cast<T>(it->second)) {
+    //         ret.push_back(it->second);
+    //         // removeFrameFromArrays(it);
+    //     }
+    // }
+
+    sp<Frame> frame = this->popFrame<T>();
+    while(frame && ret.size() < n) {
+        ret.push_back(frame);
+        frame = this->popFrame<T>();
     }
 
     if(fill)
@@ -166,13 +176,18 @@ template<typename T>
 vector<sp<Frame>> MessagingUnit::popAllFrames(){
     vector<sp<Frame>> ret;
 
-    for(multimap<int, sp<Frame>>::iterator it = frames.begin(); it != frames.end(); it++){
-        if(dynamic_pointer_cast<T>(it->second)) {
-            // delIterators.push_back(it);
-            ret.push_back(it->second);
-            removeFrameFromArrays(it);
-            it--;
-        }
+    // for(multimap<int, sp<Frame>>::iterator it = frames.begin(); it != frames.end(); it++){
+    //     if(dynamic_pointer_cast<T>(it->second)) {
+    //         // delIterators.push_back(it);
+    //         ret.push_back(it->second);
+    //         // removeFrameFromArrays(it);
+    //     }
+    // }
+
+    sp<Frame> frame = this->popFrame<T>();
+    while(frame) {
+        ret.push_back(frame);
+        frame = this->popFrame<T>();
     }
 
     return ret;
