@@ -30,9 +30,10 @@ bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
             Logger::write("Moving to down map.", LOG_INFO);
         } else if (csMsg->content == "collect") {
             dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(17));
+            // dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(17));
             Logger::write("Collecting.", LOG_INFO);
-        } else {
-            caller = dofusBotParent->mapInfos.getPlayer(csMsg->senderId);
+        } else if(dofusBotParent->getMapInfosAsRoleplay()) {
+            caller = dofusBotParent->getMapInfosAsRoleplay()->getPlayer(csMsg->senderId);
             // player = dofusBotParent->mapInfos.getPlayer(dofusBotParent->playedCharacter->contextualId);
 
             Logger::write("[Chat][Channel " + to_string(csMsg->channel) + "] " + csMsg->senderName + " : " + csMsg->content, LOG_INFO);
@@ -40,6 +41,16 @@ bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
                 Logger::write(caller->name + " called.", LOG_INFO);
                 dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(caller->cellId));
             } 
+        } else {
+            stringstream sstream(csMsg->content);
+            int destCellId;
+            sstream >> destCellId;
+
+
+            if(destCellId != 0) {
+                cout << "To cell " << destCellId << endl;
+                dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(destCellId));
+            }
         }
         break;
     
