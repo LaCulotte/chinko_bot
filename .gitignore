@@ -5,3 +5,5 @@ helpers/NetworkTypeGenerator.config
 helpers/protocol_builder/additionnal_strings
 helpers/protocol_builder/types
 helpers/protocol_builder/messages
+chinko_bot/messages_backup
+chinko_bot/types_backup
