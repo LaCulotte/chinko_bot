@@ -14,6 +14,7 @@ write_method_to_deserialize =   {"writeFloat" : "readFloat", "writeUnsignedInt" 
 messages_that_dont_end_with_Message = ["ProtocolRequired", "GameRolePlayArenaInvitationCandidatesAnswer"]
 protocols_to_build = []
 built_protocols = set()
+success_built_protocols = set()
 nb_built_protocols = 0
 
 class MacroFunctions:
@@ -410,7 +411,7 @@ def find_and_build(json_dict, protocol_name, builder):
 
     if(len(protocol_dict) <= 0):
         print(protocol_name + " is not a valid protocol.")
-        return
+        return False
     if(len(protocol_dict) > 1):
         print(protocol_name + " is designate multiple ({}) protocols.".format(len(protocol_dict)))
         print("Only the first one found will be built.")    
@@ -420,7 +421,7 @@ def find_and_build(json_dict, protocol_name, builder):
     protocol_path_h = builder.get_protocol_dir_path(protocol_dict) + "/" + protocol_name + ".h"    
     if(os.path.isfile(protocol_path_h)):
         print(protocol_name + " already exists, it will not be built.")
-        return
+        return 
 
     for field in protocol_dict["fields"]:
         if(field.get("type_namespace") != None):
@@ -438,6 +439,7 @@ def find_and_build(json_dict, protocol_name, builder):
         builder.build_type(protocol_dict)
     
     nb_built_protocols += 1
+    success_built_protocols.add(protocol_name)
     return
     
 if(len(sys.argv) != 4):
@@ -477,7 +479,7 @@ map_messages_list = []
 includes_types_list = []
 map_types_list = []
 
-for protocol_name in built_protocols:
+for protocol_name in success_built_protocols:
     if((len(protocol_name) > len("Message") and protocol_name[-len("Message"):] == "Message") or protocol_name in messages_that_dont_end_with_Message):
         includes_messages_file_last.write("#include \"" + protocol_name + ".h\"\n")
         includes_messages_file_date.write("#include \"" + protocol_name + ".h\"\n")
