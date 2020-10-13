@@ -17,7 +17,7 @@ public:
 	~GameActionFightKillMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 8275;
+	static const unsigned int protocolId = 8096;
 
 	// Turns raw data into the usable data (message's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

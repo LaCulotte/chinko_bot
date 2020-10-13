@@ -19,7 +19,7 @@ public:
 	~CollectInteractiveTypeIdMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 10063;
+	static const unsigned int protocolId = 10066;
 
     int elementTypeId = 0;
 };

@@ -18,9 +18,6 @@ MovementPath PathFinding::findPath(sp<AbstractMapManager> map, int startCellId, 
         return MovementPath();
     }
     
-    if(!allowThroughEntities)
-        Logger::write("Trying to pathfind with 'allowThroughEntities = false'. This case is not complete : the behaviour is unknown.", LOG_ERROR);
-
     if(!map->isInMap(startCellId) || !map->isInMap(endCellId)){
         Logger::write("Cannot pathfind : starting or ending cell is not in the map.", LOG_ERROR);
         return MovementPath();

@@ -20,8 +20,8 @@ public:
     bool allowMovementThrough = false;
 
     bool canWalkTo = false;
-    bool canWalkTrough = false;
-    bool canSeeTrough = false;
+    bool canWalkThrough = false;
+    bool canSeeThrough = false;
     
     int cellId = 0;
     int direction = 0;

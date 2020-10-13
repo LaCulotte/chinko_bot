@@ -44,20 +44,17 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
     case MapComplementaryInformationsDataMessage::protocolId:
         mcidMsg = dynamic_pointer_cast<MapComplementaryInformationsDataMessage>(message);
         {
-            // sp<MapInformationsContainer> infos(new MapInformationsContainer());
-            // infos->loadMapInformations(mcidMsg);
-            // dofusBotParent->mapInfos = make_shared<AbstractMapManager>();
             sp<RoleplayMapManager> mapManager(new RoleplayMapManager());
             mapManager->loadMapInformations(mcidMsg);
             dofusBotParent->currentMapId = mcidMsg->mapId;
-            // sp<RoleplayCharacterData> playedCharacter = dofusBotParent
+
             if(dofusBotParent->playedCharacter && mapManager->getPlayer(dofusBotParent->playedCharacter->contextualId)) {
                 dofusBotParent->playedCharacter = mapManager->getPlayer(dofusBotParent->playedCharacter->contextualId);
                 Logger::write("Played character : " + mapManager->getPlayer(dofusBotParent->playedCharacter->contextualId)->name + ".", LOG_INFO);
-                // TODO : (et faire un truc similaire avec FightContextFrame)
-                // dofusBotParent->playedCharacter->canSeeTrough = true;
-                // dofusBotParent->playedCharacter->canWalkTrough = true;
-                // dofusBotParent->playedCharacter->canWalkTo = true;
+
+                dofusBotParent->playedCharacter->canSeeThrough = true;
+                dofusBotParent->playedCharacter->canWalkThrough = true;
+                dofusBotParent->playedCharacter->canWalkTo = true;
             } else {
                 Logger::write("Cannot locate played character.", LOG_WARNING);
             }
@@ -66,37 +63,13 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
 
             if(!dofusBotParent->getFrame<TempDialogFrame>()) {
                 dofusBotParent->addFrame(make_shared<TempDialogFrame>());
-                // sp<TempDialogFrame> mf(new TempDialogFrame());
-                // // // mf->setPriority(-1);
-                // dofusBotParent->addFrame(mf);
             }
             if(!dofusBotParent->getFrame<MovementFrame>()) {
-                // dofusBotParent->addFrame(make_shared<MovementFrame>());
                 sp<MovementFrame> mf(new MovementFrame());
-                // sp<MovementFrame> mf = make_shared<MovementFrame>();
-                // // mf->setPriority(-1);
                 dofusBotParent->addFrame(mf);
             }
             if(!dofusBotParent->getFrame<BasicActionsFrame>())
                 dofusBotParent->addFrame(make_shared<BasicActionsFrame>());
-
-            // int playerCellId = -1;
-            // for(auto actor : mcidMsg->actors) {
-            //     if(dynamic_pointer_cast<GameRolePlayCharacterInformations>(actor)) {
-            //         playerCellId = actor->disposition->cellId;
-            //         cout << "playerCellId : " << playerCellId << endl;
-            //     }
-            // }
-
-            // if(playerCellId == -1) {
-            //     cout << "no player" << endl;
-            //     break;
-            // }
-
-            // PathFinding::findPath(infos, playerCellId, 0x1C);
-            // while(true) {
-                
-            // }
         }
         Logger::write("Received MapComplementaryInformationsDataMessage", LOG_INFO);
         break;
@@ -152,7 +125,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case InteractiveUsedMessage::protocolId:
         iuMsg = dynamic_pointer_cast<InteractiveUsedMessage>(message);
-        // iuMsg-
+
         if(dofusBotParent->getMapInfosAsRoleplay()->getPlayer(iuMsg->entityId))
             Logger::write("Player : " + dofusBotParent->getMapInfosAsRoleplay()->getPlayer(iuMsg->entityId)->name + " is using element " + to_string(iuMsg->elemId), LOG_INFO);
         else 
@@ -197,13 +170,10 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
         dofusBotParent->addFrame(make_shared<SwitchContextFrame>());
         dofusBotParent->removeFrame(this);
 
-        // dofusBotParent->popAllFrames<TempDialogFrame>();
-        // dofusBotParent->popAllFrames<MovementFrame>();
-        // cout << fr->getPriority() << endl;
-        // dofusBotParent->removeFrame(dofusBotParent->getFrame<MovementFrame>());
-        // for(auto frame : dofusBotParent->popAllFrames<MovementFrame>())
-        //     cout << frame->getPriority() << endl;
+        dofusBotParent->popAllFrames<MovementFrame>();
         dofusBotParent->popAllFrames<BasicActionsFrame>();
+        dofusBotParent->popAllFrames<TempDialogFrame>();
+
         break;
     default:
         return false;

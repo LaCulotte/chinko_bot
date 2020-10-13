@@ -6,8 +6,12 @@ void FightMapManager::addActor(sp<GameContextActorInformations> actorInfos) {
     sp<GameFightFighterInformations> fighterInfos = dynamic_pointer_cast<GameFightFighterInformations>(actorInfos);
     if(fighterInfos) {
         sp<FighterData> fighterData(new FighterData());
-        
+
         fighterData->stats = fighterInfos->stats;
+        for(auto teamIt : teams) {
+            if(teamIt.second.find(actorInfos->contextualId) != teamIt.second.end())
+                fighterData->teamId = teamIt.first;
+        }
 
         actorData = fighterData;
         fighters[fighterInfos->contextualId] = fighterData;
@@ -19,6 +23,10 @@ void FightMapManager::addActor(sp<GameContextActorInformations> actorInfos) {
     actorData->contextualId = actorInfos->contextualId;
     actorData->cellId       = actorInfos->disposition->cellId;
     actorData->direction    = actorInfos->disposition->direction;
+
+    actorData->canWalkThrough = false;
+    actorData->canWalkTo = false;
+    actorData->canSeeThrough = false;
 
     allActors[actorData->contextualId] = actorData;
 }
@@ -34,6 +42,11 @@ void FightMapManager::fighterDied(double fighterId) {
 
     if(fighterIt != fighters.end() && !fighterIt->second.expired()) {
         fighterIt->second.lock()->alive = false;
+        fighterIt->second.lock()->canSeeThrough = true;
+        fighterIt->second.lock()->canWalkThrough = true;
+        fighterIt->second.lock()->canWalkTo = true;
+
+        // this->removeActor(fighterId);
 
         for(auto otherFighterIt : fighters) {
             sp<FighterData> fighter = otherFighterIt.second.lock();
@@ -90,14 +103,15 @@ void FightMapManager::updateTeamInfos(double fighterId, int teamId) {
             }
         }
 
-        auto newTeamIt = teams.find(teamId);
-        if(newTeamIt != teams.end()) {
-            newTeamIt->second.insert(fighterId);
-        } else {
-            teams[teamId] = { fighterId };
-        }
-
         fighter->teamId = teamId;
+    }
+
+
+    auto newTeamIt = teams.find(teamId);
+    if(newTeamIt != teams.end()) {
+        newTeamIt->second.insert(fighterId);
+    } else {
+        teams[teamId] = { fighterId };
     }
 }
 
@@ -107,4 +121,24 @@ void FightMapManager::endFighterTurn(double fighterId) {
         fighter->stats->actionPoints = fighter->stats->maxActionPoints;
         fighter->stats->movementPoints = fighter->stats->maxMovementPoints;
     }
+}
+
+bool FightMapManager::isThereBlockingEntityOn(int cellId, bool allowThroughEntities) {
+    for(auto actorIt : allActors) {
+        sp<ActorData> actor = actorIt.second;
+        if(actor->cellId == cellId && (!allowThroughEntities || !actor->allowMovementThrough) && (!dynamic_pointer_cast<FighterData>(actor) || !dynamic_pointer_cast<FighterData>(actor)->alive))
+            return true;
+    }
+
+    return false;
+}
+
+bool FightMapManager::isThereSeeBlockingEntityOn(int cellId, bool allowThroughEntities) {
+    for(auto actorIt : allActors) {
+        sp<ActorData> actor = actorIt.second;
+        if(actor->cellId == cellId && (!allowThroughEntities || !actor->canSeeThrough) && (!dynamic_pointer_cast<FighterData>(actor) || !dynamic_pointer_cast<FighterData>(actor)->alive))
+            return true;
+    }
+
+    return false;
 }

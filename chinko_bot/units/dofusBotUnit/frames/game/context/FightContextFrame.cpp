@@ -10,13 +10,16 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<GameFightTurnReadyRequestMessage> gftrrMsg;
     sp<GameFightNewRoundMessage> gfnrMsg;
+    sp<GameFightTurnStartMessage> gftsMsg;
     sp<GameFightSynchronizeMessage> gfsyncMsg;
     
     sp<GameFightRefreshFighterMessage> gfrfMsg;
     sp<GameActionFightSpellCastMessage> gafscMsg;
+    sp<GameActionFightNoSpellCastMessage> gafnscMsg;
     sp<GameActionFightCloseCombatMessage> gafccMsg;
     sp<FighterStatsListMessage> fslMsg;
     sp<GameMapMovementMessage> gmmMsg;
+    sp<GameMapNoMovementMessage> gmnmMsg;
 
     sp<GameActionFightPointsVariationMessage> gafpvMsg;
     sp<GameActionFightLifeAndShieldPointsLostMessage> gaflasplMsg;
@@ -62,24 +65,32 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         // TODO : check si il y a pas un moyen de récupérer l'id de la current map
         dofusBotParent->mapInfos->loadMapInformations(dofusBotParent->currentMapId);
 
-        dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<GetFightReadyMessage>(), 2000));
+        dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<GetFightReadyMessage>(), 5000));
         break;
 
     case GameFightShowFighterMessage::protocolId:
         gfsfMsg = dynamic_pointer_cast<GameFightShowFighterMessage>(message);
         Logger::write("GameFightShowFighterMessage received.", LOG_INFO);
+
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Cannot show fighter when the map manager is not configured for a fight.", LOG_ERROR);
+            this->killBot();
+            break;
+        }
         
-        dofusBotParent->mapInfos->addActor(gfsfMsg->informations);
+        dofusBotParent->getMapInfosAsFight()->updateFighter(gfsfMsg->informations);
         if(dofusBotParent->playedCharacter && gfsfMsg->informations->contextualId == dofusBotParent->playedCharacter->contextualId) {
-            sp<ActorData> tmpPlayedCharacter = dofusBotParent->mapInfos->getActor(dofusBotParent->playedCharacter->contextualId);
-            if(tmpPlayedCharacter) {
-                dofusBotParent->playedCharacter = tmpPlayedCharacter;
+            sp<ActorData> playedCharacter = dofusBotParent->mapInfos->getActor(dofusBotParent->playedCharacter->contextualId);
+            if(playedCharacter) {
+                dofusBotParent->playedCharacter = playedCharacter;
+                
+                dofusBotParent->playedCharacter->canSeeThrough = true;
+                dofusBotParent->playedCharacter->canWalkThrough = true;
+                dofusBotParent->playedCharacter->canWalkTo = true;
             } else {
                 Logger::write("Could not build played character!!", LOG_ERROR);
-                // TODO : reset played character to nullptr?
             }
         } 
-            // dofusBotParent->playedCharacter = gfsfMsg
 
         break;
 
@@ -95,11 +106,16 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         gfutMsg = dynamic_pointer_cast<GameFightUpdateTeamMessage>(message);
         Logger::write("GameFightUpdateTeamMessage received.", LOG_INFO);
 
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Cannot update teams when the map manager is not configured for a fight.", LOG_ERROR);
+            this->killBot();
+            break;
+        }
 
         for(auto teamMember : gfutMsg->team.teamMembers) {
             dofusBotParent->getMapInfosAsFight()->updateTeamInfos(teamMember->id, gfutMsg->team.teamId);
             // TeamEnum : teamSide; TeamTypeEnum : teamTypeId
-            Logger::write(to_string(teamMember->id) + " is in team " + to_string(gfutMsg->team.teamSide) + " (team id : " + to_string(gfutMsg->team.teamId) + "; team typeId : " + to_string(gfutMsg->team.teamTypeId) + ")", LOG_DEBUG);
+            Logger::write(to_string(teamMember->id) + " is in team " + to_string(gfutMsg->team.teamId) + " (team side : " + to_string(gfutMsg->team.teamSide) + "; team typeId : " + to_string(gfutMsg->team.teamTypeId) + ")", LOG_DEBUG);
         }
         break;
 
@@ -107,6 +123,8 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         Logger::write("Fight context destroyed.", LOG_INFO);
         dofusBotParent->addFrame(make_shared<SwitchContextFrame>());
         dofusBotParent->removeFrame(this);
+        dofusBotParent->popAllFrames<FightActionFrame>();
+        dofusBotParent->popAllFrames<FightAIFrame>();
         break;
 
     case GameFightHumanReadyStateMessage::protocolId:
@@ -116,6 +134,14 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameFightStartMessage::protocolId:
         Logger::write("Game fight start.", LOG_INFO);
+
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Cannot start fight when the map manager is not configured for a fight.", LOG_ERROR);
+            this->killBot();
+            break;
+        }
+
+        dofusBotParent->addFrame(make_shared<FightAIFrame>());
         break;
 
     case GameFightTurnListMessage::protocolId:
@@ -137,6 +163,14 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             dofusBotParent->getMapInfosAsFight()->updateFighter(fighter);
         
         Logger::write("Fight synchronization done.", LOG_DEBUG);
+        break;
+
+    case GameFightTurnStartMessage::protocolId:
+        gftsMsg = dynamic_pointer_cast<GameFightTurnStartMessage>(message);
+        if(gftsMsg->id == dofusBotParent->playedCharacter->contextualId) {
+            Logger::write("Beginning turn.", LOG_INFO);
+            dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<ReadyNextFightActionMessage>(), 1000));
+        }
         break;
 
     case GameFightTurnReadyRequestMessage::protocolId:
@@ -167,6 +201,12 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         Logger::write("Entity " + to_string(gafscMsg->sourceId) + " is attacking with spell of id " + to_string(gafscMsg->spellId) + ".", LOG_INFO);
         break;
 
+    case GameActionFightNoSpellCastMessage::protocolId:
+        gafnscMsg = dynamic_pointer_cast<GameActionFightNoSpellCastMessage>(message);
+        Logger::write("Could not cast spell of id  : " + to_string(gafnscMsg->spellLevelId), LOG_WARNING);
+        dofusBotParent->sendSelfMessage(make_shared<FightActionFailureMessage>());
+        break;
+
     case FighterStatsListMessage::protocolId:
         fslMsg = dynamic_pointer_cast<FighterStatsListMessage>(message);
         Logger::write("TODO : HANDLE FighterStatsListMessage IN FightContextFrame !!!!!", LOG_ERROR);
@@ -177,6 +217,12 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         gmmMsg = dynamic_pointer_cast<GameMapMovementMessage>(message);
         dofusBotParent->mapInfos->updateActorPosition(gmmMsg->actorId, gmmMsg->keyMovements.back() & 0xFFF);
         Logger::write(to_string(gmmMsg->actorId) + " moved from cell " + to_string(gmmMsg->keyMovements.front() & 0xFFF) + " to cell " + to_string(gmmMsg->keyMovements.back() & 0xFFF), LOG_INFO);
+        break;
+
+    case GameMapNoMovementMessage::protocolId:
+        gmnmMsg = dynamic_pointer_cast<GameMapNoMovementMessage>(message);
+        Logger::write("Unauthorized movement.", LOG_WARNING);
+        dofusBotParent->sendSelfMessage(make_shared<FightActionFailureMessage>());
         break;
 
     case GameActionFightPointsVariationMessage::protocolId:
@@ -253,7 +299,6 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         gafsMsg = dynamic_pointer_cast<GameActionFightSlideMessage>(message);
         Logger::write(to_string(gafsMsg->targetId) + " slided to cell " + to_string(gafsMsg->endCellId), LOG_INFO);
         dofusBotParent->mapInfos->updateActorPosition(gafsMsg->targetId, gafsMsg->endCellId);
-        // gafsMsg->
         break;
 
     case GameActionFightMarkCellsMessage::protocolId:
@@ -287,9 +332,13 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case SequenceEndMessage::protocolId:
         seMsg = dynamic_pointer_cast<SequenceEndMessage>(message);
-        if(seMsg->authorId == dofusBotParent->playedCharacter->contextualId)
+        if(seMsg->authorId == dofusBotParent->playedCharacter->contextualId) {
             this->sendGameActionAcknowledgementMessage(seMsg);
+            dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<ReadyNextFightActionMessage>(), 3000));
+        }
         break;    
+
+    // TODO : case GameActionFightInvisibilityStateEnum::protocolId: -> change canSeeThrough & canWalkThrough 
 
     default:
         return false;
@@ -297,6 +346,8 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     return true;
 }
+
+// TODO : prendre encompte FightSpellCastFrame -> change canSeeThrough & canWalkThrough 
 
 bool FightContextFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) {
     // Checks if the message was sent by this frame
@@ -312,6 +363,10 @@ bool FightContextFrame::handleSendPacketSuccessMessage(sp<SendPacketSuccessMessa
     {
     case GameFightTurnReadyMessage::protocolId:
         Logger::write("GameFightTurnReadyMessage sent.", LOG_INFO);
+        break;
+
+    case GameActionAcknowledgementMessage::protocolId:
+        Logger::write("GameActionAcknowledgementMessage sent.", LOG_INFO);
         break;
 
     default:
@@ -338,6 +393,10 @@ bool FightContextFrame::handleSendPacketFailureMessage(sp<SendPacketFailureMessa
     {
     case GameFightTurnReadyMessage::protocolId:
         Logger::write("Could not send GameFightTurnReadyMessage. Reason : " + message->reason, LOG_WARNING);
+        break;
+    
+    case GameActionAcknowledgementMessage::protocolId:
+        Logger::write("Could not send GameActionAcknowledgementMessage. Reason : " + message->reason, LOG_WARNING);
         break;
     
     default:

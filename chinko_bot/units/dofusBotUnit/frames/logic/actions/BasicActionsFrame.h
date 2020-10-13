@@ -23,6 +23,9 @@
 #include "InteractiveUseEndedMessage.h"
 #include "CurrentMapMessage.h"
 
+#include "AttackMonsterGroupMessage.h"
+#include "GameRolePlayAttackMonsterRequestMessage.h"
+
 #include "Pathfinding.h"
 
 #include <unordered_set>
@@ -32,6 +35,7 @@ enum BasicActionsFrameState {
     baf_pathfindToSide,
     baf_changeMap,
     baf_pathfindToCollect,
+    baf_pathfindToMonster,
     baf_collect
 };
 
@@ -66,6 +70,8 @@ protected:
 
     bool sendInteractiveUseRequestMessage(int elementId, int skillId);
 
+    double monsterId = 0;
+    bool sendGameRolePlayAttackMonsterRequestMessage(double monsterGroupId);
 };
 
 #endif

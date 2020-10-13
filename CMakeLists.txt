@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 # Macro to recursively find all the chink_bot sub-directories that contain headers 
 macro(HEADER_DIRECTORIES return_list)
-    file(GLOB_RECURSE new_list chinko_bot/*.h 
+    file(GLOB_RECURSE new_list chinko_bot/*.h Var/*.h
     )
     set(dir_list "")
     foreach(file_path ${new_list})
@@ -99,6 +99,7 @@ set(CMAKE_BUILD_TYPE Debug)
 file(GLOB_RECURSE SRCS
     base64/base64.cpp
     "chinko_bot/*.cpp"
+    "Var/*.cpp"
     main.cpp
 )
 

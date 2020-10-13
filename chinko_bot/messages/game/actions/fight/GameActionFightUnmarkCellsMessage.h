@@ -17,7 +17,7 @@ public:
 	~GameActionFightUnmarkCellsMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 4963;
+	static const unsigned int protocolId = 3826;
 
 	// Turns raw data into the usable data (message's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

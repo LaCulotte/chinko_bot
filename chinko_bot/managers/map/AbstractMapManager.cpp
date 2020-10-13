@@ -152,6 +152,7 @@ bool AbstractMapManager::loadMapCellsInformations() {
     for(auto cell_json : mapFile_json["cells"]) {
         sp<Cell> cell(new Cell());
         cell->mov = cell_json["mov"].asBool();
+        cell->los = cell_json["los"].asBool();
         cell->nonWalkableDuringFight = cell_json["nonWalkableDuringFight"].asBool();
         cell->floor = cell_json["floor"].asInt();
         cell->moveZone = cell_json["moveZone"].asInt();
@@ -241,7 +242,7 @@ bool AbstractMapManager::canMove(int cellId, int previousCellId, int endCellId, 
 
     if(!allowThroughEntities) {
         for (auto actorIt : allActors) {
-            if(actorIt.second->cellId == cellId && !(endCellId != cellId && actorIt.second->canWalkTo) && !actorIt.second->canWalkTrough) {
+            if(actorIt.second->cellId == cellId && !(endCellId != cellId && actorIt.second->canWalkTo) && !actorIt.second->canWalkThrough) {
                 return false;
             }
         }
@@ -253,10 +254,167 @@ bool AbstractMapManager::canMove(int cellId, int previousCellId, int endCellId, 
     return mov;
 }
 
+/*  
+    cell1&2 are arrays of 2 elements : cellId and distance to referencePosition
+    returns true if cell1's distance is lower than cell2's distance
+*/
+bool AbstractMapManager::sortCellDist(int* cell1, int* cell2) {
+    return (cell1[1] < cell2[1]);
+}
+
+vector<int> AbstractMapManager::getLine(int cell1, int cell2) {
+    vector<int> ret;
+
+    float dist = this->getEuclidianDistance(cell1, cell2);
+
+    int x1 = this->cellId_to_XPosition(cell1);
+    int y1 = this->cellId_to_YPosition(cell1);
+    int x2 = this->cellId_to_XPosition(cell2);
+    int y2 = this->cellId_to_YPosition(cell2);
+
+    float x_step = dist / abs(x2 - x1);
+    float y_step = dist / abs(y2 - y1);
+    float x_agent = x_step / 2;
+    float y_agent = y_step / 2;
+
+    int x_sign = (x2 < x1)?-1:1;
+    int y_sign = (y2 < y1)?-1:1;
+
+    while(x1 != x2 || y1 != y2) {
+        if(abs(x_agent - y_agent) < 0.0001) {
+            x_agent += x_step;
+            y_agent += y_step;
+
+            x1 += x_sign;
+            y1 += y_sign;
+        } else if(x_agent < y_agent) {
+            x_agent += x_step;
+            x1 += x_sign;
+        } else {
+            y_agent += y_step;
+            y1 += y_sign;
+
+        }
+
+        ret.push_back(this->position_to_cellId(x1, y1));
+    }
+
+    return ret;
+}
+
+bool AbstractMapManager::isThereLos(int destCellId, int referencePosition) {
+    vector<int> line = this->getLine(referencePosition, destCellId);
+
+    int referenceX = this->cellId_to_XPosition(referencePosition);
+    int referenceY = this->cellId_to_YPosition(referencePosition);
+
+    if(line.size() == 0) {
+        return true;
+    } else {
+        bool los = true;
+        for(int i = 0; i < line.size(); i++) {
+            int cellId = line[i];
+            int cellX = this->cellId_to_XPosition(cellId);
+            int cellY = this->cellId_to_YPosition(cellId);
+
+            if(isInMap(cellId)) {
+                if(i > 0 && this->isThereSeeBlockingEntityOn(line[i - 1], true)) {
+                    return false;
+                } else {
+                    los = los && !cells[cellId]->isBlockedByObstacle && cells[cellId]->los;
+                }
+            }
+        }
+
+        return los;
+    }
+}
+
+vector<int> AbstractMapManager::getLosFromCells(vector<int> range, int referencePosition) {
+    vector<int*> orderedCells;
+    unordered_map<int, bool> testedCells;
+    vector<int> result;
+
+    int referenceX = this->cellId_to_XPosition(referencePosition);
+    int referenceY = this->cellId_to_YPosition(referencePosition);
+
+    for(int cell : range) {
+        // int cellAndDist[2] = {cell, this->getManhattanDistance(cell, referencePosition)};
+        int* cellAndDist = (int *) malloc(2 * sizeof(int));
+        cellAndDist[0] = cell;
+        cellAndDist[1] = this->getManhattanDistance(cell, referencePosition);
+        orderedCells.push_back(cellAndDist);
+    }
+
+    sort(orderedCells.begin(), orderedCells.end(), sortCellDist);
+
+    for(int* cellAndDist : orderedCells) {
+        int cellId = cellAndDist[0];
+        int cellX = this->cellId_to_XPosition(cellId);
+        int cellY = this->cellId_to_YPosition(cellId);
+
+        if(testedCells.find(cellId) == testedCells.end() || referenceX + referenceY == cellX + cellY || referenceX - referenceY == cellX - cellY) {
+
+            vector<int> line = this->getLine(referencePosition, cellId);
+
+            int referenceX = this->cellId_to_XPosition(referencePosition);
+            int referenceY = this->cellId_to_YPosition(referencePosition);
+
+            if(line.size() == 0) {
+                // return true
+                // result.push_back(cellId);
+                testedCells[cellId] = true;
+            } else {
+                bool los = true;
+
+                for(int i = 0; i < line.size(); i++) {
+                    int lineCellId = line[i];
+                    int lineCellX = this->cellId_to_XPosition(lineCellId);
+                    int lineCellY = this->cellId_to_YPosition(lineCellId);
+
+                    // if(isCoordsInMap(lineCellX, lineCellY)) {
+                    if(isInMap(lineCellId)) {
+                        if(i > 0 && this->isThereSeeBlockingEntityOn(line[i - 1], true)) {
+                            los = false;
+                            break;
+                        } else if(lineCellX + lineCellY == referenceX + referenceY || lineCellX - lineCellY == referenceX - referenceY) {
+                            los = los && !cells[lineCellId]->isBlockedByObstacle && cells[lineCellId]->los;
+                        } else if(testedCells.find(lineCellId) == testedCells.end()) {
+                            los = los && !cells[lineCellId]->isBlockedByObstacle && cells[lineCellId]->los;
+                        } else {
+                            // los = los && !cells[lineCellId]->isBlockedByObstacle && cells[lineCellId]->los;
+                            los = los && testedCells.find(lineCellId)->second;
+                        }
+                    }
+                }
+
+                testedCells[cellId] = los;
+            }
+        }
+    }
+
+    for(auto testedCell : testedCells) {
+        if(testedCell.second) 
+            result.push_back(testedCell.first);
+    }
+
+    return result;
+}
+
 bool AbstractMapManager::isThereBlockingEntityOn(int cellId, bool allowThroughEntities) {
     for(auto actorIt : allActors) {
         sp<ActorData> actor = actorIt.second;
         if(actor->cellId == cellId && (!allowThroughEntities || !actor->allowMovementThrough))
+            return true;
+    }
+
+    return false;
+}
+
+bool AbstractMapManager::isThereSeeBlockingEntityOn(int cellId, bool allowThroughEntities) {
+    for(auto actorIt : allActors) {
+        sp<ActorData> actor = actorIt.second;
+        if(actor->cellId == cellId && (!allowThroughEntities || !actor->canSeeThrough))
             return true;
     }
 

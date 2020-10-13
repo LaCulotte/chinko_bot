@@ -31,9 +31,10 @@ public:
     ~MovementPath();
 
     vector<int> toKeyMovements();
+    // n must be > 0
+    int getNthTile(int n);
     double time;
 
-protected:
     vector<PathTile *> path;
 };
 

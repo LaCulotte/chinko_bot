@@ -50,14 +50,18 @@ public:
     int getLookDirection(int fromCellId, int toCellId);
     int getLookDirection(int fromCellX, int fromCellY, int toCellX, int toCellY);
 
-    int getManhattanDistance(int cellId1, int cellId2);
-    float getEuclidianDistance(int cellId1, int cellId2);
+    static int getManhattanDistance(int cellId1, int cellId2);
+    static float getEuclidianDistance(int cellId1, int cellId2);
 
     bool isInMap(int cellId) { return cellId < cells.size() && cellId >= 0; }
     static bool isCoordsInMap(int x, int y);
     bool canMove(int cellId, int previousCellId = -1, int endCellId = -1, bool avoidObstacles = true, bool allowThroughEntities = true);
-    bool isThereBlockingEntityOn(int cellId, bool allowThroughEntities = true);
+    virtual bool isThereBlockingEntityOn(int cellId, bool allowThroughEntities = true);
+    virtual bool isThereSeeBlockingEntityOn(int cellId, bool allowThroughEntities = false);
     bool isChangeZone(int cellId1, int cellId2);
+
+    bool isThereLos(int destCellId, int referencePosition);
+    vector<int> getLosFromCells(vector<int> range, int referencePosition);
 
     void addMark(GameActionMark mark);
     void removeMark(int markId);
@@ -83,6 +87,9 @@ protected:
     bool loadMapCellsInformations();
     virtual void clearAll();
     void updateMarksInformations();
+    // cell1&2 are arrays of 2 elements : cellId and distance to referencePosition
+    static bool sortCellDist(int* cell1, int* cell2);
+    vector<int> getLine(int cell1, int cell2);
 
 // public:
     vector<sp<Cell>> cells;

@@ -34,6 +34,9 @@ public:
     void updateTeamInfos(double fighterId, int teamId);
     void endFighterTurn(double fighterId);
 
+    virtual bool isThereBlockingEntityOn(int cellId, bool allowThroughEntities = true) override;
+    virtual bool isThereSeeBlockingEntityOn(int cellId, bool allowThroughEntities = false) override;
+
     // TODO : virtual int cellSpecialEffects(int x, int y) override;
 
 protected:

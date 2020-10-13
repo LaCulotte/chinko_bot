@@ -16,7 +16,14 @@
 
 #include "CollectInteractiveTypeIdMessage.h"
 
+#include "CastSpellOnCellMessage.h"
+
 #include "RoleplayMapManager.h"
+
+// TODO : remove
+#include "FightAIFrame.h"
+#include "ReadyBeginTurnFightActionMessage.h"
+#include "AttackMonsterGroupMessage.h"
 
 class TempDialogFrame : public PacketSendingDofusBotFrame {
 public:

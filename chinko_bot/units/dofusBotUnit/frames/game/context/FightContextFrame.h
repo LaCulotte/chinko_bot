@@ -4,6 +4,8 @@
 #include "PacketSendingDofusBotFrame.h"
 
 #include "SwitchContextFrame.h"
+#include "FightActionFrame.h"
+#include "FightAIFrame.h"
 
 #include "GameContextDestroyMessage.h"
 #include "GameFightStartingMessage.h"
@@ -14,6 +16,7 @@
 #include "GameFightHumanReadyStateMessage.h"
 
 #include "GameFightTurnReadyMessage.h"
+#include "GameFightTurnStartMessage.h"
 #include "GameFightTurnReadyRequestMessage.h"
 
 #include "GameFightStartMessage.h"
@@ -28,6 +31,7 @@
 #include "AbstractGameActionFightTargetedAbilityMessage.h"
 #include "GameActionFightCloseCombatMessage.h"
 #include "GameActionFightSpellCastMessage.h"
+#include "GameActionFightNoSpellCastMessage.h"
 
 #include "GameActionFightPointsVariationMessage.h"
 #include "GameActionFightLifeAndShieldPointsLostMessage.h"
@@ -42,6 +46,11 @@
 #include "GameActionFightKillMessage.h"
 #include "GameActionAcknowledgementMessage.h"
 
+#include "ReadyBeginTurnFightActionMessage.h"
+#include "ReadyNextFightActionMessage.h"
+#include "FightActionFailureMessage.h"
+
+#include "GameMapNoMovementMessage.h"
 #include "SequenceEndMessage.h"
 
 namespace ActionIds {

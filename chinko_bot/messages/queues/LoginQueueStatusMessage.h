@@ -17,7 +17,7 @@ public:
 	~LoginQueueStatusMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 507;
+	static const unsigned int protocolId = 7010;
 
 	// Turns raw data into the usable data (message's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

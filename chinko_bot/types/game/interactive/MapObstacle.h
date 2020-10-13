@@ -17,7 +17,7 @@ public:
 	~MapObstacle() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 2651;
+	static const unsigned int typeId = 4705;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

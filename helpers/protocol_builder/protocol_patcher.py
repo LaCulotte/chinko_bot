@@ -19,11 +19,13 @@ for (dirpath, dirnames, filenames) in walk(sys.argv[1]):
         if(name[-1] == 'h'):
             files.append(dirpath + "/" + name)
             files_names.append(name.split(".")[0])
-            print(name)
+            # print(name)
 
-for messages_protocol in json_dict["types"]:
+for messages_protocol in json_dict["messages"]:
     if(messages_protocol["name"] in files_names):
         index = files_names.index(messages_protocol["name"])
+
+        print(files[index])
 
         in_file = open(files[index], 'r')
         in_lines = in_file.readlines()
@@ -31,7 +33,7 @@ for messages_protocol in json_dict["types"]:
 
         for i, line in enumerate(in_lines):
             line_parts = line.split(" ")
-            if(len(line_parts) > 3 and line_parts[-3] == "typeId"):
+            if(len(line_parts) > 3 and line_parts[-3] == "protocolId"):
                 line_parts[-1] = str(messages_protocol["protocolID"]) + ";"
                 in_lines[i] = " ".join(line_parts) + "\n"
                 break

@@ -5,7 +5,6 @@ bool FightFrame::computeMessage(sp<Message> message, int srcId) {
     sp<GameFightStartingMessage> gfsMsg;
     sp<GameFightJoinMessage> gfjMsg;
 
-    sp<GameFightReadyMessage> gfrMsg;
     sp<GameFightTurnStartMessage> gftsMsg;
 
     // TO REMOVE
@@ -59,26 +58,6 @@ bool FightFrame::computeMessage(sp<Message> message, int srcId) {
         grpffaMsg->accept = true;
         grpffaMsg->fightId = grpffrMsg->fightId;
         sendPacket(grpffaMsg, dofusBotParent->gameServerInfos.connectionId);
-        break;
-
-    case GetFightReadyMessage::protocolId:
-        Logger::write("Getting ready.", LOG_INFO);
-        gfrMsg = make_shared<GameFightReadyMessage>();
-        gfrMsg->isReady = true;
-        sendPacket(gfrMsg, dofusBotParent->gameServerInfos.connectionId);
-        break;
-
-    case GameFightTurnStartMessage::protocolId:
-        gftsMsg = dynamic_pointer_cast<GameFightTurnStartMessage>(message);
-        if(gftsMsg->id == dofusBotParent->playedCharacter->contextualId) {
-            Logger::write("Beginning turn.", LOG_INFO);
-            // dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<EndTurnMessage>(), 1000));
-        }
-        break;
-
-    case EndTurnMessage::protocolId:
-        Logger::write("Ending turn.", LOG_INFO);
-        sendPacket(make_shared<GameFightTurnFinishMessage>(), dofusBotParent->gameServerInfos.connectionId);
         break;
 
     default:

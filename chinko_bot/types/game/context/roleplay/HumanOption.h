@@ -17,7 +17,7 @@ public:
 	~HumanOption() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 6272;
+	static const unsigned int typeId = 2965;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override { return true; };

@@ -83,6 +83,7 @@
 #include "AbstractGameActionFightTargetedAbilityMessage.h"
 #include "GameActionFightCloseCombatMessage.h"
 #include "GameActionFightSpellCastMessage.h"
+#include "GameActionFightNoSpellCastMessage.h"
 #include "GameActionFightPointsVariationMessage.h"
 #include "GameActionFightLifeAndShieldPointsLostMessage.h"
 #include "GameActionFightLifePointsLostMessage.h"

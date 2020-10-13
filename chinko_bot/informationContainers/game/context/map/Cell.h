@@ -16,6 +16,7 @@ public:
     ~Cell() = default;
 
     bool mov = false;
+    bool los = false;
     bool nonWalkableDuringFight = false;
     bool isBlockedByObstacle = false;
     int floor = 0;

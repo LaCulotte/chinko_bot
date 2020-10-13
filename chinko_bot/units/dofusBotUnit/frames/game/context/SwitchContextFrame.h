@@ -9,6 +9,8 @@
 
 #include "RoleplayContextFrame.h"
 #include "FightContextFrame.h"
+#include "FightActionFrame.h"
+#include "FightAIFrame.h"
 
 #include "RoleplayCharacterData.h"
 

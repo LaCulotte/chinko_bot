@@ -52,6 +52,8 @@ protected:
 
     bool moveToRandomCellInVector(vector<int> cells);
 
+    vector<int> getCellsOnFloor(vector<int> cells, int floor);
+
  };
 
 #endif

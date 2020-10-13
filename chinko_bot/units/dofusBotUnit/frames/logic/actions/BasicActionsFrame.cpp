@@ -1,35 +1,43 @@
 #include "BasicActionsFrame.h"
 
 bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
-
+    sp<ChangeToUpMapMessage>    ctuMsg;
+    sp<ChangeToDownMapMessage>  ctdMsg;
+    sp<ChangeToRightMapMessage> ctrMsg;
+    sp<ChangeToLeftMapMessage>  ctlMsg;
+    
     switch(message->getId()) {
     case ChangeToUpMapMessage::protocolId:
+        ctuMsg = dynamic_pointer_cast<ChangeToUpMapMessage>(message);
         if(currentState == baf_idle && dofusBotParent->mapInfos) {
-            dofusBotParent->sendSelfMessage(make_shared<MoveToTopSideMessage>());
+            dofusBotParent->sendSelfMessage(make_shared<MoveToTopSideMessage>(ctuMsg->floor));
             changeMapId = dofusBotParent->mapInfos->upMapId;
             currentState = baf_pathfindToSide;
         }
         break;
 
     case ChangeToDownMapMessage::protocolId:
+        ctdMsg = dynamic_pointer_cast<ChangeToDownMapMessage>(message);
         if(currentState == baf_idle && dofusBotParent->mapInfos) {
-            dofusBotParent->sendSelfMessage(make_shared<MoveToBottomSideMessage>());
+            dofusBotParent->sendSelfMessage(make_shared<MoveToBottomSideMessage>(ctdMsg->floor));
             changeMapId = dofusBotParent->mapInfos->downMapId;
             currentState = baf_pathfindToSide;
         }
         break;
 
     case ChangeToRightMapMessage::protocolId:
+        ctrMsg = dynamic_pointer_cast<ChangeToRightMapMessage>(message);
         if(currentState == baf_idle && dofusBotParent->mapInfos) {
-            dofusBotParent->sendSelfMessage(make_shared<MoveToRightSideMessage>());
+            dofusBotParent->sendSelfMessage(make_shared<MoveToRightSideMessage>(ctrMsg->floor));
             changeMapId = dofusBotParent->mapInfos->rightMapId;
             currentState = baf_pathfindToSide;
         }
         break;
 
     case ChangeToLeftMapMessage::protocolId:
+        ctlMsg = dynamic_pointer_cast<ChangeToLeftMapMessage>(message);
         if(currentState == baf_idle && dofusBotParent->mapInfos) {
-            dofusBotParent->sendSelfMessage(make_shared<MoveToLeftSideMessage>());
+            dofusBotParent->sendSelfMessage(make_shared<MoveToLeftSideMessage>(ctlMsg->floor));
             changeMapId = dofusBotParent->mapInfos->leftMapId;
             currentState = baf_pathfindToSide;
         }
@@ -44,6 +52,9 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
                 currentState = baf_collect;
             else 
                 currentState = baf_idle;
+        } else if (currentState == baf_pathfindToMonster) {
+            sendGameRolePlayAttackMonsterRequestMessage(monsterId);
+            currentState = baf_idle;            
         }
         break;
 
@@ -72,6 +83,21 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
         if(currentState == baf_idle && dofusBotParent->getMapInfosAsRoleplay()) {
             if(!collectElementOfTypeId(dynamic_pointer_cast<CollectInteractiveTypeIdMessage>(message)->elementTypeId) && dynamic_pointer_cast<CollectInteractiveTypeIdMessage>(message)->elementTypeId == 17)
                 dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(53));
+        }
+        break;
+
+    case AttackMonsterGroupMessage::protocolId:
+        if(currentState == baf_idle && dofusBotParent->getMapInfosAsRoleplay()) {
+            monsterId = dynamic_pointer_cast<AttackMonsterGroupMessage>(message)->monsterGroupId;
+            sp<ActorData> monsterGroupData = dofusBotParent->getMapInfosAsRoleplay()->getMonsterGroup(monsterId);
+
+            if(monsterGroupData) {
+                dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(monsterGroupData->cellId));
+                currentState = baf_pathfindToMonster;
+            } else {
+                Logger::write("No monster of id " + to_string(monsterId), LOG_ERROR);
+                monsterId = 0;
+            }         
         }
         break;
     
@@ -135,6 +161,24 @@ bool BasicActionsFrame::sendInteractiveUseRequestMessage(int elementId, int skil
     iurMsg->skillInstanceUid = skillId;
 
     if(!sendPacket(iurMsg, dofusBotParent->gameServerInfos.connectionId)) {
+        Logger::write("Cannot send InteractiveUseRequestMessage.", LOG_ERROR);
+        return false;
+    }
+    
+    return true;
+}
+
+bool BasicActionsFrame::sendGameRolePlayAttackMonsterRequestMessage(double monsterGroupId) {
+    sp<GameRolePlayAttackMonsterRequestMessage> grpamrMsg(new GameRolePlayAttackMonsterRequestMessage());
+
+    if(!grpamrMsg) {
+        Logger::write("Cannot build InteractiveUseRequestMessage.", LOG_ERROR);
+        return false;
+    }
+
+    grpamrMsg->monsterGroupId = monsterGroupId;
+
+    if(!sendPacket(grpamrMsg, dofusBotParent->gameServerInfos.connectionId)) {
         Logger::write("Cannot send InteractiveUseRequestMessage.", LOG_ERROR);
         return false;
     }

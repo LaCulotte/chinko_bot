@@ -83,6 +83,7 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[AbstractGameActionFightTargetedAbilityMessage::protocolId]    = make_shared<AbstractGameActionFightTargetedAbilityMessage>;
     id_to_builder[GameActionFightCloseCombatMessage::protocolId]                = make_shared<GameActionFightCloseCombatMessage>;
     id_to_builder[GameActionFightSpellCastMessage::protocolId]                  = make_shared<GameActionFightSpellCastMessage>;
+    id_to_builder[GameActionFightNoSpellCastMessage::protocolId]                  = make_shared<GameActionFightNoSpellCastMessage>;
     id_to_builder[GameActionFightPointsVariationMessage::protocolId]            = make_shared<GameActionFightPointsVariationMessage>;
     id_to_builder[GameActionFightLifeAndShieldPointsLostMessage::protocolId]    = make_shared<GameActionFightLifeAndShieldPointsLostMessage>;
     id_to_builder[GameActionFightLifePointsLostMessage::protocolId]             = make_shared<GameActionFightLifePointsLostMessage>;

@@ -22,6 +22,11 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
     sp<MoveToCellMessage> mtcMsg;
     sp<ChangeToMapMessage> ctmMsg;
 
+    sp<MoveToTopSideMessage>    mttsMsg;
+    sp<MoveToBottomSideMessage> mtbsMsg;
+    sp<MoveToRightSideMessage>  mtrsMsg;
+    sp<MoveToLeftSideMessage>   mtlsMsg;
+
     switch (message->getId())
     {
     case SendPacketSuccessMessage::protocolId:
@@ -45,8 +50,7 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
             } else {
                 Logger::write("Pathfinding : " + to_string(dofusBotParent->playedCharacter->cellId) + " to " + to_string(mtcMsg->destinationCellId), LOG_INFO);
 
-                // TODO : séparer le findPath de Roleplay & de Fight
-                MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, mtcMsg->destinationCellId, !dofusBotParent->mapInfos->isFight(), true, !dofusBotParent->mapInfos->isFight());
+                MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, mtcMsg->destinationCellId);
                 
                 if(movPath.toKeyMovements().size() > 1) {
                     sendGameMapMovementRequestMessage(&movPath);
@@ -62,25 +66,29 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case MoveToTopSideMessage::protocolId:
-        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(dofusBotParent->mapInfos->upChangeMapCellsId)) {
+        mttsMsg = dynamic_pointer_cast<MoveToTopSideMessage>(message);
+        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(getCellsOnFloor(dofusBotParent->mapInfos->upChangeMapCellsId, mttsMsg->floor))) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
     
     case MoveToBottomSideMessage::protocolId:
-        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(dofusBotParent->mapInfos->downChangeMapCellsId)) {
+        mtbsMsg = dynamic_pointer_cast<MoveToBottomSideMessage>(message);
+        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(getCellsOnFloor(dofusBotParent->mapInfos->downChangeMapCellsId, mtbsMsg->floor))) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
     
     case MoveToRightSideMessage::protocolId:
-        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(dofusBotParent->mapInfos->rightChangeMapCellsId)) {
+        mtrsMsg = dynamic_pointer_cast<MoveToRightSideMessage>(message);
+        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(getCellsOnFloor(dofusBotParent->mapInfos->rightChangeMapCellsId, mtrsMsg->floor))) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
     
     case MoveToLeftSideMessage::protocolId:
-        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(dofusBotParent->mapInfos->leftChangeMapCellsId)) {
+        mtlsMsg = dynamic_pointer_cast<MoveToLeftSideMessage>(message);
+        if(dofusBotParent->mapInfos && !moveToRandomCellInVector(getCellsOnFloor(dofusBotParent->mapInfos->leftChangeMapCellsId, mtlsMsg->floor))) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
         break;
@@ -253,3 +261,14 @@ bool MovementFrame::sendChangeMapMessage(double mapId) {
 
 
 */
+
+vector<int> MovementFrame::getCellsOnFloor(vector<int> cells, int floor) {
+    vector<int> filtered_cells;
+
+    for(int cellId : cells) {
+        if(dofusBotParent->mapInfos->getCell(cellId)->floor == floor)
+            filtered_cells.push_back(cellId);
+    }
+    
+    return filtered_cells;
+}

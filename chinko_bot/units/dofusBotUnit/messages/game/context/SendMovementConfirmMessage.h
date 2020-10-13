@@ -17,7 +17,7 @@ public:
 	~SendMovementConfirmMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 10044;
+	static const unsigned int protocolId = 10045;
 };
 
 #endif

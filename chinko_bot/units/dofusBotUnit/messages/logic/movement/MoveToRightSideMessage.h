@@ -8,6 +8,8 @@ class MoveToRightSideMessage : public Message {
 public: 
 	// Constructor
 	MoveToRightSideMessage() {};
+	// Constructor with floor initialization
+	MoveToRightSideMessage(int floor) { this->floor = floor; };
 	// Copy constructor
 	MoveToRightSideMessage(const MoveToRightSideMessage& other) = default;
 
@@ -18,6 +20,8 @@ public:
 
 	virtual unsigned int getId() override { return protocolId; };
 	static const unsigned int protocolId = 10059;
+
+	int floor = 0;
 };
 
 #endif
