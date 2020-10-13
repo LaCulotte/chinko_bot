@@ -268,6 +268,9 @@ void MessagingUnit::tick(){
         if(processed || --message->lifetime <= 0){
             messagesToProcess.erase(messagesToProcess.begin() + i);
             i--;
+
+            if(message->lifetime <= 0)
+                Logger::write("Message of id " + to_string(message->getId()) + " was not processed.", LOG_WARNING);
         }
     }
 
