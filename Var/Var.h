@@ -63,12 +63,12 @@ void Var<T>::setValue(T value) {
 #include "Var_constructors.h"
 #include "Var_operators.h"
 
-template<>
+template<> inline
 std::string Var<std::string>::asString() const { 
     return Var<std::string>::getValue(*this); 
 }
 
-template<>
+template<> inline
 std::string Var<char>::asString() const { 
     return std::string((char *) this->value, 1); 
 }

@@ -31,7 +31,7 @@ sp<IVar> Var<T>::operator+(const IVar& other) {
             return nullptr;
     }
 }
-template<>
+template<> inline
 sp<IVar> Var<std::string>::operator+(const IVar& other) {
     switch (other.type) {
         OPERATION(+, CHAR, std::string, char, this, other)
@@ -60,7 +60,7 @@ sp<IVar> Var<T>::operator-(const IVar& other) {
             return nullptr;
     }
 }
-template<>
+template<> inline
 sp<IVar> Var<std::string>::operator-(const IVar& other) {
     throw std::string("Cannot substract type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
@@ -83,7 +83,7 @@ sp<IVar> Var<T>::operator*(const IVar& other) {
             return nullptr;
     }
 }
-template<>
+template<> inline
 sp<IVar> Var<std::string>::operator*(const IVar& other) {
     throw std::string("Cannot multiply type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
@@ -106,7 +106,7 @@ sp<IVar> Var<T>::operator/(const IVar& other) {
             return nullptr;
     }
 }
-template<>
+template<> inline
 sp<IVar> Var<std::string>::operator/(const IVar& other) {
     throw std::string("Cannot divide type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
@@ -128,12 +128,12 @@ sp<IVar> Var<T>::operator%(const IVar& other) {
             return nullptr;
     }
 }
-template<>
+template<> inline
 sp<IVar> Var<std::string>::operator%(const IVar& other) {
     throw std::string("Cannot modulo type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
 }
-template<>
+template<> inline
 sp<IVar> Var<double>::operator%(const IVar& other) {
     throw std::string("Cannot modulo type " + Var<double>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
@@ -155,12 +155,12 @@ sp<IVar> Var<T>::operator&(const IVar& other) {
             return nullptr;
     }
 }
-template<>
+template<> inline
 sp<IVar> Var<std::string>::operator&(const IVar& other) {
     throw std::string("Cannot and type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
 }
-template<>
+template<> inline
 sp<IVar> Var<double>::operator&(const IVar& other) {
     throw std::string("Cannot and type " + Var<double>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
@@ -182,12 +182,12 @@ sp<IVar> Var<T>::operator|(const IVar& other) {
             return nullptr;
     }
 }
-template<>
+template<> inline
 sp<IVar> Var<std::string>::operator|(const IVar& other) {
     throw std::string("Cannot or type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
 }
-template<>
+template<> inline
 sp<IVar> Var<double>::operator|(const IVar& other) {
     throw std::string("Cannot or type " + Var<double>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
@@ -209,12 +209,12 @@ sp<IVar> Var<T>::operator^(const IVar& other) {
             return nullptr;
     }
 }
-template<>
+template<> inline
 sp<IVar> Var<std::string>::operator^(const IVar& other) {
     throw std::string("Cannot xor type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
 }
-template<>
+template<> inline
 sp<IVar> Var<double>::operator^(const IVar& other) {
     throw std::string("Cannot xor type " + Var<double>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return nullptr;
@@ -236,7 +236,7 @@ IVar& Var<T>::operator+=(const IVar& other) {
             return *this;
     }
 }
-template<>
+template<> inline
 IVar& Var<std::string>::operator+=(const IVar& other) {
     switch (other.type) {
         ASSIGN_OPERATION(+, CHAR, std::string, char, this, other)
@@ -265,7 +265,7 @@ IVar& Var<T>::operator-=(const IVar& other) {
             return *this;
     }
 }
-template<>
+template<> inline
 IVar& Var<std::string>::operator-=(const IVar& other) {
     throw std::string("Cannot substract type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
@@ -288,7 +288,7 @@ IVar& Var<T>::operator*=(const IVar& other) {
             return *this;
     }
 }
-template<>
+template<> inline
 IVar& Var<std::string>::operator*=(const IVar& other) {
     throw std::string("Cannot multiply type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
@@ -311,7 +311,7 @@ IVar& Var<T>::operator/=(const IVar& other) {
             return *this;
     }
 }
-template<>
+template<> inline
 IVar& Var<std::string>::operator/=(const IVar& other) {
     throw std::string("Cannot divide type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
@@ -333,12 +333,12 @@ IVar& Var<T>::operator%=(const IVar& other) {
             return *this;
     }
 }
-template<>
+template<> inline
 IVar& Var<std::string>::operator%=(const IVar& other) {
     throw std::string("Cannot modulo type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
 }
-template<>
+template<> inline
 IVar& Var<double>::operator%=(const IVar& other) {
     throw std::string("Cannot modulo type " + Var<double>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
@@ -360,12 +360,12 @@ IVar& Var<T>::operator&=(const IVar& other) {
             return *this;
     }
 }
-template<>
+template<> inline
 IVar& Var<std::string>::operator&=(const IVar& other) {
     throw std::string("Cannot and type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
 }
-template<>
+template<> inline
 IVar& Var<double>::operator&=(const IVar& other) {
     throw std::string("Cannot and type " + Var<double>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
@@ -387,12 +387,12 @@ IVar& Var<T>::operator|=(const IVar& other) {
             return *this;
     }
 }
-template<>
+template<> inline
 IVar& Var<std::string>::operator|=(const IVar& other) {
     throw std::string("Cannot or type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
 }
-template<>
+template<> inline
 IVar& Var<double>::operator|=(const IVar& other) {
     throw std::string("Cannot or type " + Var<double>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
@@ -414,12 +414,12 @@ IVar& Var<T>::operator^=(const IVar& other) {
             return *this;
     }
 }
-template<>
+template<> inline
 IVar& Var<std::string>::operator^=(const IVar& other) {
     throw std::string("Cannot xor type " + Var<std::string>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
 }
-template<>
+template<> inline
 IVar& Var<double>::operator^=(const IVar& other) {
     throw std::string("Cannot xor type " + Var<double>::templateToString() + " with type " + IVar::typeToString(other.type) + ".");
     return *this;
@@ -445,7 +445,7 @@ bool Var<T>::operator==(const IVar& other) {
 
     return false;
 }
-template<>
+template<> inline
 bool Var<std::string>::operator==(const IVar& other) {
     switch (other.type) {
         COMPARISON(==, STRING, std::string, std::string, this, other)
@@ -477,7 +477,7 @@ bool Var<T>::operator<=(const IVar& other) {
 
     return false;
 }
-template<>
+template<> inline
 bool Var<std::string>::operator<=(const IVar& other) {
     switch (other.type) {
         COMPARISON(<=, STRING, std::string, std::string, this, other)
@@ -509,7 +509,7 @@ bool Var<T>::operator>=(const IVar& other) {
 
     return false;
 }
-template<>
+template<> inline
 bool Var<std::string>::operator>=(const IVar& other) {
     switch (other.type) {
         COMPARISON(>=, STRING, std::string, std::string, this, other)
@@ -541,7 +541,7 @@ bool Var<T>::operator>(const IVar& other) {
 
     return false;
 }
-template<>
+template<> inline
 bool Var<std::string>::operator>(const IVar& other) {
     switch (other.type) {
         COMPARISON(>, STRING, std::string, std::string, this, other)
@@ -573,7 +573,7 @@ bool Var<T>::operator<(const IVar& other) {
 
     return false;
 }
-template<>
+template<> inline
 bool Var<std::string>::operator<(const IVar& other) {
     switch (other.type) {
         COMPARISON(<, STRING, std::string, std::string, this, other)

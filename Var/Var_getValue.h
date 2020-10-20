@@ -40,7 +40,7 @@ T Var<T>::getValue(const IVar& var) {
     return *((T*) var.value);
 }
 
-template<>
+template<> inline
 std::string Var<std::string>::getValue(const IVar& var) {
     switch (var.type)
     {
@@ -102,7 +102,7 @@ T Var<T>::getValue(const IVar* var) {
     return *((T*) var->value);
 }
 
-template<>
+template<> inline
 std::string Var<std::string>::getValue(const IVar* var) {
     switch (var->type)
     {
@@ -164,7 +164,7 @@ T Var<T>::getValue(sp<IVar> var) {
     return *((T*) var->value);
 }
 
-template<>
+template<> inline
 std::string Var<std::string>::getValue(sp<IVar> var) {
     switch (var->type)
     {
