@@ -24,6 +24,8 @@ public:
 
     // Lauches the listening thread
     sp<thread> beginListening();
+    // Waits until the listening server thread ends
+    void waitThreadEnd() { listeningThread->join(); }
     // Stops the listening thread
     bool stop() { run = false; listeningThread->join(); listeningThread.reset(); return true; };
 

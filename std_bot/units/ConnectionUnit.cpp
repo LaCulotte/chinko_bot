@@ -98,9 +98,15 @@ void ConnectionUnit::disconnect(int connectionId){
 }
 
 void ConnectionUnit::tick(){
+    vector<int> connectionsToRemove;
+
     // Before anything, retreives one message from every connections and send them to the correct destination
     for(auto it = connections.begin(); it != connections.end(); it++){
         sp<ConnectionMessage> message = it->second->readMessage();
+        
+        if(!it->second->isConnected())
+            connectionsToRemove.push_back(it->first);
+
         if(!message)
             continue;
         
@@ -116,6 +122,12 @@ void ConnectionUnit::tick(){
                 connectionId_to_interfaceId.erase(it->first);
             }
         }
+    }
+
+    for (int connectionId : connectionsToRemove) {
+        auto connectionIt = connections.find(connectionId);
+        if(connectionIt != connections.end()) 
+            connections.erase(connectionIt);
     }
 
     // Proceeds to the usual MessagingUnit's tick

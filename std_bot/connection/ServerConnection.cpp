@@ -32,6 +32,9 @@ void ServerConnection::onConnection() {
     // Sets connection's address
     connectedAddress = ipstr;
 
+    // Set connected
+    connected = true;
+
     // Logs address
     Logger::write("Received connection from : " + connectedAddress + ".", LOG_INFO);
 }

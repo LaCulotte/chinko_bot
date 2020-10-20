@@ -26,6 +26,8 @@ public:
     // Remote initialization of the connection's socket
     void setSocket(int sock) { this->sock = sock; connected = isConnected(); };
 
+    std::string getConnectedAddress() { return connectedAddress; }
+
     // Returns true if there is messages to read
     virtual bool isThereMessage() override;
 

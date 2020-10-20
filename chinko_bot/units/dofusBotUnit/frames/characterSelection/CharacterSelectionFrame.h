@@ -15,6 +15,9 @@
 #include "SwitchContextFrame.h"
 #include "BeginGameContextRequestMessage.h"
 
+#include "QueryCharacterSelectionMessage.h"
+#include "QueryServerSelectionMessage.h"
+
 #include "CharactersListRequestMessage.h"
 #include "BasicCharactersListMessage.h"
 #include "CharactersListMessage.h"

@@ -184,6 +184,8 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         this->killBot();
         break;
 
+    // TODO : serverListMessage
+
     // TODO : A mettre dans le GameServerConnectionFrame ? -> Lancer GameServerConnectionFrame à la reception de IdentificationSuccessMessage
     case SelectedServerDataExtendedMessage::protocolId:
         // Redirects to the GameServer

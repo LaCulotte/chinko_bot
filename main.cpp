@@ -3,7 +3,8 @@
 #include "APIUnit.h"
 
 #include "AuthentificationFrame.h"
-#include "TerminalPromptFrame.h"
+// #include "TerminalPromptFrame.h"
+#include "APIBotConnectionFrame.h"
 #include "BasicDofusBotFrame.h"
 #include "TimeFrame.h"
 // #include "BasicActionsFrame.h"
@@ -28,10 +29,13 @@ int main(){
     dbu->addFrame(make_shared<FightFrame>());
     dbu->initFrames();
     cu->initFrames();
-    au->addFrame(make_shared<TerminalPromptFrame>());
+    au->addFrame(make_shared<APIBotConnectionFrame>());
 
     MessagingUnit::link(cu, dbu);
     MessagingUnit::link(au, dbu);
+    MessagingUnit::link(cu, au);
+
+    au->launchListeningServer();
 
     cu->launch().get();
     dbu->launch().get();

@@ -17,6 +17,7 @@
 #include "ConnectionIdMessage.h"
 #include "DisconnectRequestMessage.h"
 #include "DisconnectedMessage.h"
+#include "AddConnectionMessage.h"
 
 // Frame that implements basic ConnectionUnits action such as connection to a server or sending a message
 class BasicConnectionUnitFrame : public Frame {

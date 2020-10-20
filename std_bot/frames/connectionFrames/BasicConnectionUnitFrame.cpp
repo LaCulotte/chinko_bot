@@ -16,6 +16,7 @@ bool BasicConnectionUnitFrame::computeMessage(sp<Message> message, int srcId) {
         return false;
 
     // Variables for casting the message
+    sp<AddConnectionMessage> acMsg;
     sp<SendPacketRequestMessage> sprMsg;
     sp<GetConnectionFocusRequestMessage> gcfrMsg;
     sp<ConnectionRequestMessage> crMsg;
@@ -180,6 +181,11 @@ bool BasicConnectionUnitFrame::computeMessage(sp<Message> message, int srcId) {
             parent->sendMessage(make_shared<DisconnectedMessage>(disconnectIds), srcId);
         }
 
+        return true;
+
+    case AddConnectionMessage::protocolId:
+        acMsg = dynamic_pointer_cast<AddConnectionMessage>(message);
+        connectionParent->addConnection(acMsg->newConnection, srcId);
         return true;
     }
 

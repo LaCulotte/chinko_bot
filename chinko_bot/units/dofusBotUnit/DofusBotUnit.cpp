@@ -1,4 +1,5 @@
 #include "DofusBotUnit.h"
+#include "Var.h"
 
 int DofusBotUnit::sendPacket(sp<ConnectionMessage> message, int connectionId) {
 

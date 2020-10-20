@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unordered_map>
+#include <string>
 extern int yyerror(const char *s);
 extern int error;
 

@@ -52,7 +52,9 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
             apiUnitId = parent->getMessageInterfaceOutId<APIUnit>();
             if(apiUnitId != -1) {
                 // Sends the character list to the APIUnit
-                parent->sendMessage(message, apiUnitId);
+                sp<BasicCharactersListMessage> bclMsg = dynamic_pointer_cast<BasicCharactersListMessage>(message);
+                sp<QueryCharacterSelectionMessage> qcsMsg = make_shared<QueryCharacterSelectionMessage>(bclMsg->characters);
+                parent->sendMessage(qcsMsg, apiUnitId);
             } else {
                 // If there is not APIUnit, logs it and kills the bot
                 Logger::write("No APIUnit : cannot select character", LOG_ERROR);
