@@ -1,5 +1,8 @@
 #include "AuthentificationFrame.h"
 
+#include "AuthentificationFailureMessage.h"
+#include "APIClientDisconnectedMessage.h"
+
 AuthentificationFrame::AuthentificationFrame() : PacketSendingDofusBotFrame() {
     manager = make_shared<AuthentificationManager>();
 }
@@ -31,7 +34,8 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     sp<IdentificationMessage> idMsg;
     sp<ClientKeyMessage> ckMsg;
     sp<LoginQueueStatusMessage> lqsMsg;
-    sp<SelectedServerDataExtendedMessage> ssdeMsg;
+    sp<ServersListMessage> slMsg;
+    sp<SelectedServerDataMessage> ssdMsg;
 
     sp<IdentificationFailedMessage> ifMsg;
     sp<IdentificationFailedForBadVersionMessage> iffbvMsg;
@@ -51,16 +55,20 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
             // Sets credentials
             manager->setCredentials(baMsg->username, baMsg->password);
-            if(manager->beginAuthentification(baMsg->serverAdress, baMsg->port))
+            if(manager->beginAuthentification(baMsg->serverAdress, baMsg->port, baMsg->autoConnect))
                 // If the manager could begin the authentification, changes the frame's state
                 currentState = begin_authentification;
+            else 
+                dofusBotParent->sendMessage(make_shared<AuthentificationFailureMessage>("Missing boUnit links."), dofusBotParent->getAPIUnitId());
 
         } else {
             Logger::write("Cannot begin authentification : authentification has already begun.", LOG_ERROR);
+            dofusBotParent->sendMessage(make_shared<AuthentificationFailureMessage>("Wrong bot status."), dofusBotParent->getAPIUnitId());
         }
 
         break;
 
+    // TODO : à voir si nécéssaire / si on peut faire mieux
     case RetryAuthentificationMessage::protocolId:
         // Message that requests to retry the authentification
         if(currentState == af_idle) {
@@ -86,7 +94,7 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
     case ConnectionSuccessMessage::protocolId:
         // Successfully connected to the authentification server
-        if(currentState = begin_authentification) {
+        if(currentState == begin_authentification) {
             csMsg = dynamic_pointer_cast<ConnectionSuccessMessage>(message);
             Logger::write("Connected to the dofus authentification server.", LOG_INFO);
 
@@ -106,6 +114,8 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         if(currentState == begin_authentification) {
             cfMsg = dynamic_pointer_cast<ConnectionFailureMessage>(message);
             Logger::write("Could not make the connect to dofus authentification server. Reason : " + cfMsg->reason, LOG_ERROR);
+
+            dofusBotParent->sendMessage(make_shared<AuthentificationFailureMessage>("Could not connect to Dofus' authentification server."), dofusBotParent->getAPIUnitId());
 
             currentState = af_idle;
             break;
@@ -128,10 +138,10 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
             Logger::write("HelloConnectMessage received.", LOG_INFO);
 
             // Sends IdentificationMessage and ClientKeyMessage
-            if(sendIdentificationMessage(hcMsg)) {
+            if(sendIdentificationMessage(hcMsg) && sendClientKeyMessage()) {
                 currentState = snd_IdentificationMessage;
-
-                sendClientKeyMessage();
+            } else {
+                dofusBotParent->sendMessage(make_shared<AuthentificationFailureMessage>("Bot could not send indentification messages"), dofusBotParent->getAPIUnitId());
             }
         } else {
             Logger::write("Received HelloConnectMessage when not supposed to.", LOG_WARNING);
@@ -181,19 +191,34 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
     case IdentificationFailedMessage::protocolId:
         ifMsg = dynamic_pointer_cast<IdentificationFailedMessage>(message);
         Logger::write("Identification failed. Reason id : " + to_string(ifMsg->reason), LOG_ERROR);
-        this->killBot();
+
+        dofusBotParent->sendMessage(make_shared<AuthentificationFailureMessage>("Identification failed. Reason id : " + to_string(ifMsg->reason) + "."), dofusBotParent->getAPIUnitId());
         break;
 
     // TODO : serverListMessage
+    case ServersListMessage::protocolId:
+        if(dofusBotParent->getAPIUnitId() == -1) {
+            Logger::write("Cannot select server : no APIUnit linked to DofusBotUnit.", LOG_WARNING);
+            break;
+        }
+
+        slMsg = dynamic_pointer_cast<ServersListMessage>(message);
+        dofusBotParent->sendMessage(make_shared<QueryServerSelectionMessage>(slMsg->servers), dofusBotParent->getAPIUnitId());
+        break;
+
+    case ServerSelectionMessage::protocolId:
+        dofusBotParent->sendPacket(dynamic_pointer_cast<ServerSelectionMessage>(message));
+        break;
 
     // TODO : A mettre dans le GameServerConnectionFrame ? -> Lancer GameServerConnectionFrame à la reception de IdentificationSuccessMessage
     case SelectedServerDataExtendedMessage::protocolId:
+    case SelectedServerDataMessage::protocolId:
         // Redirects to the GameServer
-        ssdeMsg = dynamic_pointer_cast<SelectedServerDataExtendedMessage>(message);
-        Logger::write("Selected server : " + ssdeMsg->address, LOG_INFO);
+        ssdMsg = dynamic_pointer_cast<SelectedServerDataMessage>(message);
+        Logger::write("Selected server : " + ssdMsg->address, LOG_INFO);
 
         // Gets ticket 
-        if(!manager->decodeAndSetTicket(string(ssdeMsg->ticket.begin(), ssdeMsg->ticket.end()))){
+        if(!manager->decodeAndSetTicket(string(ssdMsg->ticket.begin(), ssdMsg->ticket.end()))){
             Logger::write("Error on AES decoding.", LOG_ERROR);
             this->killBot();
             break;
@@ -202,9 +227,21 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
         // Removes this frame and replaces it with a GameServerConnectionFrame
         parent->addFrame(make_shared<GameServerConnectionFrame>(manager));
         // Requests the Beginning of the GameServer connection
-        parent->sendSelfMessage(make_shared<BeginGameServerConnectionMessage>(ssdeMsg));
+        parent->sendSelfMessage(make_shared<BeginGameServerConnectionMessage>(ssdMsg));
         parent->removeFrame(this);
 
+        break;
+
+    // TODO in reset : manager->interruptAuthentification
+    case APIClientDisconnectedMessage::protocolId:
+        Logger::write("temp");
+        if(currentState != af_idle) {
+            Logger::write("Client disconnected during authentification : bot will be reset.", LOG_WARNING);
+
+            if(manager)
+                manager->interruptAuthentification();
+            dofusBotParent->resetNextTick();
+        }
         break;
 
     default:

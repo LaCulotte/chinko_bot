@@ -5,6 +5,7 @@
 #include "AuthentificationFrame.h"
 // #include "TerminalPromptFrame.h"
 #include "APIBotConnectionFrame.h"
+#include "APIClientConnectionFrame.h"
 #include "BasicDofusBotFrame.h"
 #include "TimeFrame.h"
 // #include "BasicActionsFrame.h"
@@ -23,13 +24,14 @@ int main(){
     sp<DofusBotUnit> dbu (new DofusBotUnit());
     sp<APIUnit> au(new APIUnit());
 
-    dbu->addFrame(make_shared<TimeFrame>());
-    dbu->addFrame(make_shared<AuthentificationFrame>());
-    dbu->addFrame(make_shared<BasicDofusBotFrame>());
-    dbu->addFrame(make_shared<FightFrame>());
+    // dbu->addFrame(make_shared<TimeFrame>());
+    // dbu->addFrame(make_shared<AuthentificationFrame>());
+    // dbu->addFrame(make_shared<BasicDofusBotFrame>());
+    // dbu->addFrame(make_shared<FightFrame>());
     dbu->initFrames();
     cu->initFrames();
     au->addFrame(make_shared<APIBotConnectionFrame>());
+    au->addFrame(make_shared<APIClientConnectionFrame>());
 
     MessagingUnit::link(cu, dbu);
     MessagingUnit::link(au, dbu);
@@ -41,8 +43,8 @@ int main(){
     dbu->launch().get();
     au->launch().get();
 
-    sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage(USERNAME, PASSWORD));
-    dbu->sendSelfMessage(baMsg);
+    // sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage(USERNAME, PASSWORD, false));
+    // dbu->sendSelfMessage(baMsg);
 
     // usleep(1000 * 1000*1000);
     while(true);

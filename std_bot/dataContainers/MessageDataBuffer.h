@@ -4,7 +4,7 @@
 #include "DataBuffer.h"
 #include "Logger.h"
 
-#define uchar unsigned char
+typedef unsigned char uchar;
 
 class MessageDataBuffer : public DataBuffer<uchar> {
 public:

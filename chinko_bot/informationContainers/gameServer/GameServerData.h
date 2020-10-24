@@ -20,7 +20,7 @@ public:
     // Server address
     std::string adress;
     // Game Server connection Id
-    int connectionId;
+    int connectionId = -1;
 
     // Miscallenious informations
     // bool isMonoAccount;

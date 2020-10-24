@@ -36,9 +36,12 @@ bool APIConnection::serializePrefix(sp<MessageDataBuffer> data, sp<PrefixedMessa
         return false;
     }
 
+    int length = data->size();
+
+    data->cursor_reset();
     data->insertDataSpace(6);
     data->writeShort(message->getId());
-    data->writeInt(message->getLength());
+    data->writeInt(length);
 
     return true;
 }

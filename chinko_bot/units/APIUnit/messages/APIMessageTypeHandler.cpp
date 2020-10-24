@@ -2,7 +2,10 @@
 #include "APIMessageTypeIncludes.h"
 
 APIMessageTypeHandler::APIMessageTypeHandler() {
-    id_to_builder[APIHelloMessage::protocolId] = make_shared<APIHelloMessage>;
+    id_to_builder[APIHelloMessage::protocolId]                  = make_shared<APIHelloMessage>;
+    id_to_builder[BeginAuthentificationMessage::protocolId]     = make_shared<BeginAuthentificationMessage>;
+    id_to_builder[AuthentificationFailureMessage::protocolId]   = make_shared<AuthentificationFailureMessage>;
+    id_to_builder[ServerSelectionListMessage::protocolId]       = make_shared<ServerSelectionListMessage>;
 }
 
 sp<Message> APIMessageTypeHandler::generateMessageById(int id) {

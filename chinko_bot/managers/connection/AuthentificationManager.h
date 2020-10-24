@@ -51,7 +51,7 @@ public:
     // TODO : renommer fonction : retryAuthentification
     bool beginAuthentification();
     // Begins authentification. 'server' and 'port' are a dofus' authentification server. Credentials must be set.
-    bool beginAuthentification(string server, int port);
+    bool beginAuthentification(string server, int port, bool autoConnect);
     // TODO : remove
     // Stops authentification : not used
     void interruptAuthentification();

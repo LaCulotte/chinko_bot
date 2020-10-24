@@ -12,7 +12,8 @@
 #include "ConnectionFailureMessage.h"
 #include "BeginGameServerConnectionMessage.h"
 
-// #include "S"
+#include "ServersListMessage.h"
+#include "ServerSelectionMessage.h"
 #include "SelectedServerDataExtendedMessage.h"
 #include "CredentialsAcknowledgementMessage.h"
 #include "IdentificationSuccessMessage.h"

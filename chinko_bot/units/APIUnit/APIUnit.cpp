@@ -28,8 +28,9 @@ void APIUnit::tick() {
     if(listeningServer) {
         sp<ServerConnection> incomingConnection = listeningServer->getLastConnection();
         if(dynamic_pointer_cast<APIServerConnection>(incomingConnection)) {
-            if(connectionUnitId != -1) {
+            if(getConnectionUnitId() != -1) {
                 sendMessage(make_shared<AddConnectionMessage>(incomingConnection), connectionUnitId);
+                this->waitsForAPIConnectionId = true;
 
                 incomingConnection->sendMessage(make_shared<APIHelloMessage>());
             }
@@ -39,4 +40,31 @@ void APIUnit::tick() {
     }
 
     MessagingUnit::tick();
+}
+
+void APIUnit::setAPIConnectionId(int apiConnectionId) {
+    if(waitsForAPIConnectionId) {
+        this->apiConnectionId = apiConnectionId;
+        waitsForAPIConnectionId = false;
+    }
+}
+
+int APIUnit::getConnectionUnitId() {
+    if(connectionUnitId == -1) {
+        connectionUnitId = this->getMessageInterfaceOutId<ConnectionUnit>();
+        if(connectionUnitId == -1)
+            Logger::write("No connectionUnit linked to APIUnit.", LOG_WARNING);
+    }
+
+    return connectionUnitId;
+}
+
+int APIUnit::getDofusBotUnitId() {
+    if(dofusBotUnitId == -1) {
+        dofusBotUnitId = this->getMessageInterfaceOutId<DofusBotUnit>();
+        if(dofusBotUnitId == -1)
+            Logger::write("No dofusBotUnit linked to APIUnit.", LOG_WARNING);
+    }
+
+    return dofusBotUnitId;
 }

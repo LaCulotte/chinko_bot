@@ -2,6 +2,7 @@
 #define APIUNIT_H
 
 #include "MessagingUnit.h"
+#include "DofusBotUnit.h"
 #include "TerminalPromptFrame.h"
 
 #include "APIListeningServer.h"
@@ -31,12 +32,21 @@ public:
 
     virtual void tick() override;
 
-    int botUnitId = -1;
+    int getConnectionUnitId();
+    int getDofusBotUnitId();
+    int getAPIConnectionId() { return apiConnectionId; };
+    void setAPIConnectionId(int apiConnectionId);
+    void resetAPIConnectionId() { apiConnectionId = -1; };
+
 
 protected:
     sp<APIListeningServer> listeningServer; 
 
     int connectionUnitId = -1;
+    int dofusBotUnitId = -1;
+
+    bool waitsForAPIConnectionId = false;
+    int apiConnectionId = -1;
 };
 
 #endif

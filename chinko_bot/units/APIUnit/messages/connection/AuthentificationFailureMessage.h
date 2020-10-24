@@ -22,9 +22,9 @@ public:
 	static const unsigned int protocolId = 11003;
 
 	// Turns raw data into the usable data (message's attributes)
-	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override{ return true; };
+	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override{ reason = input->readUTF(); return true; };
 	// Turns the message's attributes into raw data
-	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override{ return true; };
+	virtual bool serialize(shared_ptr<MessageDataBuffer> output) override{ output->writeUTF(reason); return true; };
 
     string reason;
 

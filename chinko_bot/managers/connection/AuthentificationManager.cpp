@@ -31,8 +31,8 @@ bool AuthentificationManager::beginAuthentification() {
     }
 
     // Get connectionUnit's ID
-    bot->connectionUnitId = bot->getMessageInterfaceOutId<ConnectionUnit>();
-    if(bot->connectionUnitId == -1) {
+    // bot->getConnectionUnitId() = bot->getMessageInterfaceOutId<ConnectionUnit>();
+    if(bot->getConnectionUnitId() == -1) {
         // Error if there is no ConnectionUnit attached to the bot
         Logger::write("Cannot begin authentification : there is no ConnectionUnit.", LOG_ERROR);
         return false;
@@ -48,14 +48,14 @@ bool AuthentificationManager::beginAuthentification() {
     sp<DofusClientConnection> connection(new DofusClientConnection());
 
     // Asks the ConnectionUnit to manage the new connection and connect it to the authentification server
-    bot->sendMessage(make_shared<ConnectionRequestMessage>(connection, authentificationServerAddress, authentificationServerPort), bot->connectionUnitId);
+    bot->sendMessage(make_shared<ConnectionRequestMessage>(connection, authentificationServerAddress, authentificationServerPort), bot->getConnectionUnitId());
     // Disables auto connect to avoid being "softlocked" to a server that we cannot connect to
     this->autoConnect = false;
 
     return true;
 }
 
-bool AuthentificationManager::beginAuthentification(string address, int port) {
+bool AuthentificationManager::beginAuthentification(string address, int port, bool autoConnect) {
     // Checks if the bot is launched
     if(!bot) {
         Logger::write("Cannot begin authentification if no BotUnit was linked to the AuthentificationManager.", LOG_WARNING);
@@ -69,8 +69,7 @@ bool AuthentificationManager::beginAuthentification(string address, int port) {
     }
 
     // Get connectionUnit's ID
-    bot->connectionUnitId = bot->getMessageInterfaceOutId<ConnectionUnit>();
-    if(bot->connectionUnitId == -1) {
+    if(bot->getConnectionUnitId() == -1) {
         // Error if there is no ConnectionUnit attached to the bot
         Logger::write("Cannot begin authentification : there is no ConnectionUnit.", LOG_ERROR);
         return false;
@@ -80,11 +79,12 @@ bool AuthentificationManager::beginAuthentification(string address, int port) {
     sp<DofusClientConnection> connection(new DofusClientConnection());
 
     // Asks the ConnectionUnit to manage the new connection and connect it to the authentification server
-    bot->sendMessage(make_shared<ConnectionRequestMessage>(connection, address, port), bot->connectionUnitId);
+    bot->sendMessage(make_shared<ConnectionRequestMessage>(connection, address, port), bot->getConnectionUnitId());
     
     // Saves the authentification server's address and port
     authentificationServerAddress = address;
     authentificationServerPort = port;
+    this->autoConnect = autoConnect;
 
     return true;
 }
@@ -207,7 +207,9 @@ sp<ClientKeyMessage> AuthentificationManager::generateClientKeyMessage() {
 
 // TODO : remove
 void AuthentificationManager::interruptAuthentification() {
-    bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
+    if(dofusConnectionId != -1)
+        bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->getConnectionUnitId());
+        
     dofusConnectionId = -1;
     username = "None";
     password = "None";
@@ -251,18 +253,18 @@ bool AuthentificationManager::connectGameServer(string address, int port) {
     }
 
     // Disconnects from the authentification server
-    bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
+    bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->getConnectionUnitId());
 
     // Asks for a connection to the game server
     sp<DofusClientConnection> gameServerConnection (new DofusClientConnection());
-    bot->sendMessage(make_shared<ConnectionRequestMessage>(gameServerConnection, address, port), bot->connectionUnitId);
+    bot->sendMessage(make_shared<ConnectionRequestMessage>(gameServerConnection, address, port), bot->getConnectionUnitId());
 
     return true;
 }
 
 // TODO : remove
 void AuthentificationManager::interruptConnectGameServer() {
-    bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->connectionUnitId);
+    bot->sendMessage(make_shared<DisconnectRequestMessage>((vector<int>) {dofusConnectionId}), bot->getConnectionUnitId());
     dofusConnectionId = -1;
     clientTicket = "";
 }
@@ -289,7 +291,7 @@ sp<CheckIntegrityMessage> AuthentificationManager::generateCheckIntegrityMessage
 // TODO : remove
 bool AuthentificationManager::sendCharactersListRequestMessage() {
     sp<CharactersListRequestMessage> clrMsg(new CharactersListRequestMessage());
-    return bot->sendMessage(make_shared<SendPacketRequestMessage>(clrMsg, dofusConnectionId), bot->connectionUnitId);
+    return bot->sendMessage(make_shared<SendPacketRequestMessage>(clrMsg, dofusConnectionId), bot->getConnectionUnitId());
 }
 
 // TODO : remove
@@ -297,5 +299,5 @@ bool AuthentificationManager::sendCharacterSelectionMessage(uint64_t id) {
     sp<CharacterSelectionMessage> csMsg(new CharacterSelectionMessage());
     csMsg->id = id;
     
-    return bot->sendMessage(make_shared<SendPacketRequestMessage>(csMsg, dofusConnectionId), bot->connectionUnitId);
+    return bot->sendMessage(make_shared<SendPacketRequestMessage>(csMsg, dofusConnectionId), bot->getConnectionUnitId());
 }

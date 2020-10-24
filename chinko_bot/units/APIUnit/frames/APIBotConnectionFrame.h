@@ -25,7 +25,6 @@ public :
 
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
-    // virtual bool setParent(MessagingUnit* parent) override;
 protected:
     unordered_map<int, string> breed_idToString = {    {1, "Feca"}, {2, "Osamodas"},
                                                         {3, "Enutrof"}, {4, "Sram"},

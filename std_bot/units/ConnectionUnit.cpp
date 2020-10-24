@@ -5,6 +5,8 @@ ConnectionUnit::ConnectionUnit() : MessagingUnit() {
 }
 
 void ConnectionUnit::initFrames(){
+    MessagingUnit::initFrames();
+    
     addFrame(make_shared<BasicConnectionUnitFrame>());
 }
 
@@ -86,13 +88,21 @@ void ConnectionUnit::disconnect(int connectionId){
 
         // Removes the connection
         connections.erase(connectionIt);
-        if(connectionId_to_interfaceId.find(connectionId) != connectionId_to_interfaceId.end())
+        if(connectionId_to_interfaceId.find(connectionId) != connectionId_to_interfaceId.end()) {
+            // TODO : faire ca BCP mieux -> à un endroit où on est sûr que ttes les déconnection "passent"
+            sendMessage(make_shared<DisconnectedMessage>(vector<int>({connectionId})), connectionId_to_interfaceId.find(connectionId)->second);
             connectionId_to_interfaceId.erase(connectionId); 
+        }
         
+        vector<int> ids_to_remove;
         //Removes the connection from the prefferred destination connections
         for(auto it = interfaceId_to_preferredConnectionId.begin(); it != interfaceId_to_preferredConnectionId.end(); it++){
-            if(it->second = connectionId)
-                interfaceId_to_preferredConnectionId.erase(it);
+            if(it->second == connectionId) 
+                ids_to_remove.push_back(it->first);
+        }
+
+        for(int id : ids_to_remove) {
+            interfaceId_to_preferredConnectionId.erase(id);
         }
     }
 }
@@ -104,8 +114,9 @@ void ConnectionUnit::tick(){
     for(auto it = connections.begin(); it != connections.end(); it++){
         sp<ConnectionMessage> message = it->second->readMessage();
         
-        if(!it->second->isConnected())
+        if(!it->second->isConnected()) {
             connectionsToRemove.push_back(it->first);
+        }
 
         if(!message)
             continue;
@@ -125,9 +136,7 @@ void ConnectionUnit::tick(){
     }
 
     for (int connectionId : connectionsToRemove) {
-        auto connectionIt = connections.find(connectionId);
-        if(connectionIt != connections.end()) 
-            connections.erase(connectionIt);
+        this->disconnect(connectionId);
     }
 
     // Proceeds to the usual MessagingUnit's tick

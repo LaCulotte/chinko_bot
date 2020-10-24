@@ -161,7 +161,7 @@ bool BasicConnectionUnitFrame::computeMessage(sp<Message> message, int srcId) {
             }
 
             // Sends that the connections has been disconnected
-            parent->sendMessage(make_shared<DisconnectedMessage>(drMsg->connectionIds), srcId);
+            // parent->sendMessage(make_shared<DisconnectedMessage>(drMsg->connectionIds), srcId);
         } else {
             // Ids of the connections that will be disconnected
             vector<int> disconnectIds;
@@ -177,15 +177,16 @@ bool BasicConnectionUnitFrame::computeMessage(sp<Message> message, int srcId) {
             for(int id : disconnectIds)
                 connectionParent->disconnect(id);
 
-            // Sends the disconnected connections
-            parent->sendMessage(make_shared<DisconnectedMessage>(disconnectIds), srcId);
+            // // Sends the disconnected connections
+            // parent->sendMessage(make_shared<DisconnectedMessage>(disconnectIds), srcId);
         }
 
         return true;
 
     case AddConnectionMessage::protocolId:
         acMsg = dynamic_pointer_cast<AddConnectionMessage>(message);
-        connectionParent->addConnection(acMsg->newConnection, srcId);
+        int newId = connectionParent->addConnection(acMsg->newConnection, srcId);
+        parent->sendMessage(make_shared<ConnectionIdMessage>(vector<int>({newId})), srcId);
         return true;
     }
 

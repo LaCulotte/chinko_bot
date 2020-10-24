@@ -11,6 +11,7 @@
 #include "ClientKeyMessage.h"
 #include "CredentialsAcknowledgementMessage.h"
 #include "LoginQueueStatusMessage.h"
+#include "ServersListMessage.h"
 #include "SelectedServerDataExtendedMessage.h"
 #include "SelectedServerDataMessage.h"
 

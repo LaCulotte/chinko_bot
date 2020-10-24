@@ -1,11 +1,14 @@
 #include "MessagingUnit.h"
 
+#include "TimeFrame.h"
+
 MessagingUnit::MessagingUnit(){
     msgInterfaceExtern = make_shared<MessageInterface>();
     msgInterfaceExtern->destination = this;
 }
 
 void MessagingUnit::initFrames() {
+    this->addFrame(make_shared<TimeFrame>());
 }
 
 MessagingUnit::~MessagingUnit(){

@@ -12,6 +12,7 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[ClientKeyMessage::protocolId]                         = make_shared<ClientKeyMessage>;
     id_to_builder[CredentialsAcknowledgementMessage::protocolId]        = make_shared<CredentialsAcknowledgementMessage>;
     id_to_builder[LoginQueueStatusMessage::protocolId]                  = make_shared<LoginQueueStatusMessage>;
+    id_to_builder[ServersListMessage::protocolId]                       = make_shared<ServersListMessage>;
     id_to_builder[SelectedServerDataMessage::protocolId]                = make_shared<SelectedServerDataMessage>;
     id_to_builder[SelectedServerDataExtendedMessage::protocolId]        = make_shared<SelectedServerDataExtendedMessage>;
 

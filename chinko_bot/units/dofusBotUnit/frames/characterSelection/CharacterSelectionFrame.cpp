@@ -4,7 +4,6 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<CharactersListRequestMessage> clrMsg;
     sp<UnknownDofusMessage> udMsg;
-    int apiUnitId;
     
     sp<CharacterSelectionMessage> csMsg;
     sp<CharacterSelectedSuccessMessage> cssMsg;
@@ -49,12 +48,12 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         // Receive the characters' list
         if(currentState == rcv_CharactersListMessage) {
             // Asks for the APIUnit's id
-            apiUnitId = parent->getMessageInterfaceOutId<APIUnit>();
-            if(apiUnitId != -1) {
+            // apiUnitId = parent->getMessageInterfaceOutId<APIUnit>();
+            if(dofusBotParent->getAPIUnitId() != -1) {
                 // Sends the character list to the APIUnit
                 sp<BasicCharactersListMessage> bclMsg = dynamic_pointer_cast<BasicCharactersListMessage>(message);
                 sp<QueryCharacterSelectionMessage> qcsMsg = make_shared<QueryCharacterSelectionMessage>(bclMsg->characters);
-                parent->sendMessage(qcsMsg, apiUnitId);
+                parent->sendMessage(qcsMsg, dofusBotParent->getAPIUnitId());
             } else {
                 // If there is not APIUnit, logs it and kills the bot
                 Logger::write("No APIUnit : cannot select character", LOG_ERROR);

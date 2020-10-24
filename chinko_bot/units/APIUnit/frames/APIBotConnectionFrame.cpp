@@ -1,26 +1,48 @@
 #include "APIBotConnectionFrame.h"
 #include "DofusBotUnit.h"
 
+#include "AuthentificationFailureMessage.h"
+
+#include "ServerSelectionListMessage.h"
+#include "DisconnectedMessage.h"
+
 bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     sp<QueryCharacterSelectionMessage> qcsMsg;
     sp<CharacterSelectionMessage> csMsg;
 
     sp<QueryServerSelectionMessage> qssMsg;
+    sp<ServerSelectionListMessage> sslMsg;
     sp<ServerSelectionMessage> ssMsg;
+
+    sp<ConnectionIdMessage> ciMsg;
+    sp<DisconnectedMessage> dMsg;
 
     switch (message->getId())
     {
+    case ConnectionIdMessage::protocolId:
+        ciMsg = dynamic_pointer_cast<ConnectionIdMessage>(message);
+        if(ciMsg->ids.size() > 0)
+            apiUnitParent->setAPIConnectionId(ciMsg->ids[0]);
+        break;
+
     case BeginAuthentificationMessage::protocolId:
-        if(apiUnitParent->botUnitId == -1) {
-            apiUnitParent->botUnitId = apiUnitParent->getMessageInterfaceOutId<DofusBotUnit>();
-            if(apiUnitParent->botUnitId == -1) {
-                Logger::write("Cannot begin authentification : no dofusBotUnit linked to APIUnit.", LOG_ERROR);
-                break;
-            }
+        if(apiUnitParent->getDofusBotUnitId() == -1) {
+            Logger::write("Cannot begin authentification : no dofusBotUnit linked to APIUnit.", LOG_ERROR);
+            break;
         }
 
-        apiUnitParent->sendMessage(message, apiUnitParent->botUnitId);
+        if(apiUnitParent->getAPIConnectionId() == -1) {
+            Logger::write("Cannot begin authentification : no APIConnectionId is set. This is not normal : check where does this BeginAuthentificationMessage was sent!", LOG_ERROR);
+            break;
+        }
+
+        apiUnitParent->sendMessage(message, apiUnitParent->getDofusBotUnitId());
         break;
+
+    case AuthentificationFailureMessage::protocolId:
+        apiUnitParent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<AuthentificationFailureMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
+        break;
+
     case QueryCharacterSelectionMessage::protocolId:
         qcsMsg = dynamic_pointer_cast<QueryCharacterSelectionMessage>(message);
 
@@ -45,28 +67,49 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     case QueryServerSelectionMessage::protocolId:
         qssMsg = dynamic_pointer_cast<QueryServerSelectionMessage>(message);
+        sslMsg = make_shared<ServerSelectionListMessage>();
 
-        cout << "Choose character : " << endl;
         for(int i = 0; i < qssMsg->servers.size(); i++) {
-            GameServerInformations server = qssMsg->servers[i];
+            ServerSelectInformations server;
 
-            auto serverNameIt = server_idToString.find(server.id); 
+            server.id = qssMsg->servers[i].id;
 
-            cout << "(" << i << ") " << (serverNameIt!=server_idToString.end()?serverNameIt->second:"TODO") << " (" << (server.isSelectable?"Avalaible":"Unavailable") << ") ";
-            cout << server.charactersCount << "/" << server.charactersSlots << " characters." << endl;
-            // cout << (character->sex?"Female ":"Male ") << breed_idToString[character->breed] << "." << endl; 
+            auto serverNameIt = server_idToString.find(qssMsg->servers[i].id); 
+            if(serverNameIt != server_idToString.end())
+                server.name = serverNameIt->second;
+            else
+                server.name = to_string(server.id);
+
+            server.charactersCount = qssMsg->servers[i].charactersCount;
+            server.slotsCount = qssMsg->servers[i].charactersSlots;
+            server.status = qssMsg->servers[i].status;
+            server.isSelectable = qssMsg->servers[i].isSelectable;
+
+            sslMsg->servers.push_back(server);
         }
 
-        {
-            int selectedServerId;
-            do {
-                cin >> selectedServerId;
-            } while (selectedServerId < 0 || selectedServerId >= qssMsg->servers.size());
+        apiUnitParent->sendMessage(make_shared<SendPacketRequestMessage>(sslMsg), apiUnitParent->getConnectionUnitId());
+        // cout << "Choose character : " << endl;
+        // for(int i = 0; i < qssMsg->servers.size(); i++) {
+        //     GameServerInformations server = qssMsg->servers[i];
 
-            ssMsg = make_shared<ServerSelectionMessage>();
-            ssMsg->serverId = qssMsg->servers[selectedServerId].id;
-            parent->sendMessage(ssMsg, srcId);
-        }
+        //     auto serverNameIt = server_idToString.find(server.id); 
+
+        //     cout << "(" << i << ") " << (serverNameIt!=server_idToString.end()?serverNameIt->second:"TODO") << " (" << (server.isSelectable?"Avalaible":"Unavailable") << ") ";
+        //     cout << server.charactersCount << "/" << server.charactersSlots << " characters." << endl;
+        //     // cout << (character->sex?"Female ":"Male ") << breed_idToString[character->breed] << "." << endl; 
+        // }
+
+        // {
+        //     int selectedServerId;
+        //     do {
+        //         cin >> selectedServerId;
+        //     } while (selectedServerId < 0 || selectedServerId >= qssMsg->servers.size());
+
+        //     ssMsg = make_shared<ServerSelectionMessage>();
+        //     ssMsg->serverId = qssMsg->servers[selectedServerId].id;
+        //     parent->sendMessage(ssMsg, srcId);
+        // }
         break;
 
     case APIHelloMessage::protocolId:
