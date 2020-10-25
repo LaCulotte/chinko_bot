@@ -54,6 +54,8 @@ public:
 
     void resetNextTick() { toReset = true; };
 
+    bool tempFlag = false;
+
 protected:
     void tick() override;
 

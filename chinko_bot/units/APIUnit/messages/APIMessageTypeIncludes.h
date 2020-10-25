@@ -6,6 +6,8 @@
 
 #include "BeginAuthentificationMessage.h"
 #include "AuthentificationFailureMessage.h"
+
 #include "ServerSelectionListMessage.h"
+#include "ServerSelectMessage.h"
 
 #endif

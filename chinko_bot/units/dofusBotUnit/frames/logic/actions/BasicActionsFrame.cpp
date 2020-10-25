@@ -1,5 +1,10 @@
 #include "BasicActionsFrame.h"
 
+#include "InteractiveCollectedMessage.h"
+#include "NoInteractiveToCollectMessage.h"
+
+#include "InteractiveUseErrorMessage.h"
+
 bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
     sp<ChangeToUpMapMessage>    ctuMsg;
     sp<ChangeToDownMapMessage>  ctdMsg;
@@ -62,15 +67,33 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
         if(currentState == baf_collect) {
             currentState = baf_idle;
             Logger::write("Successfully collected", LOG_INFO);
+            // TODO : avec elementTypeId
+            dofusBotParent->sendSelfMessage(make_shared<InteractiveCollectedMessage>());
         } else {
             Logger::write("Received an InteractiveUsedMessage while not using interactive?", LOG_WARNING);
         }
+        break;
+
+    case InteractiveUseErrorMessage::protocolId:
+        if(currentState == baf_collect) {
+            currentState = baf_idle;
+            Logger::write("Cannot collect.", LOG_INFO);
+            // TODO : avec elementTypeId
+            dofusBotParent->sendSelfMessage(make_shared<NoInteractiveToCollectMessage>());
+        } else {
+            Logger::write("Received an InteractiveUsedMessage while not using interactive?", LOG_WARNING);
+        }        
         break;
 
     case PlayerMovementErrorMessage::protocolId:
         if(currentState == baf_pathfindToSide || currentState == baf_pathfindToCollect) {
             currentState = baf_idle;
             Logger::write("Impossible to change map.", LOG_WARNING);
+        } else if (currentState == baf_pathfindToCollect) {
+            currentState = baf_idle;
+            Logger::write("Cannot pathfind to interactive", LOG_WARNING);
+            // TODO : avec elementTypeId
+            dofusBotParent->sendSelfMessage(make_shared<NoInteractiveToCollectMessage>());
         }
         break;
 
@@ -81,8 +104,9 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
 
     case CollectInteractiveTypeIdMessage::protocolId:
         if(currentState == baf_idle && dofusBotParent->getMapInfosAsRoleplay()) {
-            if(!collectElementOfTypeId(dynamic_pointer_cast<CollectInteractiveTypeIdMessage>(message)->elementTypeId) && dynamic_pointer_cast<CollectInteractiveTypeIdMessage>(message)->elementTypeId == 17)
-                dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(53));
+            int elementTypeId = dynamic_pointer_cast<CollectInteractiveTypeIdMessage>(message)->elementTypeId;
+            if(!collectElementOfTypeId(elementTypeId))
+                dofusBotParent->sendSelfMessage(make_shared<NoInteractiveToCollectMessage>(elementTypeId));
         }
         break;
 

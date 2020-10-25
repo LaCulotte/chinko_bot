@@ -4,6 +4,7 @@
 #include "AuthentificationFailureMessage.h"
 
 #include "ServerSelectionListMessage.h"
+#include "ServerSelectMessage.h"
 #include "DisconnectedMessage.h"
 
 bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
@@ -12,7 +13,9 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<QueryServerSelectionMessage> qssMsg;
     sp<ServerSelectionListMessage> sslMsg;
-    sp<ServerSelectionMessage> ssMsg;
+    sp<ServerSelectionMessage> ssionMsg;
+    // TODO : faire mieux (au minimum un meilleur nom)
+    sp<ServerSelectMessage> ssMsg;
 
     sp<ConnectionIdMessage> ciMsg;
     sp<DisconnectedMessage> dMsg;
@@ -112,9 +115,14 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         // }
         break;
 
-    case APIHelloMessage::protocolId:
-        Logger::write("Recevied APIHelloMessage. : TO REMOVE", LOG_DEBUG);    
+    case ServerSelectMessage::protocolId:
+        ssMsg = dynamic_pointer_cast<ServerSelectMessage>(message);
+        ssionMsg = make_shared<ServerSelectionMessage>();
+        ssionMsg->serverId = ssMsg->id;
+        apiUnitParent->sendMessage(ssionMsg, apiUnitParent->getDofusBotUnitId());
         break;
+
+        // TODO : make states : beg auth, server/char selection, ...
 
     default:
         return false;

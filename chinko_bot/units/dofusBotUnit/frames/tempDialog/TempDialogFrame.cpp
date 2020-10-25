@@ -1,5 +1,7 @@
 #include "TempDialogFrame.h"
 
+#include "CollectInteractivesMessage.h"
+
 bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<ChatServerMessage> csMsg;
@@ -19,7 +21,9 @@ bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
         csMsg = dynamic_pointer_cast<ChatServerMessage>(message);
         actor_caller = dofusBotParent->mapInfos->getActor(csMsg->senderId);
 
-        if(csMsg->content == "droite" && actor_caller)  {
+        if(csMsg->content == "combat") {
+            dofusBotParent->tempFlag = true;
+        } else if(csMsg->content == "droite" && actor_caller)  {
             int floor = dofusBotParent->mapInfos->getCell(actor_caller->cellId)->floor;
             dofusBotParent->sendSelfMessage(make_shared<ChangeToRightMapMessage>(floor));
             Logger::write("Moving to right map.", LOG_INFO);
@@ -36,7 +40,7 @@ bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
             dofusBotParent->sendSelfMessage(make_shared<ChangeToDownMapMessage>(floor));
             Logger::write("Moving to down map.", LOG_INFO);
         } else if (csMsg->content == "collect") {
-            dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(17));
+            dofusBotParent->sendSelfMessage(make_shared<CollectInteractivesMessage>(vector<int>({17})));
             // dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(17));
             Logger::write("Collecting.", LOG_INFO);
         } else if (csMsg->content == "attack" && dofusBotParent->getMapInfosAsFight()) {

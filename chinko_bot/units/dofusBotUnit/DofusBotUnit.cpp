@@ -4,6 +4,7 @@
 #include "FightFrame.h"
 #include "QueueFrame.h"
 #include "BasicDofusBotFrame.h"
+#include "APIActionsFrame.h"
 
 // TODO : check si l'ordre d'ajout des frames est important dans ce cas la!!
 void DofusBotUnit::initFrames() {
@@ -16,6 +17,7 @@ void DofusBotUnit::initFrames() {
     this->addFrame(make_shared<FightFrame>());
 
     this->addFrame(make_shared<QueueFrame>());
+    this->addFrame(make_shared<APIActionsFrame>());
 }
 
 void DofusBotUnit::tick() {

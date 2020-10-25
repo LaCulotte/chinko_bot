@@ -6,6 +6,7 @@ APIMessageTypeHandler::APIMessageTypeHandler() {
     id_to_builder[BeginAuthentificationMessage::protocolId]     = make_shared<BeginAuthentificationMessage>;
     id_to_builder[AuthentificationFailureMessage::protocolId]   = make_shared<AuthentificationFailureMessage>;
     id_to_builder[ServerSelectionListMessage::protocolId]       = make_shared<ServerSelectionListMessage>;
+    id_to_builder[ServerSelectMessage::protocolId]              = make_shared<ServerSelectMessage>;
 }
 
 sp<Message> APIMessageTypeHandler::generateMessageById(int id) {
