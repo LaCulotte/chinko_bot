@@ -30,11 +30,21 @@ public:
 
     IVar(const IVar& other);
     IVar& operator=(const IVar& other);
-    IVar(IVar&& other);
-    IVar& operator=(IVar&& other);
+    // IVar(IVar&& other);
+    // IVar& operator=(IVar&& other);
 
     void* get_value_copy() const;
     virtual void delete_value() {};
+
+    VarType get_type() { return this->type; }
+
+    // virtual bool isCompatibleWith_Assignement   (VarType otherType) { return false; };
+    virtual bool isCompatibleWith_Modulo        (VarType otherType) { return false; };
+    virtual bool isCompatibleWith_Addition    (VarType otherType) { return false; };
+    virtual bool isCompatibleWith_Operations    (VarType otherType) { return false; };
+    virtual bool isCompatibleWith_Bitwise       (VarType otherType) { return false; };
+    virtual bool isCompatibleWith_Comparison    (VarType otherType) { return false; };
+    // virtual bool isCompatibleWith_Cast          (VarType otherType) { return false; };
 
     virtual sp<IVar> operator+(const IVar& other) { throw std::string("Invalid Cannot + : variable. IVar cannot be used."); return nullptr; };
     virtual sp<IVar> operator-(const IVar& other) { throw std::string("Invalid Cannot - : variable. IVar cannot be used."); return nullptr; };

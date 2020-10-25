@@ -3,52 +3,83 @@
 
 #include "Var.h"
 
+template<typename T>
+Var<T>::Var(const Var<T>& other) {
+    this->delete_value();
+
+    this->value = other.get_value_copy();
+    this->initType();
+}
+
+template<typename T>
+Var<T>& Var<T>::operator=(const Var<T>& other) {
+    this->delete_value();
+
+    this->value = other.get_value_copy();
+
+    return *this;
+}
+
+template<typename T>
+Var<T>::Var(const IVar& other) {
+    this->initType();
+    this->value = new T(Var<T>::getValue(other));
+}
+
+template<typename T>
+Var<T>& Var<T>::operator=(const IVar& other) {
+    *((T*) this->value) = Var<T>::getValue(other);
+}
+
+template<typename T>
+Var<T>::Var(T value) {
+    this->initType();
+    this->value = new T(value);
+}
+
 template<> inline
-Var<bool>::Var(bool value) {
-    this->value = new bool(value);
+void Var<bool>::initType() {
     this->type = BOOL;
 }
 
 template<> inline
-Var<int8_t>::Var(int8_t value) {
-    this->value = new int8_t(value);
+void Var<int8_t>::initType() {
     this->type = INT8;
 }
 
 template<> inline
-Var<uint8_t>::Var(uint8_t value) {
-    this->value = new uint8_t(value);
+void Var<uint8_t>::initType() {
     this->type = UINT8;
 }
 
 template<> inline
-Var<int32_t>::Var(int32_t value) {
-    this->value = new int32_t(value);
+void Var<int32_t>::initType() {
     this->type = INT32;
 }
 
 template<> inline
-Var<uint32_t>::Var(uint32_t value) {
-    this->value = new uint32_t(value);
+void Var<uint32_t>::initType() {
     this->type = UINT32;
 }
 
 template<> inline
-Var<double>::Var(double value) {
-    this->value = new double(value);
+void Var<double>::initType() {
     this->type = DOUBLE;
 }
 
 template<> inline
-Var<char>::Var(char value) {
-    this->value = new char(value);
+void Var<char>::initType() {
     this->type = CHAR;
 }
 
 template<> inline
-Var<std::string>::Var(std::string value) {
-    this->value = new std::string(value);
+void Var<std::string>::initType() {
     this->type = STRING;
+}
+
+template<typename T>
+void Var<T>::initType() {
+    this->type = NONE;
 }
 
 #endif

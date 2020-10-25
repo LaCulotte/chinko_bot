@@ -16,27 +16,27 @@ IVar& IVar::operator=(const IVar& other) {
     return *this;
 }
 
-IVar::IVar(IVar&& other) {
-    this->delete_value();
+// IVar::IVar(IVar&& other) {
+//     this->delete_value();
 
-    this->type = other.type; 
-    this->value = other.value; 
+//     this->type = other.type; 
+//     this->value = other.value; 
 
-    other.type = NONE; 
-    other.value = nullptr; 
-}
+//     other.type = NONE; 
+//     other.value = nullptr; 
+// }
 
-IVar& IVar::operator=(IVar&& other) { 
-    this->delete_value();
+// IVar& IVar::operator=(IVar&& other) { 
+//     this->delete_value();
 
-    this->value = other.value;
-    this->type = other.type;
+//     this->value = other.value;
+//     this->type = other.type;
 
-    other.type = NONE;
-    other.value = nullptr;
+//     other.type = NONE;
+//     other.value = nullptr;
 
-    return *this;
-}
+//     return *this;
+// }
 
 void* IVar::get_value_copy() const {
     void *copy = nullptr;

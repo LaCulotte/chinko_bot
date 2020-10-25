@@ -344,7 +344,6 @@ IVar& Var<double>::operator%=(const IVar& other) {
     return *this;
 }
 
-
 template<typename T>
 IVar& Var<T>::operator&=(const IVar& other) {
     switch (other.type) {

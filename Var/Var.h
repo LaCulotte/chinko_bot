@@ -6,16 +6,15 @@
 template<typename T>
 class Var : public IVar {
 public:
-    Var(T value) {};
+    Var(T value);
     ~Var() { this->delete_value(); };
 
-    Var<T>(const Var<T>& other) {};
-    Var<T>& operator=(const Var<T>& other) {};
-    Var<T>(Var<T>&& other) {};
-    Var<T>& operator=(Var<T>&& other) {};
-
-    Var<T>(const IVar& other) {};
-    Var<T>& operator=(const IVar& other) {};
+    Var<T>(const Var<T>& other);
+    Var<T>& operator=(const Var<T>& other);
+    // Var<T>(Var<T>&& other);
+    // Var<T>& operator=(Var<T>&& other);
+    Var<T>(const IVar& other);
+    Var<T>& operator=(const IVar& other);
     
     virtual sp<IVar> operator+(const IVar& other) override;
     virtual sp<IVar> operator-(const IVar& other) override;
@@ -51,6 +50,9 @@ public:
     static T getValue(const IVar& var);
 
     void setValue(T value);
+
+protected:
+    void initType();
 };
 
 template<typename T>
