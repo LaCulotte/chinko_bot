@@ -10,7 +10,7 @@
 #include "TimeFrame.h"
 // #include "BasicActionsFrame.h"
 // #include "MapInformationsContainer.h"
-// #include <math.h
+// #include <math.h>
 
 #include "FightFrame.h"
 

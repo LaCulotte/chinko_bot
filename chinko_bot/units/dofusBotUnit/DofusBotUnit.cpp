@@ -84,8 +84,7 @@ int DofusBotUnit::getAPIUnitId() {
 }
 
 void DofusBotUnit::fullReset() {
-    Logger::write("Bot will be reset!", LOG_WARNING);
-    
+    // TODO : hard remove de toutes les frames (ici tout ce que ca fait c'est marquer les frames comme "à remove")
     this->removeFrames(getAllFrames<Frame>());
     this->messagesToProcess.clear();
 

@@ -22,7 +22,7 @@ void Logger::endInstance(){
     log.close();
 
     // Copies the file into a easily acessible file : last-log.txt
-    experimental::filesystem::copy(fullLogPath, currPath + "/logs/last-log.txt", experimental::filesystem::copy_options::overwrite_existing);
+    experimental::filesystem::copy(fullLogPath, currPath + "/cmake/logs/last-log.txt", experimental::filesystem::copy_options::overwrite_existing);
 }
 
 Logger* Logger::beginInstance(){
@@ -60,8 +60,12 @@ void Logger::write(string str, string type){
 
     // Writes the message (str) with the type of message and the current time
     time_t currentTime = time(NULL);
+    if(!(&currentTime))
+        Logger::write("wrong currentTime");
     tm *localCurrentTime = localtime(&currentTime);
 
+    if(!localCurrentTime)
+        Logger::write("wrong localCurrentTime");
 
     cout << "[" << (localCurrentTime->tm_hour<10?"0":"") << to_string(localCurrentTime->tm_hour) << ":" << (localCurrentTime->tm_min<10?"0":"") << to_string(localCurrentTime->tm_min) << ":" << (localCurrentTime->tm_sec<10?"0":"") << to_string(localCurrentTime->tm_sec) << "] " << type << str << endl; 
     log << "[" << (localCurrentTime->tm_hour<10?"0":"") << to_string(localCurrentTime->tm_hour) << ":" << (localCurrentTime->tm_min<10?"0":"") << to_string(localCurrentTime->tm_min) << ":" << (localCurrentTime->tm_sec<10?"0":"") << to_string(localCurrentTime->tm_sec) << "] " << type << str << endl; 

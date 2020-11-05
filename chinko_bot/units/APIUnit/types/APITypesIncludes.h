@@ -3,6 +3,11 @@
 
 #include "APIType.h"
 
-#include "ServerSelectInformations.h"
+#include "ServerInformations.h"
+#include "CharacterInformations.h"
+
+#include "JobInformations.h"
+#include "SkillInformations.h"
+#include "PlayedCharacterInformations.h"
 
 #endif

@@ -132,7 +132,9 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
     return true;
 }
 
+// TODO : faire gaffe à dofusBotParent->getMapInfosAs.. renvoie nullptr
 bool BasicActionsFrame::collectElementOfTypeId(int elementTypeId) {
+// bool BasicActionsFrame::collectElementOfTypeId(int elementTypeId, int skillIndex ou Skill sk) {
     for (auto interactiveElementIt : dofusBotParent->getMapInfosAsRoleplay()->interactiveElements) {
         // auto interactiveElement = interactiveElementIt.second;
         if(interactiveElementIt.second->elementTypeId == elementTypeId && interactiveElementIt.second->onCurrentMap && interactiveElementIt.second->enabledSkills.size() > 0 && inaccessibleElements.find(interactiveElementIt.second->elementId) == inaccessibleElements.end()) {
@@ -150,6 +152,7 @@ bool BasicActionsFrame::collectElementOfTypeId(int elementTypeId) {
 }
 
 bool BasicActionsFrame::collectElement(int elementId) {
+// bool BasicActionsFrame::collectElement(int elementId, idem) {
     auto interactiveElement = dofusBotParent->getMapInfosAsRoleplay()->interactiveElements[elementId];
     auto statedElement = dofusBotParent->getMapInfosAsRoleplay()->statedElements[elementId];
     

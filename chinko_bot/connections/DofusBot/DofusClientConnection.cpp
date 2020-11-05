@@ -35,6 +35,10 @@ sp<MessageDataBuffer> DofusClientConnection::readPrefix() {
 
     if(!prefixData)
         return nullptr;
+        
+    if(prefixData->size() < 2)
+        Logger::write("Not enougth data for the prefix!! It is a must fix.", LOG_ERROR);
+
 
     // Gets typeLen
     int typeLen = prefixData->readShort() & 3;

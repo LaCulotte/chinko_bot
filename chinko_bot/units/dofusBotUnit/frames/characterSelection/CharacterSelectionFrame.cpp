@@ -1,5 +1,12 @@
 #include "CharacterSelectionFrame.h"
 
+#include "APIClientDisconnectedMessage.h"
+
+#include "CharacterSelectionSuccessMessage.h"
+#include "CharacterSelectionFailureMessage.h"
+
+#include "JobDescriptionMessage.h"
+
 bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<CharactersListRequestMessage> clrMsg;
@@ -79,6 +86,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
             cssMsg = dynamic_pointer_cast<CharacterSelectedSuccessMessage>(message);
             currentState = rcv_CharacterLoadingCompleteMessage;
             Logger::write("Successfully selected " + cssMsg->infos.name, LOG_INFO);
+            dofusBotParent->sendMessage(make_shared<CharacterSelectionSuccessMessage>(cssMsg->infos.name), dofusBotParent->getAPIUnitId());
             
             dofusBotParent->playedCharacter = make_shared<RoleplayCharacterData>();
             dofusBotParent->playedCharacter->contextualId = cssMsg->infos.id;
@@ -101,6 +109,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
             currentState = csf_idle;
             parent->sendSelfMessage(make_shared<BeginCharacterSelectionMessage>());
             Logger::write("Error while selecting requested character. Please select a valid character.", LOG_WARNING);
+            dofusBotParent->sendMessage(make_shared<CharacterSelectionFailureMessage>(), dofusBotParent->getAPIUnitId());
         } else {
             Logger::write("Received CharacterSelectedErrorMessage when not supposed to.", LOG_WARNING);
         }
@@ -141,11 +150,16 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         jemuMsg = dynamic_pointer_cast<JobExperienceMultiUpdateMessage>(message);
         Logger::write("Received JobExperienceMultiUpdateMessage", LOG_INFO);
         break;
+
+    case JobDescriptionMessage::protocolId:
+        // jemuMsg = dynamic_pointer_cast<JobDescriptionMessage>(message);
+        Logger::write("Received JobDescriptionMessage", LOG_INFO);
+        break;
     
     // TODO : à enlever
     case InventoryWeightMessage::protocolId:
         iwMsg = dynamic_pointer_cast<InventoryWeightMessage>(message);
-        Logger::write("Received JobExperienceMultiUpdateMessage", LOG_INFO);
+        Logger::write("Received InventoryWeightMessage", LOG_INFO);
         Logger::write("Current weight : " + to_string(iwMsg->inventoryWeight) + "/" + to_string(iwMsg->weightMax), LOG_INFO);
         break;
 
@@ -165,6 +179,12 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
     case SpellListMessage::protocolId:
         slMsg = dynamic_pointer_cast<SpellListMessage>(message);
         Logger::write("Received SpellListMessage", LOG_INFO);
+        break;
+
+    case APIClientDisconnectedMessage::protocolId:
+        Logger::write("API client disconnected during authentification : bot will be reset.", LOG_WARNING);
+
+        dofusBotParent->resetNextTick();
         break;
 
     default:

@@ -4,9 +4,18 @@
 APIMessageTypeHandler::APIMessageTypeHandler() {
     id_to_builder[APIHelloMessage::protocolId]                  = make_shared<APIHelloMessage>;
     id_to_builder[BeginAuthentificationMessage::protocolId]     = make_shared<BeginAuthentificationMessage>;
+    id_to_builder[AuthentificationSuccessMessage::protocolId]   = make_shared<AuthentificationSuccessMessage>;
     id_to_builder[AuthentificationFailureMessage::protocolId]   = make_shared<AuthentificationFailureMessage>;
-    id_to_builder[ServerSelectionListMessage::protocolId]       = make_shared<ServerSelectionListMessage>;
-    id_to_builder[ServerSelectMessage::protocolId]              = make_shared<ServerSelectMessage>;
+
+    id_to_builder[ServerInformationsListMessage::protocolId]    = make_shared<ServerInformationsListMessage>;
+    id_to_builder[ServerSelectedMessage::protocolId]            = make_shared<ServerSelectedMessage>;
+    id_to_builder[ServerSelectionSuccessMessage::protocolId]    = make_shared<ServerSelectionSuccessMessage>;
+    id_to_builder[ServerSelectionFailureMessage::protocolId]    = make_shared<ServerSelectionFailureMessage>;
+
+    id_to_builder[CharacterInformationsListMessage::protocolId]    = make_shared<CharacterInformationsListMessage>;
+    id_to_builder[CharacterSelectedMessage::protocolId]            = make_shared<CharacterSelectedMessage>;
+    id_to_builder[CharacterSelectionSuccessMessage::protocolId]    = make_shared<CharacterSelectionSuccessMessage>;
+    id_to_builder[CharacterSelectionFailureMessage::protocolId]    = make_shared<CharacterSelectionFailureMessage>;
 }
 
 sp<Message> APIMessageTypeHandler::generateMessageById(int id) {

@@ -48,7 +48,7 @@ public:
     sp<ActorData> playedCharacter = nullptr;
 
     double currentMapId = 0;
-    sp<AbstractMapManager> mapInfos;
+    sp<AbstractMapManager> mapInfos = nullptr;
     sp<RoleplayMapManager> getMapInfosAsRoleplay() { return dynamic_pointer_cast<RoleplayMapManager>(this->mapInfos); };
     sp<FightMapManager> getMapInfosAsFight() { return dynamic_pointer_cast<FightMapManager>(this->mapInfos); };
 

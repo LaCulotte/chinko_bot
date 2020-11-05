@@ -34,6 +34,11 @@
 #include "ShortcutSmiley.h"
 #include "ShortcutSpell.h"
 
+#include "SkillActionDescription.h"
+#include "SkillActionDescriptionTimed.h"
+#include "SkillActionDescriptionCollect.h"
+#include "SkillActionDescriptionCraft.h"
+
 #include "PortalInformation.h"
 #include "TaxCollectorStaticInformations.h"
 #include "GameRolePlayNpcInformations.h"

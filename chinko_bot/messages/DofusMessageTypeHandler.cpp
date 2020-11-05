@@ -13,6 +13,7 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[CredentialsAcknowledgementMessage::protocolId]        = make_shared<CredentialsAcknowledgementMessage>;
     id_to_builder[LoginQueueStatusMessage::protocolId]                  = make_shared<LoginQueueStatusMessage>;
     id_to_builder[ServersListMessage::protocolId]                       = make_shared<ServersListMessage>;
+    id_to_builder[SelectedServerRefusedMessage::protocolId]             = make_shared<SelectedServerRefusedMessage>;
     id_to_builder[SelectedServerDataMessage::protocolId]                = make_shared<SelectedServerDataMessage>;
     id_to_builder[SelectedServerDataExtendedMessage::protocolId]        = make_shared<SelectedServerDataExtendedMessage>;
 
@@ -33,6 +34,7 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[InventoryContentMessage::protocolId]              = make_shared<InventoryContentMessage>;
     id_to_builder[InventoryWeightMessage::protocolId]               = make_shared<InventoryWeightMessage>;
     id_to_builder[ShortcutBarContentMessage::protocolId]            = make_shared<ShortcutBarContentMessage>;
+    id_to_builder[JobDescriptionMessage::protocolId]                = make_shared<JobDescriptionMessage>;
     id_to_builder[JobExperienceMultiUpdateMessage::protocolId]      = make_shared<JobExperienceMultiUpdateMessage>;
     id_to_builder[SequenceNumberRequestMessage::protocolId]         = make_shared<SequenceNumberRequestMessage>;
     id_to_builder[SequenceNumberMessage::protocolId]                = make_shared<SequenceNumberMessage>;

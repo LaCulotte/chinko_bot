@@ -12,6 +12,7 @@
 #include "CredentialsAcknowledgementMessage.h"
 #include "LoginQueueStatusMessage.h"
 #include "ServersListMessage.h"
+#include "SelectedServerRefusedMessage.h"
 #include "SelectedServerDataExtendedMessage.h"
 #include "SelectedServerDataMessage.h"
 
@@ -33,6 +34,7 @@
 #include "InventoryWeightMessage.h"
 #include "ShortcutBarContentMessage.h"
 #include "JobExperienceMultiUpdateMessage.h"
+#include "JobDescriptionMessage.h"
 #include "SequenceNumberRequestMessage.h"
 #include "SequenceNumberMessage.h"
 #include "AlmanachCalendarDateMessage.h"
