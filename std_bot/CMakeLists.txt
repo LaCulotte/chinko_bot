@@ -38,4 +38,4 @@ target_include_directories(std_bot PUBLIC ./units)
 target_link_libraries(std_bot pthread)
 target_link_libraries(std_bot stdc++fs)
 
-set_property(TARGET std_bot PROPERTY CXX_STANDARD 20)
+set_property(TARGET std_bot PROPERTY CXX_STANDARD 17)
