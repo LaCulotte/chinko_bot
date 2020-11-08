@@ -30,21 +30,34 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[CharacterSelectedSuccessMessage::protocolId]          = make_shared<CharacterSelectedSuccessMessage>;
     id_to_builder[CharacterSelectedErrorMessage::protocolId]            = make_shared<CharacterSelectedErrorMessage>;
     id_to_builder[CharacterLoadingCompleteMessage::protocolId]          = make_shared<CharacterLoadingCompleteMessage>;
+    id_to_builder[CharacterLevelUpMessage::protocolId]                  = make_shared<CharacterLevelUpMessage>;
 
-    id_to_builder[InventoryContentMessage::protocolId]              = make_shared<InventoryContentMessage>;
-    id_to_builder[InventoryWeightMessage::protocolId]               = make_shared<InventoryWeightMessage>;
     id_to_builder[ShortcutBarContentMessage::protocolId]            = make_shared<ShortcutBarContentMessage>;
     id_to_builder[JobDescriptionMessage::protocolId]                = make_shared<JobDescriptionMessage>;
+    id_to_builder[JobExperienceUpdateMessage::protocolId]           = make_shared<JobExperienceUpdateMessage>;
     id_to_builder[JobExperienceMultiUpdateMessage::protocolId]      = make_shared<JobExperienceMultiUpdateMessage>;
     id_to_builder[SequenceNumberRequestMessage::protocolId]         = make_shared<SequenceNumberRequestMessage>;
     id_to_builder[SequenceNumberMessage::protocolId]                = make_shared<SequenceNumberMessage>;
     id_to_builder[AlmanachCalendarDateMessage::protocolId]          = make_shared<AlmanachCalendarDateMessage>;
     id_to_builder[CharacterExperienceGainMessage::protocolId]       = make_shared<CharacterExperienceGainMessage>;
     id_to_builder[SpellListMessage::protocolId]                     = make_shared<SpellListMessage>;
+    id_to_builder[CharacterStatsListMessage::protocolId]            = make_shared<CharacterStatsListMessage>;
+    id_to_builder[JobLevelUpMessage::protocolId]                    = make_shared<JobLevelUpMessage>;
+
+    id_to_builder[InventoryContentMessage::protocolId]              = make_shared<InventoryContentMessage>;
+    id_to_builder[InventoryWeightMessage::protocolId]               = make_shared<InventoryWeightMessage>;
+    id_to_builder[ObjectQuantityMessage::protocolId]                = make_shared<ObjectQuantityMessage>;
+    id_to_builder[ObjectsQuantityMessage::protocolId]               = make_shared<ObjectsQuantityMessage>;
+    id_to_builder[ObjectAddedMessage::protocolId]                   = make_shared<ObjectAddedMessage>;
+    id_to_builder[ObjectsAddedMessage::protocolId]                  = make_shared<ObjectsAddedMessage>;
+    id_to_builder[ObjectDeletedMessage::protocolId]                 = make_shared<ObjectDeletedMessage>;
+    id_to_builder[ObjectsDeletedMessage::protocolId]                = make_shared<ObjectsDeletedMessage>;
+    id_to_builder[ObjectModifiedMessage::protocolId]                = make_shared<ObjectModifiedMessage>;
+    id_to_builder[KamasUpdateMessage::protocolId]                   = make_shared<KamasUpdateMessage>;
 
     id_to_builder[GameContextCreateRequestMessage::protocolId]      = make_shared<GameContextCreateRequestMessage>;
     id_to_builder[GameContextCreateMessage::protocolId]             = make_shared<GameContextCreateMessage>;
-    id_to_builder[GameContextDestroyMessage::protocolId]    = make_shared<GameContextDestroyMessage>;
+    id_to_builder[GameContextDestroyMessage::protocolId]            = make_shared<GameContextDestroyMessage>;
     id_to_builder[CurrentMapMessage::protocolId]                    = make_shared<CurrentMapMessage>;
 
     id_to_builder[MapComplementaryInformationsDataMessage::protocolId]	= make_shared<MapComplementaryInformationsDataMessage>;
@@ -62,8 +75,8 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
     id_to_builder[InteractiveUseRequestMessage::protocolId]     = make_shared<InteractiveUseRequestMessage>;
     id_to_builder[InteractiveUseEndedMessage::protocolId]       = make_shared<InteractiveUseEndedMessage>;
 
-    id_to_builder[ChatAbstractServerMessage::protocolId]    = make_shared<ChatAbstractServerMessage>;
-    id_to_builder[ChatServerMessage::protocolId]            = make_shared<ChatServerMessage>;
+    id_to_builder[ChatAbstractServerMessage::protocolId]        = make_shared<ChatAbstractServerMessage>;
+    id_to_builder[ChatServerMessage::protocolId]                = make_shared<ChatServerMessage>;
 
 	id_to_builder[GameRolePlayPlayerFightFriendlyRequestedMessage::protocolId]	= make_shared<GameRolePlayPlayerFightFriendlyRequestedMessage>;
 	id_to_builder[GameFightShowFighterMessage::protocolId]	                    = make_shared<GameFightShowFighterMessage>;
@@ -80,6 +93,7 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
 	id_to_builder[GameFightSynchronizeMessage::protocolId]	        = make_shared<GameFightSynchronizeMessage>;
 	id_to_builder[GameFightTurnListMessage::protocolId]	            = make_shared<GameFightTurnListMessage>;
     id_to_builder[GameFightTurnStartMessage::protocolId]            = make_shared<GameFightTurnStartMessage>;
+    id_to_builder[GameFightEndMessage::protocolId]                  = make_shared<GameFightEndMessage>;
 
     id_to_builder[GameFightRefreshFighterMessage::protocolId]                   = make_shared<GameFightRefreshFighterMessage>;
     id_to_builder[AbstractGameActionMessage::protocolId]                        = make_shared<AbstractGameActionMessage>;

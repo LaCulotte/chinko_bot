@@ -27,15 +27,6 @@
 #include "CharacterLoadingCompleteMessage.h"
 #include "ClientKeyMessage.h"
 
-// TODO : à enlever
-#include "InventoryContentMessage.h"
-#include "InventoryWeightMessage.h"
-#include "ShortcutBarContentMessage.h"
-#include "JobExperienceMultiUpdateMessage.h"
-#include "AlmanachCalendarDateMessage.h"
-#include "CharacterExperienceGainMessage.h"
-#include "SpellListMessage.h"
-
 // States that the frame can be in; Keeps track of what to do next and if every thing is going in the right order
 enum CharacterSelectionFrameState {
     csf_idle,

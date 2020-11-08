@@ -1,5 +1,8 @@
 #include "FightContextFrame.h"
 
+#include "FightResultPlayerListEntry.h"
+#include "FightResultExperienceData.h"
+
 bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<GameFightStartingMessage> gfsMsg;
@@ -7,6 +10,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
     sp<GameEntitiesDispositionMessage> gedMsg;
     sp<GameFightUpdateTeamMessage> gfutMsg;
     sp<GameFightHumanReadyStateMessage> gfhrsMsg;
+    sp<GameFightEndMessage> gfeMsg;
 
     sp<GameFightTurnReadyRequestMessage> gftrrMsg;
     sp<GameFightNewRoundMessage> gfnrMsg;
@@ -398,6 +402,11 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     // TODO : case GameActionFightInvisibilityStateEnum::protocolId: -> change canSeeThrough & canWalkThrough 
 
+    case GameFightEndMessage::protocolId:
+        gfeMsg = dynamic_pointer_cast<GameFightEndMessage>(message);
+        // this->processGameFightEndMessage(gfeMsg);
+        break;
+
     default:
         return false;
     }
@@ -509,3 +518,22 @@ bool FightContextFrame::sendGameActionAcknowledgementMessage(sp<SequenceEndMessa
     return true;
 
 }
+
+// void FightContextFrame::processGameFightEndMessage(sp<GameFightEndMessage> gfeMsg) {
+//     sp<FightResultPlayerListEntry> frple = nullptr;
+
+//     for(auto result : gfeMsg->results) {
+//         frple = dynamic_pointer_cast<FightResultPlayerListEntry>(result);
+//         if(frple && frple->id == dofusBotParent->playedCharacter->contextualId) {
+//             sp<FightResultExperienceData> fred = nullptr;
+            
+//             for(auto additional : frple->additional) {
+//                 fred = dynamic_pointer_cast<FightResultExperienceData>(additional);
+//                 if(fred) {
+//                     Logger::write("Gained experience : +" + to_string(fred->experienceFightDelta) + " points; current xp : " + to_string(fred->experience));
+//                     dofusBotParent->characterManager.setXp(fred->experience, fred->experienceLevelFloor, fred->experienceNextLevelFloor);
+//                 }
+//             }
+//         }
+//     }
+// }

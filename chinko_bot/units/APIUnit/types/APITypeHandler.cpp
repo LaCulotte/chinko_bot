@@ -10,6 +10,7 @@ APITypeHandler::APITypeHandler() {
 	id_to_builder[SkillInformations::typeId] 	        = make_shared<SkillInformations>;
 	id_to_builder[JobInformations::typeId]   	        = make_shared<JobInformations>;
 	id_to_builder[PlayedCharacterInformations::typeId]  = make_shared<PlayedCharacterInformations>;
+	id_to_builder[ItemInformations::typeId]             = make_shared<ItemInformations>;
 }
 
 APITypeHandler * APITypeHandler::getInstance() {

@@ -6,6 +6,10 @@
 #include "BasicDofusBotFrame.h"
 #include "APIActionsFrame.h"
 
+DofusBotUnit::DofusBotUnit() : MessagingUnit() {
+    characterManager = make_shared<PlayedCharacterManager>(); 
+}
+
 // TODO : check si l'ordre d'ajout des frames est important dans ce cas la!!
 void DofusBotUnit::initFrames() {
     MessagingUnit::initFrames();

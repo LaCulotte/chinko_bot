@@ -1,6 +1,7 @@
 #ifndef DOFUS_BOTUNIT_H
 #define DOFUS_BOTUNIT_H
 
+
 #include "MessagingUnit.h"
 #include "ConnectionUnit.h"
 #include "QueueFrame.h"
@@ -15,17 +16,20 @@
 #include "SendPacketSuccessMessage.h"
 #include "SendPacketFailureMessage.h"
 
+#include "PlayedCharacterManager.h"
+
 #include "APIUnit.h"
 
+class PlayedCharacterManager;
 class DofusBotUnit : public MessagingUnit {
 public:
     // Constructor
-    DofusBotUnit() : MessagingUnit() {};
+    DofusBotUnit();
     // Copy constructor
-    DofusBotUnit(const DofusBotUnit& other) = default;
+    DofusBotUnit(const DofusBotUnit& other) = delete;
 
     // Copy operator
-    DofusBotUnit& operator=(const DofusBotUnit& other) = default;
+    DofusBotUnit& operator=(const DofusBotUnit& other) = delete;
     // Destructor
     virtual ~DofusBotUnit() = default;
 
@@ -46,6 +50,7 @@ public:
     // Informations of the current GameServer 
     GameServerData gameServerInfos;
     sp<ActorData> playedCharacter = nullptr;
+    sp<PlayedCharacterManager> characterManager = nullptr;
 
     double currentMapId = 0;
     sp<AbstractMapManager> mapInfos = nullptr;

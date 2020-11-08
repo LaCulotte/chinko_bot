@@ -9,5 +9,6 @@
 #include "JobInformations.h"
 #include "SkillInformations.h"
 #include "PlayedCharacterInformations.h"
+#include "ItemInformations.h"
 
 #endif
