@@ -13,9 +13,36 @@ macro(HEADER_DIRECTORIES return_list)
     set(${return_list} ${dir_list})
 endmacro()
 
+
 project(chinko_bot)
 
+add_custom_target(dscript COMMAND make all
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/chinko_bot/dscript/
+)
+add_dependencies(dscript dscript)
+
+
+# find_package(FLEX)
+# flex_target(lexer ${CMAKE_CURRENT_SOURCE_DIR}/chinko_bot/dscript/src/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/chinko_bot/dscript/products/lexer.cpp)
+# add_executable(flex ${FLEX_lexer_OUTPUTS})
+# find_package(BISON)
+# bison_target(dscript ${CMAKE_CURRENT_SOURCE_DIR}/chinko_bot/dscript/src/parser.y ${CMAKE_CURRENT_SOURCE_DIR}/chinko_bot/dscript/products/dscript.tab.cpp)
+# add_executable(bison ${BISON_dscript_OUTPUTS})
+
+# add_custom_command(
+#     OUTPUT ${CMAKE_SOURCE_DIR}/../chinko_bot/dcsript/products/temp.cpp
+#     WORKING_DIR ${CMAKE_SOURCE_DIR}/../chinko_bot/dcsript
+#     COMMAND bison -d src/parser.y
+# )
+# add_custom_command(
+#     OUTPUT ${CMAKE_SOURCE_DIR}/../chinko_bot/dcsript/products/bie.cpp
+#     WORKING_DIR ${CMAKE_SOURCE_DIR}/../chinko_bot/dcsript
+#     COMMAND flex -o products/lexer.cpp src/lexer.l
+# )
+
+
 add_subdirectory(std_bot)
+
 
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -100,7 +127,7 @@ file(GLOB_RECURSE SRCS
     base64/base64.cpp
     "chinko_bot/*.cpp"
     "Var/*.cpp"
-    main.cpp
+    #main.cpp
 )
 
 add_executable(chinko_bot ${SRCS})
@@ -157,4 +184,4 @@ target_link_libraries(chinko_bot jsoncpp)
 target_link_libraries(chinko_bot std_bot)
 
 
-set_property(TARGET chinko_bot PROPERTY CXX_STANDARD 20)
+set_property(TARGET chinko_bot PROPERTY CXX_STANDARD 17)
