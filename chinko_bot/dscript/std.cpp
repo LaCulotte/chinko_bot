@@ -26,6 +26,7 @@ void initstd() {
 	stdfuncs = {};
 	stdfuncs.insert({"print", stdprint});
 	stdfuncs.insert({"pow", stdpow});
+	stdfuncs.insert({"test", test});
 }
 
 
@@ -55,4 +56,9 @@ sp<IVar> stdpow(vector<sp<IVar>> params) {
 	Var<double> t2 = *params[1];
 	double res = pow(*(double*)t1.value, *(double*)t2.value);
 	return make_shared<Var<double>>(res);
+}
+
+sp<IVar> test(vector<sp<IVar>> params) {
+	cout << "salut théo" << endl;
+	return NULL;
 }

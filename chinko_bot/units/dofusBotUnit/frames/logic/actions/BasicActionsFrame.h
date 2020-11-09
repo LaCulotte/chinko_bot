@@ -66,7 +66,7 @@ protected:
     int elementToCollectId = 0;
     int skillToUseId = 0;
     bool collectElementOfTypeId(int elementTypeId);
-    bool collectElement(int elementId);
+    bool collectElement(int elementId, int skillId, int skillUID);
 
     bool sendInteractiveUseRequestMessage(int elementId, int skillId);
 

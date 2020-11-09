@@ -8,6 +8,7 @@
 
 DofusBotUnit::DofusBotUnit() : MessagingUnit() {
     characterManager = make_shared<PlayedCharacterManager>(); 
+    characterManager->dofusBot = this;
 }
 
 // TODO : check si l'ordre d'ajout des frames est important dans ce cas la!!

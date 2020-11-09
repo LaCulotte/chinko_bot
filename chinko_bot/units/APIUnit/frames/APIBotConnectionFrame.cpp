@@ -1,6 +1,8 @@
 #include "APIBotConnectionFrame.h"
 #include "DofusBotUnit.h"
 
+#include "APIBotUpdatesFrame.h"
+
 #include "AuthentificationSuccessMessage.h"
 #include "AuthentificationFailureMessage.h"
 
@@ -118,6 +120,7 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     case CharacterSelectionSuccessMessage::protocolId:
         parent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<CharacterSelectionSuccessMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
+        parent->addFrame(make_shared<APIBotUpdatesFrame>());
         break;
 
     case CharacterSelectionFailureMessage::protocolId:

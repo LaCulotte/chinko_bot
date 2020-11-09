@@ -74,6 +74,7 @@ DofusMessageTypeHandler::DofusMessageTypeHandler(){
 
     id_to_builder[InteractiveUseRequestMessage::protocolId]     = make_shared<InteractiveUseRequestMessage>;
     id_to_builder[InteractiveUseEndedMessage::protocolId]       = make_shared<InteractiveUseEndedMessage>;
+    id_to_builder[InteractiveUseErrorMessage::protocolId]       = make_shared<InteractiveUseErrorMessage>;
 
     id_to_builder[ChatAbstractServerMessage::protocolId]        = make_shared<ChatAbstractServerMessage>;
     id_to_builder[ChatServerMessage::protocolId]                = make_shared<ChatServerMessage>;

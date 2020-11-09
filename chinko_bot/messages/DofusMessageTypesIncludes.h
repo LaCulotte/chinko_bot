@@ -74,6 +74,7 @@
 
 #include "InteractiveUseRequestMessage.h"
 #include "InteractiveUseEndedMessage.h"
+#include "InteractiveUseErrorMessage.h"
 
 #include "ChatAbstractServerMessage.h"
 #include "ChatServerMessage.h"

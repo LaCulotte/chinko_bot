@@ -1,6 +1,4 @@
 double test = 45f;
 print("cool ", test);
-
-let func(byte zizi, byte tt) {
-	print("waw");
-}
+int32 a = 0;
+print("a :", a);

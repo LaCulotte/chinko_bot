@@ -134,13 +134,25 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
 
 // TODO : faire gaffe à dofusBotParent->getMapInfosAs.. renvoie nullptr
 bool BasicActionsFrame::collectElementOfTypeId(int elementTypeId) {
-// bool BasicActionsFrame::collectElementOfTypeId(int elementTypeId, int skillIndex ou Skill sk) {
     for (auto interactiveElementIt : dofusBotParent->getMapInfosAsRoleplay()->interactiveElements) {
         // auto interactiveElement = interactiveElementIt.second;
-        if(interactiveElementIt.second->elementTypeId == elementTypeId && interactiveElementIt.second->onCurrentMap && interactiveElementIt.second->enabledSkills.size() > 0 && inaccessibleElements.find(interactiveElementIt.second->elementId) == inaccessibleElements.end()) {
+        if(interactiveElementIt.second->elementTypeId == elementTypeId && interactiveElementIt.second->onCurrentMap 
+            && inaccessibleElements.find(interactiveElementIt.second->elementId) == inaccessibleElements.end()) {
+
+
             auto statedElement = dofusBotParent->getMapInfosAsRoleplay()->statedElements[interactiveElementIt.second->elementId];
             if(statedElement.elementState == 0) {
-                if(collectElement(statedElement.elementId))
+                int usedSkillId = -1;
+                int usedSkillUID = -1;
+                for(int i = 0; i < interactiveElementIt.second->enabledSkills.size(); i++) {
+                    if(dofusBotParent->characterManager->hasSkill(interactiveElementIt.second->enabledSkills[i]->skillId)) {
+                        usedSkillUID = interactiveElementIt.second->enabledSkills[i]->skillInstanceUid;
+                        usedSkillId = interactiveElementIt.second->enabledSkills[i]->skillId;
+                        break;
+                    }
+                }
+
+                if(usedSkillId != -1 && usedSkillUID != -1 && collectElement(statedElement.elementId, usedSkillId, usedSkillUID))
                     return true;
             }
         }
@@ -151,23 +163,27 @@ bool BasicActionsFrame::collectElementOfTypeId(int elementTypeId) {
     return false;
 }
 
-bool BasicActionsFrame::collectElement(int elementId) {
-// bool BasicActionsFrame::collectElement(int elementId, idem) {
+bool BasicActionsFrame::collectElement(int elementId, int skillId, int skillUID) {
+    int range = dofusBotParent->characterManager->getSkillRange(skillId);
+    if(range == -1) {
+        Logger::write("Skill " + to_string(skillId) + " has no range!.", LOG_ERROR);
+        return false;        
+    }
+
     auto interactiveElement = dofusBotParent->getMapInfosAsRoleplay()->interactiveElements[elementId];
     auto statedElement = dofusBotParent->getMapInfosAsRoleplay()->statedElements[elementId];
     
     MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, statedElement.elementCellId);
 
-    // if(movPath)
     int lastCellId = movPath.toKeyMovements().back() & 0xFFF;
 
     int dX = abs(dofusBotParent->mapInfos->cellId_to_XPosition(statedElement.elementCellId) - dofusBotParent->mapInfos->cellId_to_XPosition(lastCellId)); 
     int dY = abs(dofusBotParent->mapInfos->cellId_to_YPosition(statedElement.elementCellId) - dofusBotParent->mapInfos->cellId_to_YPosition(lastCellId)); 
 
-    if(dX < 2 && dY < 2) {
+    if(dX + dY <= range) {
         dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(statedElement.elementCellId));
         elementToCollectId = elementId;
-        skillToUseId = interactiveElement->enabledSkills[0]->skillInstanceUid;
+        skillToUseId = skillUID;
         currentState = baf_pathfindToCollect;
         return true;
     }

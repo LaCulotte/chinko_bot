@@ -26,10 +26,10 @@ public:
     // Constructor
     DofusBotUnit();
     // Copy constructor
-    DofusBotUnit(const DofusBotUnit& other) = delete;
+    DofusBotUnit(const DofusBotUnit& other) = default;
 
     // Copy operator
-    DofusBotUnit& operator=(const DofusBotUnit& other) = delete;
+    DofusBotUnit& operator=(const DofusBotUnit& other) = default;
     // Destructor
     virtual ~DofusBotUnit() = default;
 
@@ -50,7 +50,7 @@ public:
     // Informations of the current GameServer 
     GameServerData gameServerInfos;
     sp<ActorData> playedCharacter = nullptr;
-    sp<PlayedCharacterManager> characterManager = nullptr;
+    sp<PlayedCharacterManager> characterManager;
 
     double currentMapId = 0;
     sp<AbstractMapManager> mapInfos = nullptr;

@@ -16,6 +16,16 @@ APIMessageTypeHandler::APIMessageTypeHandler() {
     id_to_builder[CharacterSelectedMessage::protocolId]            = make_shared<CharacterSelectedMessage>;
     id_to_builder[CharacterSelectionSuccessMessage::protocolId]    = make_shared<CharacterSelectionSuccessMessage>;
     id_to_builder[CharacterSelectionFailureMessage::protocolId]    = make_shared<CharacterSelectionFailureMessage>;
+
+    id_to_builder[ItemsAddMessage::protocolId]                          = make_shared<ItemsAddMessage>;
+    id_to_builder[JobsInformationsMessage::protocolId]                  = make_shared<JobsInformationsMessage>;
+    id_to_builder[JobsXpMessage::protocolId]                            = make_shared<JobsXpMessage>;
+    id_to_builder[PlayedCharacterInformationsMessage::protocolId]       = make_shared<PlayedCharacterInformationsMessage>;
+    id_to_builder[PlayedCharacterInventoryWeightMessage::protocolId]    = make_shared<PlayedCharacterInventoryWeightMessage>;
+    id_to_builder[PlayedCharacterKamasMessage::protocolId]              = make_shared<PlayedCharacterKamasMessage>;
+    id_to_builder[PlayedCharacterLevelMessage::protocolId]              = make_shared<PlayedCharacterLevelMessage>;
+    id_to_builder[PlayedCharacterXpMessage::protocolId]                 = make_shared<PlayedCharacterXpMessage>;
+
 }
 
 sp<Message> APIMessageTypeHandler::generateMessageById(int id) {
