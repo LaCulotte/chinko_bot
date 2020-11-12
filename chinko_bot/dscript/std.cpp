@@ -59,6 +59,7 @@ sp<IVar> stdpow(vector<sp<IVar>> params) {
 }
 
 sp<IVar> test(vector<sp<IVar>> params) {
-	cout << "salut théo" << endl;
-	return NULL;
+	is_valid_call(&params, 1, DOUBLE);
+	double val = Var<double>::getValue(params[0]);
+	return make_shared<Var<double>>(val * 2);
 }
