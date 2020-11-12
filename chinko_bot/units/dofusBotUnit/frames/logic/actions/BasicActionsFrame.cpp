@@ -86,7 +86,7 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case PlayerMovementErrorMessage::protocolId:
-        if(currentState == baf_pathfindToSide || currentState == baf_pathfindToCollect) {
+        if(currentState == baf_pathfindToSide || currentState == baf_pathfindToMonster) {
             currentState = baf_idle;
             Logger::write("Impossible to change map.", LOG_WARNING);
         } else if (currentState == baf_pathfindToCollect) {
