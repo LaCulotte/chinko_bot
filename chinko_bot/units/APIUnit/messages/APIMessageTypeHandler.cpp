@@ -2,10 +2,12 @@
 #include "APIMessageTypeIncludes.h"
 
 APIMessageTypeHandler::APIMessageTypeHandler() {
-    id_to_builder[APIHelloMessage::protocolId]                  = make_shared<APIHelloMessage>;
-    id_to_builder[BeginAuthentificationMessage::protocolId]     = make_shared<BeginAuthentificationMessage>;
-    id_to_builder[AuthentificationSuccessMessage::protocolId]   = make_shared<AuthentificationSuccessMessage>;
-    id_to_builder[AuthentificationFailureMessage::protocolId]   = make_shared<AuthentificationFailureMessage>;
+    id_to_builder[APIHelloMessage::protocolId]                      = make_shared<APIHelloMessage>;
+    id_to_builder[APINoBotMessage::protocolId]                      = make_shared<APINoBotMessage>;
+    id_to_builder[APIAuthentificationStatusMessage::protocolId]     = make_shared<APIAuthentificationStatusMessage>;
+    id_to_builder[BeginAuthentificationMessage::protocolId]         = make_shared<BeginAuthentificationMessage>;
+    id_to_builder[AuthentificationSuccessMessage::protocolId]       = make_shared<AuthentificationSuccessMessage>;
+    id_to_builder[AuthentificationFailureMessage::protocolId]       = make_shared<AuthentificationFailureMessage>;
 
     id_to_builder[ServerInformationsListMessage::protocolId]    = make_shared<ServerInformationsListMessage>;
     id_to_builder[ServerSelectedMessage::protocolId]            = make_shared<ServerSelectedMessage>;

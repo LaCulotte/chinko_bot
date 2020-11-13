@@ -1,6 +1,9 @@
 #include "APIUnit.h"
 #include "ConnectionUnit.h"
 
+#include "APINoBotMessage.h"
+#include "BotConnectionStatusRequestMessage.h"
+
 APIUnit::~APIUnit() {
     if(listeningServer) {
         listeningServer->stop();
@@ -29,10 +32,15 @@ void APIUnit::tick() {
         sp<ServerConnection> incomingConnection = listeningServer->getLastConnection();
         if(dynamic_pointer_cast<APIServerConnection>(incomingConnection)) {
             if(getConnectionUnitId() != -1) {
-                sendMessage(make_shared<AddConnectionMessage>(incomingConnection), connectionUnitId);
-                this->waitsForAPIConnectionId = true;
+                if(this->getDofusBotUnitId() != -1) {
+                    sendMessage(make_shared<AddConnectionMessage>(incomingConnection), connectionUnitId);
+                    this->waitsForAPIConnectionId = true;
 
-                incomingConnection->sendMessage(make_shared<APIHelloMessage>());
+                    incomingConnection->sendMessage(make_shared<APIHelloMessage>());
+                } else {
+                    incomingConnection->sendMessage(make_shared<APINoBotMessage>());
+                    incomingConnection->disconnect();
+                }
             }
         } else if(incomingConnection) {
             incomingConnection->disconnect();
@@ -42,11 +50,15 @@ void APIUnit::tick() {
     MessagingUnit::tick();
 }
 
-void APIUnit::setAPIConnectionId(int apiConnectionId) {
+bool APIUnit::setAPIConnectionId(int apiConnectionId) {
     if(waitsForAPIConnectionId) {
         this->apiConnectionId = apiConnectionId;
         waitsForAPIConnectionId = false;
+
+        return true;
     }
+
+    return false;
 }
 
 int APIUnit::getConnectionUnitId() {

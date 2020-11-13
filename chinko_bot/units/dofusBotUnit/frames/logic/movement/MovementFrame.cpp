@@ -58,7 +58,6 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
                     dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
                 }
             }
-
         } else {
             Logger::write("Cannot pathfind : no played character.", LOG_WARNING);
         }

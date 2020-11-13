@@ -32,17 +32,10 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     sp<CharacterSelectionMessage> csionMsg;
     sp<CharacterSelectedMessage> csedMsg;
 
-    sp<ConnectionIdMessage> ciMsg;
     sp<DisconnectedMessage> dMsg;
 
     switch (message->getId())
     {
-    case ConnectionIdMessage::protocolId:
-        ciMsg = dynamic_pointer_cast<ConnectionIdMessage>(message);
-        if(ciMsg->ids.size() > 0)
-            apiUnitParent->setAPIConnectionId(ciMsg->ids[0]);
-        break;
-
     case BeginAuthentificationMessage::protocolId:
         if(apiUnitParent->getDofusBotUnitId() == -1) {
             Logger::write("Cannot begin authentification : no dofusBotUnit linked to APIUnit.", LOG_ERROR);
@@ -121,6 +114,8 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     case CharacterSelectionSuccessMessage::protocolId:
         parent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<CharacterSelectionSuccessMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
         parent->addFrame(make_shared<APIBotUpdatesFrame>());
+        // TODO : 
+        // parent->removeFrame(this);
         break;
 
     case CharacterSelectionFailureMessage::protocolId:

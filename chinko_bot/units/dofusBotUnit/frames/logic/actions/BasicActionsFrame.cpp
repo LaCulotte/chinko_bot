@@ -172,7 +172,7 @@ bool BasicActionsFrame::collectElement(int elementId, int skillId, int skillUID)
 
     auto interactiveElement = dofusBotParent->getMapInfosAsRoleplay()->interactiveElements[elementId];
     auto statedElement = dofusBotParent->getMapInfosAsRoleplay()->statedElements[elementId];
-    
+
     MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, statedElement.elementCellId);
 
     int lastCellId = movPath.toKeyMovements().back() & 0xFFF;

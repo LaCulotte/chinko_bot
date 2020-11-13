@@ -3,6 +3,8 @@
 
 #include "UnknownAPIMessage.h"
 #include "APIHelloMessage.h"
+#include "APINoBotMessage.h"
+#include "APIAuthentificationStatusMessage.h"
 
 #include "BeginAuthentificationMessage.h"
 #include "AuthentificationSuccessMessage.h"

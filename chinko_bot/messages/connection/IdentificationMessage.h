@@ -33,7 +33,7 @@ public:
 	int serverId = 0;
 	vector<char> credentials;
 	string lang = "fr";
-	Version version = Version(2, 57, 8, 11, 0);
+	Version version = Version(2, 57, 9, 12, 0);
 };
 
 #endif

@@ -97,6 +97,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
                 this->killBot();
             } else {
                 parent->addFrame(make_shared<CharacterUpdatesFrame>());
+                dofusBotParent->setConnectedToGameServer();
             }
         } else {
             Logger::write("Received CharacterSelectedSuccessMessage when not supposed to.", LOG_WARNING);

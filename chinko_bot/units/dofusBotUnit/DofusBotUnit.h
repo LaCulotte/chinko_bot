@@ -51,6 +51,8 @@ public:
     GameServerData gameServerInfos;
     sp<ActorData> playedCharacter = nullptr;
     sp<PlayedCharacterManager> characterManager;
+    bool isConnectedToGameServer() { return connectedToGameServer; }
+    void setConnectedToGameServer() { connectedToGameServer = true; }
 
     double currentMapId = 0;
     sp<AbstractMapManager> mapInfos = nullptr;
@@ -59,6 +61,7 @@ public:
 
     void resetNextTick() { toReset = true; };
 
+    // TODO : remove
     bool tempFlag = false;
 
 protected:
@@ -71,6 +74,8 @@ protected:
     int connectionUnitId = -1;
     // APIUnit's MessagingInterface's id
     int apiUnitId = -1;
+
+    bool connectedToGameServer = false;
 
     bool toReset = false;
     void fullReset();
