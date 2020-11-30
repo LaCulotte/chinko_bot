@@ -1,3 +1,9 @@
+%option header-file = "chinko_bot/dscript/products/lexer.h"
+%option outfile     = "chinko_bot/dscript/products/lexer.cpp"
+%option reentrant
+%option bison-bridge
+%option extra-type="parser_data_t*"
+%option noyywrap nounput noinput
 %{
 #include "parser.tab.h"
 #include <stdio.h>
@@ -5,8 +11,8 @@
 #include "../gramm_funcs.h"
 #include "../../../Var/Var.h"
 using namespace std;
-int nline = 1;
 %}
+
 
 %option noyywrap
 
@@ -20,6 +26,7 @@ elseinst	else
 whileinst	while
 forinst		for
 to			to
+ret			return
 lbrack		\{
 rbrack		\}
 ptvirg		\;
@@ -36,7 +43,7 @@ tuint8		(ubyte|uint8)
 tint32		(int32|dword)
 tuint32		(uint32|udword)
 tdouble		(double|fp)
-tstr		str
+tstr		string
 let			let
 /* EXPRESSIONS */
 equal		==
@@ -78,14 +85,14 @@ strv		\"[^\"]*\"
 %%
 
 {blanks}	{ /* ignore */ }
-{newline}	{ nline++; }
-{comment}	{ nline++; }
-{real}		{ yylval.doubleval = atof(yytext); return(REAL); }
-{naturaldec} { yylval.intval = atoi(yytext); return(NATURAL); }
-{naturalhex} { yylval.intval = strtol(yytext+2, NULL, 16); return(NATURAL); }
-{naturalbin} { yylval.intval = strtol(yytext+2, NULL, 2); return(NATURAL); }
-{charv}		{ yylval.intval = *((char*)yytext+1); return(CHARACT); }
-{strv}		{ yylval.strval = (char*)malloc(strlen(yytext)+1); strcpy(yylval.strval, yytext); return(STR); }
+{newline}	{ yyextra->nline++; }
+{comment}	{ yyextra->nline++; }
+{real}		{ yylval->doubleval = atof(yytext); return(REAL); }
+{naturaldec} { yylval->intval = atoi(yytext); return(NATURAL); }
+{naturalhex} { yylval->intval = strtol(yytext+2, NULL, 16); return(NATURAL); }
+{naturalbin} { yylval->intval = strtol(yytext+2, NULL, 2); return(NATURAL); }
+{charv}		{ yylval->intval = *((char*)yytext+1); return(CHARACT); }
+{strv}		{ yylval->strval = (char*)malloc(strlen(yytext)+1); strcpy(yylval->strval, yytext); return(STR); }
 {truev}		{ return(TRUE); }
 {falsev}	{ return(FALSE); }
 {ifinst}	{ return(IF); }
@@ -93,6 +100,7 @@ strv		\"[^\"]*\"
 {whileinst}	{ return(WHILE); }
 {forinst}	{ return(FOR); }
 {to}		{ return(TO); }
+{ret}		{ return(RETURN); }
 {let}		{ return(LET); }
 {tbool}		{ return(TBOOL); }
 {tchar}		{ return(TCHAR); }
@@ -134,4 +142,4 @@ strv		\"[^\"]*\"
 {divass}	{ return(DIVASS); }
 {ptvirg}	{ return(PTV); }
 {comma}		{ return(COMMA); }
-{ident}		{ yylval.strval = (char*)malloc(strlen(yytext)+1); strcpy(yylval.strval, yytext); return(IDENT); }
+{ident}		{ yylval->strval = (char*)malloc(strlen(yytext)+1); strcpy(yylval->strval, yytext); return(IDENT); }

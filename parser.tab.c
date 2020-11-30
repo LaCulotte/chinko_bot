@@ -55,7 +55,7 @@
 #define YYSKELETON_NAME "yacc.c"
 
 /* Pure parsers.  */
-#define YYPURE 2
+#define YYPURE 0
 
 /* Push parsers.  */
 #define YYPUSH 0
@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 19 "chinko_bot/dscript/parser.y"
+#line 2 "chinko_bot/dscript/parser.y"
 
 #include <unordered_map>
 #include <stdexcept>
@@ -81,7 +81,14 @@
 
 using namespace std; 
 
-#line 85 "chinko_bot/dscript/products/parser.tab.cpp"
+int yylex_destroy(void);
+extern int nline;
+extern unordered_map<string, stdf> stdfuncs;
+extern unordered_map<string, ast*> usrfuncs;
+unordered_map<string, sp<IVar>> variables;
+el_alloced_t *fst_el;
+
+#line 92 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -565,14 +572,14 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    76,    76,    78,    79,    81,    82,    84,    85,    87,
-      88,    89,    91,    92,    93,    94,    95,    96,    97,    98,
-     100,   101,   102,   103,   104,   105,   106,   108,   109,   110,
-     111,   112,   113,   114,   115,   117,   117,   117,   117,   117,
-     117,   117,   117,   118,   119,   120,   121,   122,   123,   124,
-     125,   126,   127,   128,   129,   130,   131,   132,   133,   134,
-     135,   136,   137,   138,   139,   140,   141,   142,   144,   145,
-     146,   147,   148,   149,   150,   151
+       0,    68,    68,    70,    71,    73,    74,    76,    77,    79,
+      80,    81,    83,    84,    85,    86,    87,    88,    89,    90,
+      92,    93,    94,    95,    96,    97,    98,   100,   101,   102,
+     103,   104,   105,   106,   107,   109,   109,   109,   109,   109,
+     109,   109,   109,   110,   111,   112,   113,   114,   115,   116,
+     117,   118,   119,   120,   121,   122,   123,   124,   125,   126,
+     127,   128,   129,   130,   131,   132,   133,   134,   136,   137,
+     138,   139,   140,   141,   142,   143
 };
 #endif
 
@@ -874,7 +881,7 @@ enum { YYENOMEM = -2 };
       }                                                           \
     else                                                          \
       {                                                           \
-        yyerror (scanner, data, YY_("syntax error: cannot back up")); \
+        yyerror (YY_("syntax error: cannot back up")); \
         YYERROR;                                                  \
       }                                                           \
   while (0)
@@ -910,7 +917,7 @@ do {                                                                      \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Kind, Value, scanner, data); \
+                  Kind, Value); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -922,12 +929,10 @@ do {                                                                      \
 
 static void
 yy_symbol_value_print (FILE *yyo,
-                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, yyscan_t scanner, parser_data_t *data)
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep)
 {
   FILE *yyoutput = yyo;
   YYUSE (yyoutput);
-  YYUSE (scanner);
-  YYUSE (data);
   if (!yyvaluep)
     return;
 # ifdef YYPRINT
@@ -946,12 +951,12 @@ yy_symbol_value_print (FILE *yyo,
 
 static void
 yy_symbol_print (FILE *yyo,
-                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, yyscan_t scanner, parser_data_t *data)
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep)
 {
   YYFPRINTF (yyo, "%s %s (",
              yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
 
-  yy_symbol_value_print (yyo, yykind, yyvaluep, scanner, data);
+  yy_symbol_value_print (yyo, yykind, yyvaluep);
   YYFPRINTF (yyo, ")");
 }
 
@@ -985,7 +990,7 @@ do {                                                            \
 
 static void
 yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
-                 int yyrule, yyscan_t scanner, parser_data_t *data)
+                 int yyrule)
 {
   int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -998,7 +1003,7 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
                        YY_ACCESSING_SYMBOL (+yyssp[yyi + 1 - yynrhs]),
-                       &yyvsp[(yyi + 1) - (yynrhs)], scanner, data);
+                       &yyvsp[(yyi + 1) - (yynrhs)]);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -1006,7 +1011,7 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
 # define YY_REDUCE_PRINT(Rule)          \
 do {                                    \
   if (yydebug)                          \
-    yy_reduce_print (yyssp, yyvsp, Rule, scanner, data); \
+    yy_reduce_print (yyssp, yyvsp, Rule); \
 } while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1047,11 +1052,9 @@ int yydebug;
 
 static void
 yydestruct (const char *yymsg,
-            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, yyscan_t scanner, parser_data_t *data)
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep)
 {
   YYUSE (yyvaluep);
-  YYUSE (scanner);
-  YYUSE (data);
   if (!yymsg)
     yymsg = "Deleting";
   YY_SYMBOL_PRINT (yymsg, yykind, yyvaluep, yylocationp);
@@ -1062,6 +1065,13 @@ yydestruct (const char *yymsg,
 }
 
 
+/* Lookahead token kind.  */
+int yychar;
+
+/* The semantic value of the lookahead symbol.  */
+YYSTYPE yylval;
+/* Number of syntax errors so far.  */
+int yynerrs;
 
 
 
@@ -1071,21 +1081,8 @@ yydestruct (const char *yymsg,
 `----------*/
 
 int
-yyparse (yyscan_t scanner, parser_data_t *data)
+yyparse (void)
 {
-/* Lookahead token kind.  */
-int yychar;
-
-
-/* The semantic value of the lookahead symbol.  */
-/* Default value used for initialization, for pacifying older GCCs
-   or non-GCC compilers.  */
-YY_INITIAL_VALUE (static YYSTYPE yyval_default;)
-YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
-
-    /* Number of syntax errors so far.  */
-    int yynerrs = 0;
-
     yy_state_fast_t yystate = 0;
     /* Number of tokens to shift before error messages enabled.  */
     int yyerrstatus = 0;
@@ -1236,7 +1233,7 @@ yybackup:
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token\n"));
-      yychar = yylex (&yylval, scanner);
+      yychar = yylex ();
     }
 
   if (yychar <= YYEOF)
@@ -1324,409 +1321,409 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: Functions  */
-#line 76 "chinko_bot/dscript/parser.y"
-                                                                                        { execute(data, (yyvsp[0].instr)); }
-#line 1330 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 68 "chinko_bot/dscript/parser.y"
+                                                                                        { execute((yyvsp[0].instr)); }
+#line 1327 "parser.tab.c"
     break;
 
   case 3: /* Functions: Sequence  */
-#line 78 "chinko_bot/dscript/parser.y"
+#line 70 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = (yyvsp[0].instr); }
-#line 1336 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1333 "parser.tab.c"
     break;
 
   case 4: /* Functions: Functions LET IDENT LPAREN Args RPAREN LBRACK Sequence RBRACK  */
-#line 79 "chinko_bot/dscript/parser.y"
-                                                                                              { declarefunc(data, (yyvsp[-6].strval), (yyvsp[-4].instr), (yyvsp[-1].instr)); (yyval.instr) = (yyvsp[-8].instr); }
-#line 1342 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 71 "chinko_bot/dscript/parser.y"
+                                                                                              { declarefunc((yyvsp[-6].strval), (yyvsp[-4].instr), (yyvsp[-1].instr)); (yyval.instr) = (yyvsp[-8].instr); }
+#line 1339 "parser.tab.c"
     break;
 
   case 5: /* Args: ArgsRec Type Var  */
-#line 81 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = seq(createvar(data, (yyvsp[-1].intval), (yyvsp[0].instr)), (yyvsp[-2].instr)); }
-#line 1348 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 73 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = seq(createvar((yyvsp[-1].intval), (yyvsp[0].instr)), (yyvsp[-2].instr)); }
+#line 1345 "parser.tab.c"
     break;
 
   case 6: /* Args: %empty  */
-#line 82 "chinko_bot/dscript/parser.y"
+#line 74 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
-#line 1354 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1351 "parser.tab.c"
     break;
 
   case 7: /* ArgsRec: ArgsRec Type Var COMMA  */
-#line 84 "chinko_bot/dscript/parser.y"
-                                                                        { (yyval.instr) = seq(createvar(data, (yyvsp[-2].intval), (yyvsp[-1].instr)), (yyvsp[-3].instr)); }
-#line 1360 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 76 "chinko_bot/dscript/parser.y"
+                                                                        { (yyval.instr) = seq(createvar((yyvsp[-2].intval), (yyvsp[-1].instr)), (yyvsp[-3].instr)); }
+#line 1357 "parser.tab.c"
     break;
 
   case 8: /* ArgsRec: %empty  */
-#line 85 "chinko_bot/dscript/parser.y"
+#line 77 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
-#line 1366 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1363 "parser.tab.c"
     break;
 
   case 9: /* Sequence: Instruction Sequence  */
-#line 87 "chinko_bot/dscript/parser.y"
+#line 79 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = seq((yyvsp[-1].instr), (yyvsp[0].instr)); }
-#line 1372 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1369 "parser.tab.c"
     break;
 
   case 10: /* Sequence: Instruction  */
-#line 88 "chinko_bot/dscript/parser.y"
+#line 80 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = (yyvsp[0].instr); }
-#line 1378 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1375 "parser.tab.c"
     break;
 
   case 11: /* Sequence: %empty  */
-#line 89 "chinko_bot/dscript/parser.y"
+#line 81 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
-#line 1384 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1381 "parser.tab.c"
     break;
 
   case 12: /* Instruction: IF Expression LBRACK Sequence RBRACK  */
-#line 91 "chinko_bot/dscript/parser.y"
-                                                    { (yyval.instr) = ifinst(data, (yyvsp[-3].instr), (yyvsp[-1].instr)); }
-#line 1390 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 83 "chinko_bot/dscript/parser.y"
+                                                    { (yyval.instr) = ifinst((yyvsp[-3].instr), (yyvsp[-1].instr)); }
+#line 1387 "parser.tab.c"
     break;
 
   case 13: /* Instruction: IF Expression LBRACK Sequence RBRACK ELSE LBRACK Sequence RBRACK  */
-#line 92 "chinko_bot/dscript/parser.y"
-                                                                                                        { (yyval.instr) = ifelseinst(data, (yyvsp[-7].instr), (yyvsp[-5].instr), (yyvsp[-1].instr)); }
-#line 1396 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 84 "chinko_bot/dscript/parser.y"
+                                                                                                        { (yyval.instr) = ifelseinst((yyvsp[-7].instr), (yyvsp[-5].instr), (yyvsp[-1].instr)); }
+#line 1393 "parser.tab.c"
     break;
 
   case 14: /* Instruction: WHILE Expression LBRACK Sequence RBRACK  */
-#line 93 "chinko_bot/dscript/parser.y"
-                                                                                                                                { (yyval.instr) = whileinst(data, (yyvsp[-3].instr), (yyvsp[-1].instr)); }
-#line 1402 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 85 "chinko_bot/dscript/parser.y"
+                                                                                                                                { (yyval.instr) = whileinst((yyvsp[-3].instr), (yyvsp[-1].instr)); }
+#line 1399 "parser.tab.c"
     break;
 
   case 15: /* Instruction: FOR Assignment TO Expression LBRACK Sequence RBRACK  */
-#line 94 "chinko_bot/dscript/parser.y"
-                                                                                                                        { (yyval.instr) = forinst(data, (yyvsp[-5].instr), (yyvsp[-3].instr), (yyvsp[-1].instr)); }
-#line 1408 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 86 "chinko_bot/dscript/parser.y"
+                                                                                                                        { (yyval.instr) = forinst((yyvsp[-5].instr), (yyvsp[-3].instr), (yyvsp[-1].instr)); }
+#line 1405 "parser.tab.c"
     break;
 
   case 16: /* Instruction: Assignment PTV  */
-#line 95 "chinko_bot/dscript/parser.y"
+#line 87 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = (yyvsp[-1].instr); }
-#line 1414 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1411 "parser.tab.c"
     break;
 
   case 17: /* Instruction: IDENT LPAREN Expression RPAREN PTV  */
-#line 96 "chinko_bot/dscript/parser.y"
-                                                                        { (yyval.instr) = loadfunction(data, (yyvsp[-4].strval), (yyvsp[-2].instr)); }
-#line 1420 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 88 "chinko_bot/dscript/parser.y"
+                                                                        { (yyval.instr) = loadfunction((yyvsp[-4].strval), (yyvsp[-2].instr)); }
+#line 1417 "parser.tab.c"
     break;
 
   case 18: /* Instruction: IDENT LPAREN RPAREN PTV  */
-#line 97 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = loadfunction(data, (yyvsp[-3].strval), NULL); }
-#line 1426 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 89 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = loadfunction((yyvsp[-3].strval), NULL); }
+#line 1423 "parser.tab.c"
     break;
 
   case 19: /* Instruction: RETURN Expression PTV  */
-#line 98 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = unary_operator(data, (yyvsp[-1].instr), RETURN); }
-#line 1432 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 90 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = unary_operator((yyvsp[-1].instr), RETURN); }
+#line 1429 "parser.tab.c"
     break;
 
   case 20: /* Assignment: Var ASSIGN Expression  */
-#line 100 "chinko_bot/dscript/parser.y"
-                                                                        { (yyval.instr) = assignment(data, (yyvsp[-2].instr), (yyvsp[0].instr)); }
-#line 1438 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 92 "chinko_bot/dscript/parser.y"
+                                                                        { (yyval.instr) = assignment((yyvsp[-2].instr), (yyvsp[0].instr)); }
+#line 1435 "parser.tab.c"
     break;
 
   case 21: /* Assignment: Var PLUSASS Expression  */
-#line 101 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), PLUSASS); }
-#line 1444 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 93 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), PLUSASS); }
+#line 1441 "parser.tab.c"
     break;
 
   case 22: /* Assignment: Var MINUSASS Expression  */
-#line 102 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MINUSASS); }
-#line 1450 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 94 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), MINUSASS); }
+#line 1447 "parser.tab.c"
     break;
 
   case 23: /* Assignment: Var MULTASS Expression  */
-#line 103 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MULTASS); }
-#line 1456 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 95 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), MULTASS); }
+#line 1453 "parser.tab.c"
     break;
 
   case 24: /* Assignment: Var DIVASS Expression  */
-#line 104 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), DIVASS); }
-#line 1462 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 96 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), DIVASS); }
+#line 1459 "parser.tab.c"
     break;
 
   case 25: /* Assignment: Type Var ASSIGN Expression  */
-#line 105 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = create_assign(data, (yyvsp[-3].intval), (yyvsp[-2].instr), (yyvsp[0].instr)); }
-#line 1468 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 97 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = create_assign((yyvsp[-3].intval), (yyvsp[-2].instr), (yyvsp[0].instr)); }
+#line 1465 "parser.tab.c"
     break;
 
   case 26: /* Assignment: Type Var  */
-#line 106 "chinko_bot/dscript/parser.y"
-                                                                                                { (yyval.instr) = createvar(data, (yyvsp[-1].intval), (yyvsp[0].instr)); }
-#line 1474 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 98 "chinko_bot/dscript/parser.y"
+                                                                                                { (yyval.instr) = createvar((yyvsp[-1].intval), (yyvsp[0].instr)); }
+#line 1471 "parser.tab.c"
     break;
 
   case 27: /* Type: TBOOL  */
-#line 108 "chinko_bot/dscript/parser.y"
+#line 100 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.intval) = BOOL; }
-#line 1480 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1477 "parser.tab.c"
     break;
 
   case 28: /* Type: TCHAR  */
-#line 109 "chinko_bot/dscript/parser.y"
+#line 101 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = CHAR; }
-#line 1486 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1483 "parser.tab.c"
     break;
 
   case 29: /* Type: TINT8  */
-#line 110 "chinko_bot/dscript/parser.y"
+#line 102 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = INT8; }
-#line 1492 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1489 "parser.tab.c"
     break;
 
   case 30: /* Type: TUINT8  */
-#line 111 "chinko_bot/dscript/parser.y"
+#line 103 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = UINT8; }
-#line 1498 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1495 "parser.tab.c"
     break;
 
   case 31: /* Type: TINT32  */
-#line 112 "chinko_bot/dscript/parser.y"
+#line 104 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = INT32; }
-#line 1504 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1501 "parser.tab.c"
     break;
 
   case 32: /* Type: TUINT32  */
-#line 113 "chinko_bot/dscript/parser.y"
+#line 105 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = UINT32; }
-#line 1510 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1507 "parser.tab.c"
     break;
 
   case 33: /* Type: TDOUBLE  */
-#line 114 "chinko_bot/dscript/parser.y"
+#line 106 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = DOUBLE; }
-#line 1516 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1513 "parser.tab.c"
     break;
 
   case 34: /* Type: TSTR  */
-#line 115 "chinko_bot/dscript/parser.y"
+#line 107 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = STRING; }
-#line 1522 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1519 "parser.tab.c"
     break;
 
   case 42: /* Expression: Paren  */
-#line 117 "chinko_bot/dscript/parser.y"
+#line 109 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = (yyvsp[0].instr); }
-#line 1528 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1525 "parser.tab.c"
     break;
 
   case 43: /* Ops: Expression EQ Expression  */
-#line 118 "chinko_bot/dscript/parser.y"
-                                                                        { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), EQ); }
-#line 1534 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 110 "chinko_bot/dscript/parser.y"
+                                                                        { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), EQ); }
+#line 1531 "parser.tab.c"
     break;
 
   case 44: /* Ops: Expression NEQ Expression  */
-#line 119 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), NEQ); }
-#line 1540 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 111 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), NEQ); }
+#line 1537 "parser.tab.c"
     break;
 
   case 45: /* Ops: Expression GT Expression  */
-#line 120 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), GT); }
-#line 1546 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 112 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), GT); }
+#line 1543 "parser.tab.c"
     break;
 
   case 46: /* Ops: Expression LT Expression  */
-#line 121 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LT); }
-#line 1552 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 113 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), LT); }
+#line 1549 "parser.tab.c"
     break;
 
   case 47: /* Ops: Expression GTEQ Expression  */
-#line 122 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), GTEQ); }
-#line 1558 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 114 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), GTEQ); }
+#line 1555 "parser.tab.c"
     break;
 
   case 48: /* Ops: Expression LTEQ Expression  */
-#line 123 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LTEQ); }
-#line 1564 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 115 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), LTEQ); }
+#line 1561 "parser.tab.c"
     break;
 
   case 49: /* Ops: Expression PLUS Expression  */
-#line 124 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), PLUS); }
-#line 1570 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 116 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), PLUS); }
+#line 1567 "parser.tab.c"
     break;
 
   case 50: /* Ops: Expression MINUS Expression  */
-#line 125 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MINUS); }
-#line 1576 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 117 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), MINUS); }
+#line 1573 "parser.tab.c"
     break;
 
   case 51: /* Ops: Expression MULT Expression  */
-#line 126 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MULT); }
-#line 1582 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 118 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), MULT); }
+#line 1579 "parser.tab.c"
     break;
 
   case 52: /* Ops: Expression DIV Expression  */
-#line 127 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), DIV); }
-#line 1588 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 119 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), DIV); }
+#line 1585 "parser.tab.c"
     break;
 
   case 53: /* Ops: Expression MOD Expression  */
-#line 128 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MOD); }
-#line 1594 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 120 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), MOD); }
+#line 1591 "parser.tab.c"
     break;
 
   case 54: /* Ops: Expression POW Expression  */
-#line 129 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), POW); }
-#line 1600 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 121 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), POW); }
+#line 1597 "parser.tab.c"
     break;
 
   case 55: /* Ops: Expression LAND Expression  */
-#line 130 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LAND); }
-#line 1606 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 122 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), LAND); }
+#line 1603 "parser.tab.c"
     break;
 
   case 56: /* Ops: Expression LOR Expression  */
-#line 131 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LOR); }
-#line 1612 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 123 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), LOR); }
+#line 1609 "parser.tab.c"
     break;
 
   case 57: /* Ops: Expression BAND Expression  */
-#line 132 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BAND); }
-#line 1618 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 124 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), BAND); }
+#line 1615 "parser.tab.c"
     break;
 
   case 58: /* Ops: Expression BXOR Expression  */
-#line 133 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BXOR); }
-#line 1624 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 125 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), BXOR); }
+#line 1621 "parser.tab.c"
     break;
 
   case 59: /* Ops: Expression BOR Expression  */
-#line 134 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BOR); }
-#line 1630 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 126 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), BOR); }
+#line 1627 "parser.tab.c"
     break;
 
   case 60: /* Ops: Expression LSHIFT Expression  */
-#line 135 "chinko_bot/dscript/parser.y"
-                                                                        { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LSHIFT); }
-#line 1636 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 127 "chinko_bot/dscript/parser.y"
+                                                                        { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), LSHIFT); }
+#line 1633 "parser.tab.c"
     break;
 
   case 61: /* Ops: Expression RSHIFT Expression  */
-#line 136 "chinko_bot/dscript/parser.y"
-                                                                        { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), RSHIFT); }
-#line 1642 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 128 "chinko_bot/dscript/parser.y"
+                                                                        { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), RSHIFT); }
+#line 1639 "parser.tab.c"
     break;
 
   case 62: /* Ops: Expression COMMA Expression  */
-#line 137 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), COMMA); }
-#line 1648 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 129 "chinko_bot/dscript/parser.y"
+                                                                                { (yyval.instr) = binary_operator((yyvsp[-2].instr), (yyvsp[0].instr), COMMA); }
+#line 1645 "parser.tab.c"
     break;
 
   case 63: /* Ops: LNOT Expression  */
-#line 138 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), LNOT); }
-#line 1654 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 130 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = unary_operator((yyvsp[0].instr), LNOT); }
+#line 1651 "parser.tab.c"
     break;
 
   case 64: /* Ops: BNOT Expression  */
-#line 139 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), BNOT); }
-#line 1660 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 131 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = unary_operator((yyvsp[0].instr), BNOT); }
+#line 1657 "parser.tab.c"
     break;
 
   case 65: /* Ops: MINUS Expression  */
-#line 140 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), UNARY_MINUS); }
-#line 1666 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 132 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = unary_operator((yyvsp[0].instr), UNARY_MINUS); }
+#line 1663 "parser.tab.c"
     break;
 
   case 66: /* Ops: IDENT LPAREN Expression RPAREN  */
-#line 141 "chinko_bot/dscript/parser.y"
-                                                                        { (yyval.instr) = loadfunction(data, (yyvsp[-3].strval), (yyvsp[-1].instr)); }
-#line 1672 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 133 "chinko_bot/dscript/parser.y"
+                                                                        { (yyval.instr) = loadfunction((yyvsp[-3].strval), (yyvsp[-1].instr)); }
+#line 1669 "parser.tab.c"
     break;
 
   case 67: /* Ops: IDENT LPAREN RPAREN  */
-#line 142 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = loadfunction(data, (yyvsp[-2].strval), NULL); }
-#line 1678 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 134 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = loadfunction((yyvsp[-2].strval), NULL); }
+#line 1675 "parser.tab.c"
     break;
 
   case 68: /* Paren: LPAREN Expression RPAREN  */
-#line 144 "chinko_bot/dscript/parser.y"
+#line 136 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = (yyvsp[-1].instr); }
-#line 1684 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1681 "parser.tab.c"
     break;
 
   case 69: /* Nat: NATURAL  */
-#line 145 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = loadnatural(data, (yyvsp[0].intval)); }
-#line 1690 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 137 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = loadnatural((yyvsp[0].intval)); }
+#line 1687 "parser.tab.c"
     break;
 
   case 70: /* Real: REAL  */
-#line 146 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = loadreal(data, (yyvsp[0].doubleval)); }
-#line 1696 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 138 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = loadreal((yyvsp[0].doubleval)); }
+#line 1693 "parser.tab.c"
     break;
 
   case 71: /* Char: CHARACT  */
-#line 147 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = loadnatural(data, (yyvsp[0].intval)); }
-#line 1702 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 139 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = loadnatural((yyvsp[0].intval)); }
+#line 1699 "parser.tab.c"
     break;
 
   case 72: /* Bool: TRUE  */
-#line 148 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = loadnatural(data, 1); }
-#line 1708 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 140 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = loadnatural(1); }
+#line 1705 "parser.tab.c"
     break;
 
   case 73: /* Bool: FALSE  */
-#line 149 "chinko_bot/dscript/parser.y"
-                                                                                                { (yyval.instr) = loadnatural(data, 0); }
-#line 1714 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 141 "chinko_bot/dscript/parser.y"
+                                                                                                { (yyval.instr) = loadnatural(0); }
+#line 1711 "parser.tab.c"
     break;
 
   case 74: /* Str: STR  */
-#line 150 "chinko_bot/dscript/parser.y"
-                                                                                                { (yyval.instr) = loadstr(data, (yyvsp[0].strval)); }
-#line 1720 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 142 "chinko_bot/dscript/parser.y"
+                                                                                                { (yyval.instr) = loadstr((yyvsp[0].strval)); }
+#line 1717 "parser.tab.c"
     break;
 
   case 75: /* Var: IDENT  */
-#line 151 "chinko_bot/dscript/parser.y"
-                                                                                        { (yyval.instr) = loadvar(data, (yyvsp[0].strval)); }
-#line 1726 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 143 "chinko_bot/dscript/parser.y"
+                                                                                        { (yyval.instr) = loadvar((yyvsp[0].strval)); }
+#line 1723 "parser.tab.c"
     break;
 
 
-#line 1730 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1727 "parser.tab.c"
 
       default: break;
     }
@@ -1773,7 +1770,7 @@ yyerrlab:
   if (!yyerrstatus)
     {
       ++yynerrs;
-      yyerror (scanner, data, YY_("syntax error"));
+      yyerror (YY_("syntax error"));
     }
 
   if (yyerrstatus == 3)
@@ -1790,7 +1787,7 @@ yyerrlab:
       else
         {
           yydestruct ("Error: discarding",
-                      yytoken, &yylval, scanner, data);
+                      yytoken, &yylval);
           yychar = YYEMPTY;
         }
     }
@@ -1845,7 +1842,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-                  YY_ACCESSING_SYMBOL (yystate), yyvsp, scanner, data);
+                  YY_ACCESSING_SYMBOL (yystate), yyvsp);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -1884,7 +1881,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (scanner, data, YY_("memory exhausted"));
+  yyerror (YY_("memory exhausted"));
   yyresult = 2;
   goto yyreturn;
 #endif
@@ -1900,7 +1897,7 @@ yyreturn:
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval, scanner, data);
+                  yytoken, &yylval);
     }
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
@@ -1909,7 +1906,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp, scanner, data);
+                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -1920,11 +1917,8 @@ yyreturn:
   return yyresult;
 }
 
-#line 153 "chinko_bot/dscript/parser.y"
+#line 145 "chinko_bot/dscript/parser.y"
 
-
-#include "products/parser.tab.h"
-#include "products/lexer.h"
 
 
 void throw_exception(const string err, int nl) {
@@ -1936,70 +1930,42 @@ void throw_exception(const string err, int nl) {
 	throw runtime_error(error);
 }
 
-int yyerror(yyscan_t scanner, parser_data_t *data, const char *s) {
-	throw_exception(string(s), data->nline);
-}
-
-
-void dscript_cmd(const char *code) {
-	parser_data_t data = {};
-	data.nline = 1;
-	data.fst_el = NULL;
-	data.variables = {};
-	initstd(&data);
-
-	yyscan_t scanner;
-	if(yylex_init(&scanner)) {
-		throw runtime_error("Error while initializing the parser.");
-	}
-	yylex_init_extra(&data, &scanner);
-	YY_BUFFER_STATE buf = yy_scan_string(code, scanner);
-	try {
-		yyparse(scanner, &data);
-	} catch(const exception& e) {
-		yy_delete_buffer(buf, scanner);
-		yylex_destroy(scanner);
-		free_list(data.fst_el);
-		// SI TU VEUX CHANGER LA MANIÈRE DONT SONT GÉRÉES LES EXCEPTIONS C'EST ICI...
-		throw runtime_error(e.what());
-	}
-	yy_delete_buffer(buf, scanner);
-	yylex_destroy(scanner);
-	free_list(data.fst_el);
+int yyerror(const char *s) {
+	throw_exception(string(s), nline);
 }
 
 void dscript(const char *file) {
-	FILE *fp = fopen(file, "r");
-	fseek(fp, 0L, SEEK_END);
-	size_t size = ftell(fp);
-	rewind(fp);
-	char code[size+1];
-	
-	fread(code, 1, size, fp);
-	code[size] = 0x0;
+	// le reset marche pas
+	// faut voir du cote de yyrestart peut-être ? (CF lexer.cpp)
+	variables = {};
+	initstd();
+	FILE *fp = freopen(file, "r", stdin);
+	fst_el = NULL;
 	try {
-		dscript_cmd(code);
+		cout << "appreter..." << endl;
+		yyparse();
+		cout << "end!" << endl;
 	} catch(const exception& e) {
+		free_list(fst_el);
 		fclose(fp);
-		// ...ET ICI
+		// SI TU VEUX CHANGER LA FAÇON DONT SONT GÉRÉES LES ERREURS C'EST ICI !
 		throw runtime_error(e.what());
 	}
-	
+
+	free_list(fst_el);
+	cout << "appreter..." << endl;
+		yyparse();
+		cout << "end!" << endl;
 	fclose(fp);
 }
 
 
 void free_list(el_alloced_t *list) {
-	el_alloced_t *cur = list;
-	while(cur!=NULL) {
-		el_alloced_t *tmp = cur->next;
-		if(cur->type==0)
-			free(cur->el);
-		else
-			delete (string*)cur->el;
-		free(cur);
-		cur = tmp;
-	}
+	if(list==NULL)
+		return;
+	free_list(list->next);
+	free(list->el);
+	free(list);
 }
 
 
@@ -2069,31 +2035,31 @@ void disp_recur(ast *x, int nbsp) {
 }
 
 
-void execute(parser_data_t *data, ast *x) {
+void execute(ast *x) {
 	cout << endl;
 	disp_recur(x, 0);
 	cout << endl;
-	run(data, x, true);
+	//run(x, true);
 }
 
 
-void parse_params(parser_data_t *data, vector<sp<IVar>> *dst, ast *ast) {
+void parse_params(vector<sp<IVar>> *dst, ast *ast) {
 	if(ast->token == COMMA) {
-		dst->insert(dst->begin(), parse_expr(data, ast->fst_child->next_sibling));
-		parse_params(data, dst, ast->fst_child);
+		dst->insert(dst->begin(), parse_expr(ast->fst_child->next_sibling));
+		parse_params(dst, ast->fst_child);
 	} else
-		dst->insert(dst->begin(), parse_expr(data, ast));
+		dst->insert(dst->begin(), parse_expr(ast));
 }
 
 
-sp<IVar> parse_expr(parser_data_t *data, ast *ast) {
+sp<IVar> parse_expr(ast *ast) {
 	/* CHECKING TYPES COMPATIBILITY */
 	sp<IVar> expr1;
 	sp<IVar> expr2;
 	if(ast->fst_child != NULL && ast->token != FUNC) {
-		expr1 = parse_expr(data, ast->fst_child);
+		expr1 = parse_expr(ast->fst_child);
 		if(ast->token != COMMA && ast->fst_child->next_sibling != NULL) {
-			expr2 = parse_expr(data, ast->fst_child->next_sibling);
+			expr2 = parse_expr(ast->fst_child->next_sibling);
 			watchdog_type(expr1->get_type(), expr2->get_type(), ast);
 		}
 	}
@@ -2102,7 +2068,7 @@ sp<IVar> parse_expr(parser_data_t *data, ast *ast) {
 		case COMMA:
 			throw_exception("syntax error ','", ast->nline);
 		case FUNC: {
-			sp<IVar> ret = runfunc(data, *ast->strvalue, ast);
+			sp<IVar> ret = runfunc(*ast->strvalue, ast);
 			if(ret==NULL)
 				throw_exception("void function in expression", ast->nline);
 			return ret;
@@ -2121,7 +2087,7 @@ sp<IVar> parse_expr(parser_data_t *data, ast *ast) {
 			return stdpow(args);
 		} case UNARY_MINUS: {
 			const sp<IVar> ZERO = make_shared<Var<int>>(0);
-			return *ZERO - *parse_expr(data, ast->fst_child);
+			return *ZERO - *parse_expr(ast->fst_child);
 		} case EQ:
 			return make_shared<Var<bool>>(*expr1==(*expr2));
 		case LT:
@@ -2154,61 +2120,62 @@ sp<IVar> parse_expr(parser_data_t *data, ast *ast) {
 			return make_shared<Var<string>>(*ast->strvalue);
 		case IDENT:
 			string varname = *ast->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
+			if(variables.find(varname) == variables.end())
 				throw_exception("unknown variable!", ast->nline);
-			return data->variables.at(varname);
+			return variables.at(varname);
 	}
 	return 0;
 }
 
 
-sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
+sp<IVar> run(ast *ast, bool recur) {
 	if(ast==NULL)
 		return NULL;
 	switch(ast->token) {
+
 		case IF:
-			if(parse_expr(data, ast->fst_child))
-				run(data, ast->fst_child->next_sibling, true);
+			if(parse_expr(ast->fst_child))
+				run(ast->fst_child->next_sibling, true);
 			break;
 		case IFELSE:
-			if(parse_expr(data, ast->fst_child))
-				run(data, ast->fst_child->next_sibling->fst_child, true);
+			if(parse_expr(ast->fst_child))
+				run(ast->fst_child->next_sibling->fst_child, true);
 			else
-				run(data, ast->fst_child->next_sibling->next_sibling->fst_child, true);
+				run(ast->fst_child->next_sibling->next_sibling->fst_child, true);
 			break;
 		case WHILE:
-			while(*(bool*)(*parse_expr(data, ast->fst_child)).value)
-				run(data, ast->fst_child->next_sibling, true);
+			while(*(bool*)(*parse_expr(ast->fst_child)).value)
+				run(ast->fst_child->next_sibling, true);
 			break;
 		case FOR: {
-			run(data, ast->fst_child, false);
+			run(ast->fst_child, false);
 			string varname = *ast->fst_child->next_sibling->fst_child->strvalue;
 			const IVar ONE = Var<int>(1);
-			while(*(bool*)(*parse_expr(data, ast->fst_child->next_sibling)).value) {
-				run(data, ast->fst_child->next_sibling->next_sibling, true);
-				data->variables.at(varname) = cast_type(data->variables.at(varname)->get_type(), *data->variables.at(varname)+ONE);
+			while(*(bool*)(*parse_expr(ast->fst_child->next_sibling)).value) {
+				run(ast->fst_child->next_sibling->next_sibling, true);
+				variables.at(varname) = cast_type(variables.at(varname)->get_type(), *variables.at(varname)+ONE);
 			}
 			break;
 		} case CREATEVAR: {
 			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(data->variables.find(varname) != data->variables.end())
+			if(variables.find(varname) != variables.end())
 				throw_exception("variable initialized twice!", ast->nline);
 			const sp<IVar> ZERO = cast_type(ast->fst_child->intvalue, make_shared<Var<int>>(0));
-			data->variables.insert({varname, ZERO});
+			variables.insert({varname, ZERO});
 			break;
 		} case CREATEASSIGN: {
 			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(data->variables.find(varname) != data->variables.end())
+			if(variables.find(varname) != variables.end())
 				throw_exception("variable initialized twice!", ast->nline);
-			sp<IVar> val = cast_type(ast->fst_child->intvalue, parse_expr(data, ast->fst_child->next_sibling->next_sibling));
-			data->variables.insert({varname, val});
+			sp<IVar> val = cast_type(ast->fst_child->intvalue, parse_expr(ast->fst_child->next_sibling->next_sibling));
+			variables.insert({varname, val});
 			break;
 		} case ASSIGN: {
 			string varname = *ast->fst_child->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
+			if(variables.find(varname) == variables.end())
 				throw_exception("unknown variable!", ast->nline);
-			sp<IVar> val = cast_type(data->variables.at(varname)->get_type(), parse_expr(data, ast->fst_child->next_sibling));
-			data->variables.at(varname) = val;
+			sp<IVar> val = cast_type(variables.at(varname)->get_type(), parse_expr(ast->fst_child->next_sibling));
+			variables.at(varname) = val;
 			break;
 		}
 		case PLUSASS:
@@ -2216,46 +2183,46 @@ sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
 		case MULTASS:
 		case DIVASS: {
 			string varname = *ast->fst_child->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
+			if(variables.find(varname) == variables.end())
 				throw_exception("unknown variable!", ast->nline);
-			const sp<IVar> expr = parse_expr(data, ast->fst_child->next_sibling);
-			watchdog_type(data->variables.at(varname)->get_type(), expr->get_type(), ast);
+			const sp<IVar> expr = parse_expr(ast->fst_child->next_sibling);
+			watchdog_type(variables.at(varname)->get_type(), expr->get_type(), ast);
 			sp<IVar> val;
 			if(ast->token==PLUSASS)
-				val = *data->variables.at(varname) + *expr;
+				val = *variables.at(varname) + *expr;
 			else if(ast->token==MINUSASS)
-				val = *data->variables.at(varname) - *expr;
+				val = *variables.at(varname) - *expr;
 			else if(ast->token==MULTASS)
-				val = *data->variables.at(varname) * *expr;
+				val = *variables.at(varname) * *expr;
 			else if(ast->token==DIVASS)
-				val = *data->variables.at(varname) / *expr;
+				val = *variables.at(varname) / *expr;
 			
-			data->variables.at(varname) = cast_type(data->variables.at(varname)->get_type(), val);
+			variables.at(varname) = cast_type(variables.at(varname)->get_type(), val);
 			break;
 		} case FUNC: {
-			runfunc(data, *ast->strvalue, ast);
+			runfunc(*ast->strvalue, ast);
 			break;
 		} case RETURN:
-			return parse_expr(data, ast->fst_child);
+			return parse_expr(ast->fst_child);
 			break;
 		default:
 			throw_exception("unrecognized token!", ast->nline);
 	}
 	if(recur)
-		return run(data, ast->next_sibling, true);
+		return run(ast->next_sibling, true);
 	return NULL;
 }
 
 
-sp<IVar> runfunc(parser_data_t *data, string funcname, ast *ast) {
+sp<IVar> runfunc(string funcname, ast *ast) {
 	vector<sp<IVar>> params{};
 	if(ast->fst_child!=NULL)
-		parse_params(data, &params, ast->fst_child);
+		parse_params(&params, ast->fst_child);
 
-	if(data->stdfuncs.find(funcname) != data->stdfuncs.end())
-		return data->stdfuncs[funcname](params);
+	if(stdfuncs.find(funcname) != stdfuncs.end())
+		return stdfuncs[funcname](params);
 
-	if(data->usrfuncs.find(funcname) != data->usrfuncs.end()) {
+	if(usrfuncs.find(funcname) != usrfuncs.end()) {
 
 		// A FAIRE MAINTENANT : LA PORTÉE DES VARIABLES
 		// SUR LE COUP JE ME SUIS DIT QUE JE METTRAIS EN PARAM DE RUN ET DES PARSE_*** LA THASH DES VARS
@@ -2265,7 +2232,7 @@ sp<IVar> runfunc(parser_data_t *data, string funcname, ast *ast) {
 		// Idée, je peux mettre en place une structure de cette sorte (un peu cheloue avec pas forcément un pointeur 
 		// vers le fils mais plutôt un pointeur vers le père)
 
-		return run(data, data->usrfuncs[funcname]->next_sibling, true);
+		return run(usrfuncs[funcname]->next_sibling, true);
 	}
 
 	throw_exception("function not found...", ast->nline);

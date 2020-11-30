@@ -5,19 +5,23 @@
 #include <vector>
 
 
-int yylex();
+void dscript(const char *file);
 
-int yyerror(const char *s);
+void dscript_cmd(const char *code);
 
-void parse_params(std::vector<sp<IVar>> *dst, ast *ast);
+void throw_exception(const std::string err, int nl);
 
-sp<IVar> parse_expr(ast *ast);
+void free_list(el_alloced_t *list);
 
-void run(ast *ast, bool recur);
+void parse_params(parser_data_t *data, std::vector<sp<IVar>> *dst, ast *ast);
 
-void execute(ast *x);
+sp<IVar> parse_expr(parser_data_t *data, ast *ast);
 
-sp<IVar> runfunc(std::string funcname, ast *ast);
+sp<IVar> run(parser_data_t *data, ast *ast, bool recur);
+
+void execute(parser_data_t *data, ast *x);
+
+sp<IVar> runfunc(parser_data_t *data, std::string funcname, ast *ast);
 
 bool castable(int type1, int type2);
 

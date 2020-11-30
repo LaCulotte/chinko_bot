@@ -1,23 +1,35 @@
 %require "3.2"
+%define api.pure full
+%lex-param   { yyscan_t scanner }
+%parse-param { yyscan_t scanner }
+%parse-param { parser_data_t *data }
+
+%code requires{
+#include "parser.h"
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void* yyscan_t;
+#endif
+
+typedef union YYSTYPE YYSTYPE;
+int yyerror(yyscan_t scanner, parser_data_t *data, const char *s);
+extern int yylex(YYSTYPE * yylval_param , yyscan_t yyscanner);
+}
+
 %{
 #include <unordered_map>
+#include <stdexcept>
 #include <stdio.h>
 #include <iostream>
 #include <string>
 #include <math.h>
 #include "std.h"
 #include "../../../Var/Var.h"
+#include "gramm_funcs.h"
 
 using namespace std; 
-int error;
-extern int nline;
-extern unordered_map<string, stdf> stdfuncs;
-unordered_map<string, sp<IVar>> variables;
 %}
 
-%code requires{
-#include "parser.h"
-}
 
 %union {
 	ast *instr;
@@ -40,7 +52,7 @@ unordered_map<string, sp<IVar>> variables;
 %left MULT DIV MOD
 %right POW
 %token LNOT BNOT
-%token UNARY_MINUS LPAREN RPAREN LET FUNC INIT_ARGS INIT_FUNC IF ELSE LBRACK RBRACK PTV ASSIGN WHILE FOR TO IFELSE CREATEVAR CREATEASSIGN TYPE PLUSASS MINUSASS MULTASS DIVASS
+%token RETURN UNARY_MINUS LPAREN RPAREN LET FUNC INIT_ARGS INIT_FUNC IF ELSE LBRACK RBRACK PTV ASSIGN WHILE FOR TO IFELSE CREATEVAR CREATEASSIGN TYPE PLUSASS MINUSASS MULTASS DIVASS
 %type <instr> Program Sequence Instruction Expression Ops Paren Nat Real Char Bool Str Var Assignment Functions Args ArgsRec
 %type <intval> NATURAL CHARACT Type
 %type <strval> IDENT STR
@@ -49,46 +61,48 @@ unordered_map<string, sp<IVar>> variables;
 
 %%
 
-// TODO : 	- Fonctions personnelles ?
-//			- Demander à Chriggz de faire en sorte que char+int = char (dans un print par exemple) : quioque, je crois que c'est juste qu'un char est mal affiché dans un print
-//			- Discuter avec Chriggz du fait de ne garder que 1 type de var parmi (u)int8_t et (u)int32_t
-//					-> en effet ce qu'on veut faire un langage haut niveau très simple, et ça simplifierait le langage
-//			- Changer les malloc en make_shared (notamment dans new_ast())
+// TODO : 	- Fonctions personnelles
+//			- Enlever typage fort (donc enlever le type byte)
 //			- Il n'y a pas d'analyse paresseuse des expressions booléennes...
+//			- tableaux
+//			- pouvoir arrêter à tout moment
+//			- pouvoir appeler un script
+//			- enlever les segfault notamment quand une fonction n'existe pas
+//			- mon comptage de ligne est faux (puisque nline est la dernière ligne traitée) : il parait qu'il y a une fonction pour connaitre la ligne du token mais elle a pas l'air commode
 
 
-// CURRENT : NORMALEMENT ÇA DEVRAIT MARCHER MAIS LES FONCTIONS ACCEPTANT STRCIT PLUS DE 2 ARGS FONT PLANTER
 
-
-Program:		Functions							{ execute($1); }
+Program:		Functions							{ execute(data, $1); }
 
 Functions:		Sequence							{ $$ = $1; }
-		|		Functions LET IDENT LPAREN Args RPAREN LBRACK Sequence RBRACK { $$ = declarefunc($3, $5, $8); }
+		|		Functions LET IDENT LPAREN Args RPAREN LBRACK Sequence RBRACK { declarefunc(data, $3, $5, $8); $$ = $1; }
 
-Args:			ArgsRec Type Var					{ $$ = seq(createvar($2, $3), $1); }
+Args:			ArgsRec Type Var					{ $$ = seq(createvar(data, $2, $3), $1); }
 		|		%empty								{ $$ = NULL; }
 
-ArgsRec:		ArgsRec Type Var COMMA				{ $$ = seq(createvar($2, $3), $1); }
+ArgsRec:		ArgsRec Type Var COMMA				{ $$ = seq(createvar(data, $2, $3), $1); }
 		|		%empty								{ $$ = NULL; }
 
 Sequence:		Instruction Sequence				{ $$ = seq($1, $2); }
 		|		Instruction							{ $$ = $1; }
 		|		%empty								{ $$ = NULL; }
 
-Instruction:	IF Expression LBRACK Sequence RBRACK{ $$ = ifinst($2, $4); }
-		|		IF Expression LBRACK Sequence RBRACK ELSE LBRACK Sequence RBRACK	{ $$ = ifelseinst($2, $4, $8); }
-		|		WHILE Expression LBRACK Sequence RBRACK								{ $$ = whileinst($2, $4); }
-		|		FOR Assignment TO Expression LBRACK Sequence RBRACK					{ $$ = forinst($2, $4, $6); }
+Instruction:	IF Expression LBRACK Sequence RBRACK{ $$ = ifinst(data, $2, $4); }
+		|		IF Expression LBRACK Sequence RBRACK ELSE LBRACK Sequence RBRACK	{ $$ = ifelseinst(data, $2, $4, $8); }
+		|		WHILE Expression LBRACK Sequence RBRACK								{ $$ = whileinst(data, $2, $4); }
+		|		FOR Assignment TO Expression LBRACK Sequence RBRACK					{ $$ = forinst(data, $2, $4, $6); }
 		|		Assignment PTV						{ $$ = $1; }
-		|		Expression PTV						{ /* Do nothing */ }
+		|		IDENT LPAREN Expression RPAREN PTV	{ $$ = loadfunction(data, $1, $3); }
+		|		IDENT LPAREN RPAREN PTV				{ $$ = loadfunction(data, $1, NULL); }
+		|		RETURN Expression PTV				{ $$ = unary_operator(data, $2, RETURN); }
 
-Assignment:		Var ASSIGN Expression				{ $$ = assignment($1, $3); }
-		|		Var PLUSASS Expression				{ $$ = binary_operator($1, $3, PLUSASS); }
-		|		Var MINUSASS Expression				{ $$ = binary_operator($1, $3, MINUSASS); }
-		|		Var MULTASS Expression				{ $$ = binary_operator($1, $3, MULTASS); }
-		|		Var DIVASS Expression				{ $$ = binary_operator($1, $3, DIVASS); }
-		|		Type Var ASSIGN Expression			{ $$ = create_assign($1, $2, $4); }
-		|		Type Var							{ $$ = createvar($1, $2); }
+Assignment:		Var ASSIGN Expression				{ $$ = assignment(data, $1, $3); }
+		|		Var PLUSASS Expression				{ $$ = binary_operator(data, $1, $3, PLUSASS); }
+		|		Var MINUSASS Expression				{ $$ = binary_operator(data, $1, $3, MINUSASS); }
+		|		Var MULTASS Expression				{ $$ = binary_operator(data, $1, $3, MULTASS); }
+		|		Var DIVASS Expression				{ $$ = binary_operator(data, $1, $3, DIVASS); }
+		|		Type Var ASSIGN Expression			{ $$ = create_assign(data, $1, $2, $4); }
+		|		Type Var							{ $$ = createvar(data, $1, $2); }
 
 Type:			TBOOL 								{ $$ = BOOL; }
 		|		TCHAR								{ $$ = CHAR; }
@@ -100,65 +114,120 @@ Type:			TBOOL 								{ $$ = BOOL; }
 		|		TSTR								{ $$ = STRING; }
 
 Expression:		Nat | Real | Char | Bool | Str | Var | Ops | Paren	{ $$ = $1; }
-Ops:			Expression EQ Expression			{ $$ = binary_operator($1, $3, EQ); }
-		|		Expression NEQ Expression			{ $$ = binary_operator($1, $3, NEQ); }
-		|		Expression GT Expression			{ $$ = binary_operator($1, $3, GT); }
-		|		Expression LT Expression			{ $$ = binary_operator($1, $3, LT); }
-		|		Expression GTEQ Expression			{ $$ = binary_operator($1, $3, GTEQ); }
-		|		Expression LTEQ Expression			{ $$ = binary_operator($1, $3, LTEQ); }
-		|		Expression PLUS Expression			{ $$ = binary_operator($1, $3, PLUS); }
-		|		Expression MINUS Expression			{ $$ = binary_operator($1, $3, MINUS); }
-		|		Expression MULT Expression			{ $$ = binary_operator($1, $3, MULT); }
-		|		Expression DIV Expression			{ $$ = binary_operator($1, $3, DIV); }
-		|		Expression MOD Expression			{ $$ = binary_operator($1, $3, MOD); }
-		|		Expression POW Expression			{ $$ = binary_operator($1, $3, POW); }
-		|		Expression LAND Expression			{ $$ = binary_operator($1, $3, LAND); }
-		|		Expression LOR Expression			{ $$ = binary_operator($1, $3, LOR); }
-		|		Expression BAND Expression			{ $$ = binary_operator($1, $3, BAND); }
-		|		Expression BXOR Expression			{ $$ = binary_operator($1, $3, BXOR); }
-		|		Expression BOR Expression			{ $$ = binary_operator($1, $3, BOR); }
-		|		Expression LSHIFT Expression		{ $$ = binary_operator($1, $3, LSHIFT); }
-		|		Expression RSHIFT Expression		{ $$ = binary_operator($1, $3, RSHIFT); }
-		|		Expression COMMA Expression			{ $$ = binary_operator($1, $3, COMMA); }
-		|		LNOT Expression						{ $$ = unary_operator($2, LNOT); }
-		|		BNOT Expression						{ $$ = unary_operator($2, BNOT); }
-		|		MINUS Expression					{ $$ = unary_operator($2, UNARY_MINUS); }
-		|		IDENT LPAREN Expression RPAREN		{ $$ = loadfunction($1, $3); }
-		|		IDENT LPAREN RPAREN					{ $$ = loadfunction($1, NULL); }
+Ops:			Expression EQ Expression			{ $$ = binary_operator(data, $1, $3, EQ); }
+		|		Expression NEQ Expression			{ $$ = binary_operator(data, $1, $3, NEQ); }
+		|		Expression GT Expression			{ $$ = binary_operator(data, $1, $3, GT); }
+		|		Expression LT Expression			{ $$ = binary_operator(data, $1, $3, LT); }
+		|		Expression GTEQ Expression			{ $$ = binary_operator(data, $1, $3, GTEQ); }
+		|		Expression LTEQ Expression			{ $$ = binary_operator(data, $1, $3, LTEQ); }
+		|		Expression PLUS Expression			{ $$ = binary_operator(data, $1, $3, PLUS); }
+		|		Expression MINUS Expression			{ $$ = binary_operator(data, $1, $3, MINUS); }
+		|		Expression MULT Expression			{ $$ = binary_operator(data, $1, $3, MULT); }
+		|		Expression DIV Expression			{ $$ = binary_operator(data, $1, $3, DIV); }
+		|		Expression MOD Expression			{ $$ = binary_operator(data, $1, $3, MOD); }
+		|		Expression POW Expression			{ $$ = binary_operator(data, $1, $3, POW); }
+		|		Expression LAND Expression			{ $$ = binary_operator(data, $1, $3, LAND); }
+		|		Expression LOR Expression			{ $$ = binary_operator(data, $1, $3, LOR); }
+		|		Expression BAND Expression			{ $$ = binary_operator(data, $1, $3, BAND); }
+		|		Expression BXOR Expression			{ $$ = binary_operator(data, $1, $3, BXOR); }
+		|		Expression BOR Expression			{ $$ = binary_operator(data, $1, $3, BOR); }
+		|		Expression LSHIFT Expression		{ $$ = binary_operator(data, $1, $3, LSHIFT); }
+		|		Expression RSHIFT Expression		{ $$ = binary_operator(data, $1, $3, RSHIFT); }
+		|		Expression COMMA Expression			{ $$ = binary_operator(data, $1, $3, COMMA); }
+		|		LNOT Expression						{ $$ = unary_operator(data, $2, LNOT); }
+		|		BNOT Expression						{ $$ = unary_operator(data, $2, BNOT); }
+		|		MINUS Expression					{ $$ = unary_operator(data, $2, UNARY_MINUS); }
+		|		IDENT LPAREN Expression RPAREN		{ $$ = loadfunction(data, $1, $3); }
+		|		IDENT LPAREN RPAREN					{ $$ = loadfunction(data, $1, NULL); }
 
 Paren:			LPAREN Expression RPAREN			{ $$ = $2; }
-Nat:			NATURAL								{ $$ = loadnatural($1); }
-Real:			REAL								{ $$ = loadreal($1); }
-Char:			CHARACT								{ $$ = loadnatural($1); }
-Bool:			TRUE								{ $$ = loadnatural(1); }
-		|		FALSE								{ $$ = loadnatural(0); }
-Str:			STR									{ $$ = loadstr($1); }
-Var:			IDENT								{ $$ = loadvar($1); }
+Nat:			NATURAL								{ $$ = loadnatural(data, $1); }
+Real:			REAL								{ $$ = loadreal(data, $1); }
+Char:			CHARACT								{ $$ = loadnatural(data, $1); }
+Bool:			TRUE								{ $$ = loadnatural(data, 1); }
+		|		FALSE								{ $$ = loadnatural(data, 0); }
+Str:			STR									{ $$ = loadstr(data, $1); }
+Var:			IDENT								{ $$ = loadvar(data, $1); }
 
 %%
 
-int yyerror(const char *s) {
-	printf("Error on line %d : %s\n", nline, s);
-	return 0;
+#include "products/parser.tab.h"
+#include "products/lexer.h"
+
+
+void throw_exception(const string err, int nl) {
+	string error;
+	if(nl>0)
+		error = "Error on line "+to_string(nl)+": "+err;
+	else
+		error = "Error: "+err;
+	throw runtime_error(error);
+}
+
+int yyerror(yyscan_t scanner, parser_data_t *data, const char *s) {
+	throw_exception(string(s), data->nline);
 }
 
 
-int dscript(const char *file) {
-	//unordered_map<string, sp<IVar>> variables{{"x", 42}, {"test", 9}, {"var", 3}};
-	// std::shared_ptr<Var<double>> variable1 = std::make_shared<Var<int>>(8);
-	// std::shared_ptr<Var<int>> variable2 = std::make_shared<Var<int>>(4);
-	// vérifier que deux var n'ont pas le même nom.
-	// variables.insert({{"namevar1", variable1}, {"namevar2", variable2}});
-	// variables.find("namevar1");
-	// variable1->getType()==INT8 (un enum à check sur IVar.h);
-	// l'addition de 2 *sp est un sp.
+void dscript_cmd(const char *code) {
+	parser_data_t data = {};
+	data.nline = 1;
+	data.fst_el = NULL;
+	data.variables = {};
+	initstd(&data);
 
-	variables = {};
-	initstd();
-	freopen(file, "r", stdin);
-	error = 0;
-	yyparse();
-	return error;
+	yyscan_t scanner;
+	if(yylex_init(&scanner)) {
+		throw runtime_error("Error while initializing the parser.");
+	}
+	yylex_init_extra(&data, &scanner);
+	YY_BUFFER_STATE buf = yy_scan_string(code, scanner);
+	try {
+		yyparse(scanner, &data);
+	} catch(const exception& e) {
+		yy_delete_buffer(buf, scanner);
+		yylex_destroy(scanner);
+		free_list(data.fst_el);
+		// SI TU VEUX CHANGER LA MANIÈRE DONT SONT GÉRÉES LES EXCEPTIONS C'EST ICI...
+		throw runtime_error(e.what());
+	}
+	yy_delete_buffer(buf, scanner);
+	yylex_destroy(scanner);
+	free_list(data.fst_el);
+}
+
+void dscript(const char *file) {
+	FILE *fp = fopen(file, "r");
+	fseek(fp, 0L, SEEK_END);
+	size_t size = ftell(fp);
+	rewind(fp);
+	char code[size+1];
+	
+	fread(code, 1, size, fp);
+	code[size] = 0x0;
+	try {
+		dscript_cmd(code);
+	} catch(const exception& e) {
+		fclose(fp);
+		// ...ET ICI
+		throw runtime_error(e.what());
+	}
+	
+	fclose(fp);
+}
+
+
+void free_list(el_alloced_t *list) {
+	el_alloced_t *cur = list;
+	while(cur!=NULL) {
+		el_alloced_t *tmp = cur->next;
+		if(cur->type==0)
+			free(cur->el);
+		else
+			delete (string*)cur->el;
+		free(cur);
+		cur = tmp;
+	}
 }
 
 
@@ -228,45 +297,42 @@ void disp_recur(ast *x, int nbsp) {
 }
 
 
-void execute(ast *x) {
-	printf("\n");
+void execute(parser_data_t *data, ast *x) {
+	cout << endl;
 	disp_recur(x, 0);
-	printf("\n");
-	run(x, true);
+	cout << endl;
+	run(data, x, true);
 }
 
 
-void parse_params(vector<sp<IVar>> *dst, ast *ast) {
+void parse_params(parser_data_t *data, vector<sp<IVar>> *dst, ast *ast) {
 	if(ast->token == COMMA) {
-		dst->insert(dst->begin(), parse_expr(ast->fst_child->next_sibling));
-		parse_params(dst, ast->fst_child);
+		dst->insert(dst->begin(), parse_expr(data, ast->fst_child->next_sibling));
+		parse_params(data, dst, ast->fst_child);
 	} else
-		dst->insert(dst->begin(), parse_expr(ast));
+		dst->insert(dst->begin(), parse_expr(data, ast));
 }
 
 
-sp<IVar> parse_expr(ast *ast) {
+sp<IVar> parse_expr(parser_data_t *data, ast *ast) {
 	/* CHECKING TYPES COMPATIBILITY */
 	sp<IVar> expr1;
 	sp<IVar> expr2;
 	if(ast->fst_child != NULL && ast->token != FUNC) {
-		expr1 = parse_expr(ast->fst_child);
+		expr1 = parse_expr(data, ast->fst_child);
 		if(ast->token != COMMA && ast->fst_child->next_sibling != NULL) {
-			expr2 = parse_expr(ast->fst_child->next_sibling);
+			expr2 = parse_expr(data, ast->fst_child->next_sibling);
 			watchdog_type(expr1->get_type(), expr2->get_type(), ast);
 		}
 	}
 
 	switch(ast->token) {
 		case COMMA:
-			printf("Error on line %d : syntax error ','\n", ast->nline);
-			exit(-1);
+			throw_exception("syntax error ','", ast->nline);
 		case FUNC: {
-			sp<IVar> ret = runfunc(*ast->strvalue, ast);
-			if(ret==NULL) {
-				printf("Error on line %d : void function in expression\n", ast->nline);
-				exit(-1);
-			}
+			sp<IVar> ret = runfunc(data, *ast->strvalue, ast);
+			if(ret==NULL)
+				throw_exception("void function in expression", ast->nline);
 			return ret;
 		} case PLUS:
 			return *expr1+(*expr2);
@@ -283,7 +349,7 @@ sp<IVar> parse_expr(ast *ast) {
 			return stdpow(args);
 		} case UNARY_MINUS: {
 			const sp<IVar> ZERO = make_shared<Var<int>>(0);
-			return *ZERO - *parse_expr(ast->fst_child);
+			return *ZERO - *parse_expr(data, ast->fst_child);
 		} case EQ:
 			return make_shared<Var<bool>>(*expr1==(*expr2));
 		case LT:
@@ -316,69 +382,61 @@ sp<IVar> parse_expr(ast *ast) {
 			return make_shared<Var<string>>(*ast->strvalue);
 		case IDENT:
 			string varname = *ast->strvalue;
-			if(variables.find(varname) == variables.end()) {
-				printf("ERROR ON LINE %d : Unknown variable!\n", ast->nline);
-				exit(-1);
-			}
-			return variables.at(varname);
+			if(data->variables.find(varname) == data->variables.end())
+				throw_exception("unknown variable!", ast->nline);
+			return data->variables.at(varname);
 	}
 	return 0;
 }
 
 
-void run(ast *ast, bool recur) {
+sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
 	if(ast==NULL)
-		return;
+		return NULL;
 	switch(ast->token) {
 		case IF:
-			if(parse_expr(ast->fst_child))
-				run(ast->fst_child->next_sibling, true);
+			if(parse_expr(data, ast->fst_child))
+				run(data, ast->fst_child->next_sibling, true);
 			break;
 		case IFELSE:
-			if(parse_expr(ast->fst_child))
-				run(ast->fst_child->next_sibling->fst_child, true);
+			if(parse_expr(data, ast->fst_child))
+				run(data, ast->fst_child->next_sibling->fst_child, true);
 			else
-				run(ast->fst_child->next_sibling->next_sibling->fst_child, true);
+				run(data, ast->fst_child->next_sibling->next_sibling->fst_child, true);
 			break;
 		case WHILE:
-			while(*(bool*)(*parse_expr(ast->fst_child)).value)
-				run(ast->fst_child->next_sibling, true);
+			while(*(bool*)(*parse_expr(data, ast->fst_child)).value)
+				run(data, ast->fst_child->next_sibling, true);
 			break;
 		case FOR: {
-			run(ast->fst_child, false);
+			run(data, ast->fst_child, false);
 			string varname = *ast->fst_child->next_sibling->fst_child->strvalue;
 			const IVar ONE = Var<int>(1);
-			while(*(bool*)(*parse_expr(ast->fst_child->next_sibling)).value) {
-				run(ast->fst_child->next_sibling->next_sibling, true);
-				variables.at(varname) = cast_type(variables.at(varname)->get_type(), *variables.at(varname)+ONE);
+			while(*(bool*)(*parse_expr(data, ast->fst_child->next_sibling)).value) {
+				run(data, ast->fst_child->next_sibling->next_sibling, true);
+				data->variables.at(varname) = cast_type(data->variables.at(varname)->get_type(), *data->variables.at(varname)+ONE);
 			}
 			break;
 		} case CREATEVAR: {
 			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(variables.find(varname) != variables.end()) {
-				printf("ERROR ON LINE %d : Variable initialized twice!\n", ast->nline);
-				exit(-1);
-			}
+			if(data->variables.find(varname) != data->variables.end())
+				throw_exception("variable initialized twice!", ast->nline);
 			const sp<IVar> ZERO = cast_type(ast->fst_child->intvalue, make_shared<Var<int>>(0));
-			variables.insert({varname, ZERO});
+			data->variables.insert({varname, ZERO});
 			break;
 		} case CREATEASSIGN: {
 			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(variables.find(varname) != variables.end()) {
-				printf("ERROR ON LINE %d : Variable initialized twice!\n", ast->nline);
-				exit(-1);
-			}
-			sp<IVar> val = cast_type(ast->fst_child->intvalue, parse_expr(ast->fst_child->next_sibling->next_sibling));
-			variables.insert({varname, val});
+			if(data->variables.find(varname) != data->variables.end())
+				throw_exception("variable initialized twice!", ast->nline);
+			sp<IVar> val = cast_type(ast->fst_child->intvalue, parse_expr(data, ast->fst_child->next_sibling->next_sibling));
+			data->variables.insert({varname, val});
 			break;
 		} case ASSIGN: {
 			string varname = *ast->fst_child->strvalue;
-			if(variables.find(varname) == variables.end()) {
-				printf("ERROR ON LINE %d : Unknown variable!\n", ast->nline);
-				exit(-1);
-			}
-			sp<IVar> val = cast_type(variables.at(varname)->get_type(), parse_expr(ast->fst_child->next_sibling));
-			variables.at(varname) = val;
+			if(data->variables.find(varname) == data->variables.end())
+				throw_exception("unknown variable!", ast->nline);
+			sp<IVar> val = cast_type(data->variables.at(varname)->get_type(), parse_expr(data, ast->fst_child->next_sibling));
+			data->variables.at(varname) = val;
 			break;
 		}
 		case PLUSASS:
@@ -386,45 +444,59 @@ void run(ast *ast, bool recur) {
 		case MULTASS:
 		case DIVASS: {
 			string varname = *ast->fst_child->strvalue;
-			if(variables.find(varname) == variables.end()) {
-				printf("ERROR ON LINE %d : Unknown variable!\n", ast->nline);
-				exit(-1);
-			}
-			const sp<IVar> expr = parse_expr(ast->fst_child->next_sibling);
-			watchdog_type(variables.at(varname)->get_type(), expr->get_type(), ast);
+			if(data->variables.find(varname) == data->variables.end())
+				throw_exception("unknown variable!", ast->nline);
+			const sp<IVar> expr = parse_expr(data, ast->fst_child->next_sibling);
+			watchdog_type(data->variables.at(varname)->get_type(), expr->get_type(), ast);
 			sp<IVar> val;
 			if(ast->token==PLUSASS)
-				val = *variables.at(varname) + *expr;
+				val = *data->variables.at(varname) + *expr;
 			else if(ast->token==MINUSASS)
-				val = *variables.at(varname) - *expr;
+				val = *data->variables.at(varname) - *expr;
 			else if(ast->token==MULTASS)
-				val = *variables.at(varname) * *expr;
+				val = *data->variables.at(varname) * *expr;
 			else if(ast->token==DIVASS)
-				val = *variables.at(varname) / *expr;
+				val = *data->variables.at(varname) / *expr;
 			
-			variables.at(varname) = cast_type(variables.at(varname)->get_type(), val);
+			data->variables.at(varname) = cast_type(data->variables.at(varname)->get_type(), val);
 			break;
 		} case FUNC: {
-			runfunc(*ast->strvalue, ast);
+			runfunc(data, *ast->strvalue, ast);
 			break;
-		} default:
-			printf("Unrecognized token %d\n", ast->token);
+		} case RETURN:
+			return parse_expr(data, ast->fst_child);
 			break;
+		default:
+			throw_exception("unrecognized token!", ast->nline);
 	}
 	if(recur)
-		run(ast->next_sibling, true);
+		return run(data, ast->next_sibling, true);
+	return NULL;
 }
 
 
-sp<IVar> runfunc(string funcname, ast *ast) {
+sp<IVar> runfunc(parser_data_t *data, string funcname, ast *ast) {
 	vector<sp<IVar>> params{};
 	if(ast->fst_child!=NULL)
-		parse_params(&params, ast->fst_child);
+		parse_params(data, &params, ast->fst_child);
 
-	// for(int i=0; i<params.size(); i++)
-	// 	cout << "PARAM: " << *params[i] << endl;
+	if(data->stdfuncs.find(funcname) != data->stdfuncs.end())
+		return data->stdfuncs[funcname](params);
 
-	return stdfuncs[funcname](params);
+	if(data->usrfuncs.find(funcname) != data->usrfuncs.end()) {
+
+		// A FAIRE MAINTENANT : LA PORTÉE DES VARIABLES
+		// SUR LE COUP JE ME SUIS DIT QUE JE METTRAIS EN PARAM DE RUN ET DES PARSE_*** LA THASH DES VARS
+		// SAUF QU'IL FAUT PAS OUBLIER LE CONTEXTE PRINCIPAL
+		// + EST-CE QU'ON PEUT IMBRIQUER LES DÉCLARATIONS DE FONCTIONS ?
+		//			-> SI OUI FAUT TROUVER UN MOYEN DE METTRE EN PLACE ÇA
+		// Idée, je peux mettre en place une structure de cette sorte (un peu cheloue avec pas forcément un pointeur 
+		// vers le fils mais plutôt un pointeur vers le père)
+
+		return run(data, data->usrfuncs[funcname]->next_sibling, true);
+	}
+
+	throw_exception("function not found...", ast->nline);
 }
 
 
@@ -434,10 +506,8 @@ bool castable(int type1, int type2) {
 
 
 sp<IVar> cast_type(int type, sp<IVar> value) {
-	if(!castable(type, value->get_type())) {
-		cout << "ERR: Conversion from number to string" << endl;
-		exit(-1);
-	}
+	if(!castable(type, value->get_type()))
+		throw_exception("conversion from number to string!", 0);
 	switch(type) {
 		case BOOL:
 			return make_shared<Var<bool>>(*value);
@@ -461,13 +531,9 @@ sp<IVar> cast_type(int type, sp<IVar> value) {
 
 
 void watchdog_type(int typedst, int typesrc, ast *op) {
-	const int nline = op->nline;
-	if(typesrc==STRING && op->token!=PLUS && op->token!=PLUSASS) {
-		cout << "ERROR ON LINE " << nline << ": Operation undefined for string objects." << endl;
-		exit(-1);
-	}
-	if((typedst==STRING && typesrc!=STRING) || (typedst!=STRING && typesrc==STRING)) {
-		cout << "ERROR ON LINE " << nline << ": Cannont convert STRING to a canonical type!" << endl;
-		exit(-1);
-	}
+	const int nl = op->nline;
+	if(typesrc==STRING && op->token!=PLUS && op->token!=PLUSASS)
+		throw_exception("operation undefined for string objects.", nl);
+	if((typedst==STRING && typesrc!=STRING) || (typedst!=STRING && typesrc==STRING))
+		throw_exception("cannont convert STRING to a canonical type!", nl);
 }

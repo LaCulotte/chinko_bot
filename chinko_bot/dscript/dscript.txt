@@ -1,6 +1,1 @@
-double test = 45f;
-print("cool ", test);
-
-let func(byte zizi, byte tt) {
-	print("waw");
-}
+print(45);

@@ -8,7 +8,7 @@
 #include "parser.h"
 using namespace std;
 
-unordered_map<string, stdf> stdfuncs;
+void throw_exception(const std::string err, int nl);
 
 
 /*
@@ -22,17 +22,17 @@ unordered_map<string, stdf> stdfuncs;
 */
 
 
-void initstd() {
-	stdfuncs = {};
-	stdfuncs.insert({"print", stdprint});
-	stdfuncs.insert({"pow", stdpow});
+void initstd(parser_data_t *data) {
+	data->stdfuncs = {};
+	data->usrfuncs = {};
+	data->stdfuncs.insert({"print", stdprint});
+	data->stdfuncs.insert({"pow", stdpow});
 }
 
 
 void is_valid_call(vector<sp<IVar>> *args, int nb_params, ...) {
 	if(args->size()!=nb_params) {
-		cout << "ERR: number of arguments\n";
-		exit(-1);
+		throw_exception("bad number of arguments!", 0);
 	}
 	va_list va_params;
 	va_start(va_params, nb_params);

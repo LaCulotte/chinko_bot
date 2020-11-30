@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_CHINKO_BOT_DSCRIPT_PRODUCTS_PARSER_TAB_H_INCLUDED
-# define YY_YY_CHINKO_BOT_DSCRIPT_PRODUCTS_PARSER_TAB_H_INCLUDED
+#ifndef YY_YY_PARSER_TAB_H_INCLUDED
+# define YY_YY_PARSER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -45,19 +45,11 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 7 "chinko_bot/dscript/parser.y"
+#line 23 "chinko_bot/dscript/parser.y"
 
 #include "parser.h"
-#ifndef YY_TYPEDEF_YY_SCANNER_T
-#define YY_TYPEDEF_YY_SCANNER_T
-typedef void* yyscan_t;
-#endif
 
-typedef union YYSTYPE YYSTYPE;
-int yyerror(yyscan_t scanner, parser_data_t *data, const char *s);
-extern int yylex(YYSTYPE * yylval_param , yyscan_t yyscanner);
-
-#line 61 "chinko_bot/dscript/products/parser.tab.h"
+#line 53 "parser.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -138,14 +130,14 @@ extern int yylex(YYSTYPE * yylval_param , yyscan_t yyscanner);
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 34 "chinko_bot/dscript/parser.y"
+#line 27 "chinko_bot/dscript/parser.y"
 
 	ast *instr;
 	int intval;
 	double doubleval;
 	char* strval;
 
-#line 149 "chinko_bot/dscript/products/parser.tab.h"
+#line 141 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -154,7 +146,8 @@ typedef union YYSTYPE YYSTYPE;
 #endif
 
 
+extern YYSTYPE yylval;
 
-int yyparse (yyscan_t scanner, parser_data_t *data);
+int yyparse (void);
 
-#endif /* !YY_YY_CHINKO_BOT_DSCRIPT_PRODUCTS_PARSER_TAB_H_INCLUDED  */
+#endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */
