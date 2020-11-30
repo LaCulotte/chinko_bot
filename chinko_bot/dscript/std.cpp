@@ -27,6 +27,7 @@ void initstd(parser_data_t *data) {
 	data->usrfuncs = {};
 	data->stdfuncs.insert({"print", stdprint});
 	data->stdfuncs.insert({"pow", stdpow});
+	data->stdfuncs.insert({"test", test});
 }
 
 
@@ -55,4 +56,10 @@ sp<IVar> stdpow(vector<sp<IVar>> params) {
 	Var<double> t2 = *params[1];
 	double res = pow(*(double*)t1.value, *(double*)t2.value);
 	return make_shared<Var<double>>(res);
+}
+
+sp<IVar> test(vector<sp<IVar>> params) {
+	is_valid_call(&params, 1, DOUBLE);
+	double val = Var<double>::getValue(params[0]);
+	return make_shared<Var<double>>(val * 2);
 }

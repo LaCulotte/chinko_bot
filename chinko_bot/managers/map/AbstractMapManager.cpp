@@ -123,7 +123,7 @@ bool AbstractMapManager::loadMapInformations(int mapId) {
 
 bool AbstractMapManager::loadMapCellsInformations() {
     ostringstream filename_strstream;
-    filename_strstream.precision(0);
+    filename_strstream.precision(0); 
     filename_strstream << mapsFolder << "/" << fixed << mapId << ".json";
 
     ifstream mapFile_stream(filename_strstream.str(), ifstream::binary);
@@ -134,12 +134,14 @@ bool AbstractMapManager::loadMapCellsInformations() {
     }
 
     Json::Value mapFile_json;
-    Json::Reader mapFile_reader;
+    // Json::Reader mapFile_reader;
+    Json::CharReaderBuilder builder;
 
-    bool couldRead = mapFile_reader.parse(mapFile_stream, mapFile_json);
+    string error_str;
+    bool couldRead = Json::parseFromStream(builder, mapFile_stream, &mapFile_json, &error_str);
 
     if(!couldRead) {
-        Logger::write("Cannot read the map information file of mapId : " + to_string(mapId) + "; it is not a correct json file.", LOG_ERROR);
+        Logger::write("Cannot read the map information file of mapId : " + to_string(mapId) + "; it is not a correct json file. Error : " + error_str, LOG_ERROR);
         return false;
     }
 

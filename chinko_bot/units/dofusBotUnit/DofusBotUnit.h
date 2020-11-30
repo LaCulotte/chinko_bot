@@ -1,6 +1,7 @@
 #ifndef DOFUS_BOTUNIT_H
 #define DOFUS_BOTUNIT_H
 
+
 #include "MessagingUnit.h"
 #include "ConnectionUnit.h"
 #include "QueueFrame.h"
@@ -15,12 +16,15 @@
 #include "SendPacketSuccessMessage.h"
 #include "SendPacketFailureMessage.h"
 
+#include "PlayedCharacterManager.h"
+
 #include "APIUnit.h"
 
+class PlayedCharacterManager;
 class DofusBotUnit : public MessagingUnit {
 public:
     // Constructor
-    DofusBotUnit() : MessagingUnit() {};
+    DofusBotUnit();
     // Copy constructor
     DofusBotUnit(const DofusBotUnit& other) = default;
 
@@ -46,14 +50,18 @@ public:
     // Informations of the current GameServer 
     GameServerData gameServerInfos;
     sp<ActorData> playedCharacter = nullptr;
+    sp<PlayedCharacterManager> characterManager;
+    bool isConnectedToGameServer() { return connectedToGameServer; }
+    void setConnectedToGameServer() { connectedToGameServer = true; }
 
     double currentMapId = 0;
-    sp<AbstractMapManager> mapInfos;
+    sp<AbstractMapManager> mapInfos = nullptr;
     sp<RoleplayMapManager> getMapInfosAsRoleplay() { return dynamic_pointer_cast<RoleplayMapManager>(this->mapInfos); };
     sp<FightMapManager> getMapInfosAsFight() { return dynamic_pointer_cast<FightMapManager>(this->mapInfos); };
 
     void resetNextTick() { toReset = true; };
 
+    // TODO : remove
     bool tempFlag = false;
 
 protected:
@@ -66,6 +74,8 @@ protected:
     int connectionUnitId = -1;
     // APIUnit's MessagingInterface's id
     int apiUnitId = -1;
+
+    bool connectedToGameServer = false;
 
     bool toReset = false;
     void fullReset();

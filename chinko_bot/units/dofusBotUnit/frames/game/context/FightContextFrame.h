@@ -24,6 +24,7 @@
 #include "GameFightNewRoundMessage.h"
 #include "GameFightSynchronizeMessage.h"
 #include "GameFightTurnListMessage.h"
+#include "GameFightEndMessage.h"
 
 #include "GameFightRefreshFighterMessage.h"
 #include "FighterStatsListMessage.h"
@@ -84,6 +85,8 @@ protected:
 
     bool sendGameFightTurnReadyMessage(bool ready = true);
     bool sendGameActionAcknowledgementMessage(sp<SequenceEndMessage> message);
+
+    // void processGameFightEndMessage(sp<GameFightEndMessage> gfeMsg); 
 };
 
 #endif

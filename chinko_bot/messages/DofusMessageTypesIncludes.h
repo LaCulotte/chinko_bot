@@ -12,6 +12,7 @@
 #include "CredentialsAcknowledgementMessage.h"
 #include "LoginQueueStatusMessage.h"
 #include "ServersListMessage.h"
+#include "SelectedServerRefusedMessage.h"
 #include "SelectedServerDataExtendedMessage.h"
 #include "SelectedServerDataMessage.h"
 
@@ -28,16 +29,30 @@
 #include "CharacterSelectedSuccessMessage.h"
 #include "CharacterSelectedErrorMessage.h"
 #include "CharacterLoadingCompleteMessage.h"
+#include "CharacterLevelUpMessage.h"
 
-#include "InventoryContentMessage.h"
-#include "InventoryWeightMessage.h"
 #include "ShortcutBarContentMessage.h"
+#include "JobExperienceUpdateMessage.h"
 #include "JobExperienceMultiUpdateMessage.h"
+#include "JobDescriptionMessage.h"
 #include "SequenceNumberRequestMessage.h"
 #include "SequenceNumberMessage.h"
 #include "AlmanachCalendarDateMessage.h"
 #include "CharacterExperienceGainMessage.h"
 #include "SpellListMessage.h"
+#include "CharacterStatsListMessage.h"
+#include "JobLevelUpMessage.h"
+
+#include "InventoryContentMessage.h"
+#include "InventoryWeightMessage.h"
+#include "ObjectAddedMessage.h"
+#include "ObjectsAddedMessage.h"
+#include "ObjectQuantityMessage.h"
+#include "ObjectsQuantityMessage.h"
+#include "ObjectModifiedMessage.h"
+#include "ObjectDeletedMessage.h"
+#include "ObjectsDeletedMessage.h"
+#include "KamasUpdateMessage.h"
 
 #include "GameContextCreateRequestMessage.h"
 #include "GameContextCreateMessage.h"
@@ -59,6 +74,7 @@
 
 #include "InteractiveUseRequestMessage.h"
 #include "InteractiveUseEndedMessage.h"
+#include "InteractiveUseErrorMessage.h"
 
 #include "ChatAbstractServerMessage.h"
 #include "ChatServerMessage.h"
@@ -71,6 +87,7 @@
 #include "GameFightStartingMessage.h"
 #include "GameFightJoinMessage.h"
 #include "GameFightHumanReadyStateMessage.h"
+#include "GameFightEndMessage.h"
 
 #include "GameFightStartMessage.h"
 #include "GameFightTurnReadyRequestMessage.h"

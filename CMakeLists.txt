@@ -127,7 +127,7 @@ file(GLOB_RECURSE SRCS
     base64/base64.cpp
     "chinko_bot/*.cpp"
     "Var/*.cpp"
-    #main.cpp
+    main.cpp
 )
 
 add_executable(chinko_bot ${SRCS})

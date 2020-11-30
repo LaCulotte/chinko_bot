@@ -1,10 +1,17 @@
 #include "BasicDofusBotFrame.h"
 
+#include "BotConnectionStatusMessage.h"
+#include "BotConnectionStatusRequestMessage.h"
+
+#include "BotCharacterInformationsRequestMessage.h"
+
 bool BasicDofusBotFrame::computeMessage(sp<Message> message, int srcId) {
     sp<SendPacketFailureMessage> spfMsg;
     
     sp<UnknownDofusMessage> udMsg;
     sp<SequenceNumberMessage> snMsg;
+
+    sp<BotConnectionStatusMessage> bcsMsg;
 
     switch (message->getId()) {
     case UnknownDofusMessage::protocolId:
@@ -33,6 +40,14 @@ bool BasicDofusBotFrame::computeMessage(sp<Message> message, int srcId) {
             break;
 
         return false;
+
+    case BotConnectionStatusRequestMessage::protocolId:
+        parent->sendMessage(make_shared<BotConnectionStatusMessage>(dofusBotParent->isConnectedToGameServer()), srcId);
+        break;
+
+    case BotCharacterInformationsRequestMessage::protocolId:
+        dofusBotParent->characterManager->sendCharacterInformationsMessage();
+        break;
 
     default:
         return false;

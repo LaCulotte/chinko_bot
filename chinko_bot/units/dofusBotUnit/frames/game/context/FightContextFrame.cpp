@@ -1,5 +1,8 @@
 #include "FightContextFrame.h"
 
+#include "FightResultPlayerListEntry.h"
+#include "FightResultExperienceData.h"
+
 bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<GameFightStartingMessage> gfsMsg;
@@ -7,6 +10,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
     sp<GameEntitiesDispositionMessage> gedMsg;
     sp<GameFightUpdateTeamMessage> gfutMsg;
     sp<GameFightHumanReadyStateMessage> gfhrsMsg;
+    sp<GameFightEndMessage> gfeMsg;
 
     sp<GameFightTurnReadyRequestMessage> gftrrMsg;
     sp<GameFightNewRoundMessage> gfnrMsg;
@@ -96,8 +100,12 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameEntitiesDispositionMessage::protocolId:
         gedMsg = dynamic_pointer_cast<GameEntitiesDispositionMessage>(message);
-        Logger::write("GameEntitiesDispositionMessage received", LOG_INFO);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
 
+        Logger::write("GameEntitiesDispositionMessage received", LOG_INFO);
         for(auto disposition : gedMsg->dispositions) 
             dofusBotParent->mapInfos->updateActorPosition(disposition.id, disposition.cellId);
         break;
@@ -176,8 +184,12 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
     case GameFightTurnReadyRequestMessage::protocolId:
         // TODO : cooldown sorts
         gftrrMsg = dynamic_pointer_cast<GameFightTurnReadyRequestMessage>(message);
-        Logger::write("End of the turn of entity " + to_string(gftrrMsg->id), LOG_DEBUG);     
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
 
+        Logger::write("End of the turn of entity " + to_string(gftrrMsg->id), LOG_DEBUG);     
         dofusBotParent->getMapInfosAsFight()->endFighterTurn(gftrrMsg->id);
         sendGameFightTurnReadyMessage();
         break;
@@ -215,6 +227,11 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameMapMovementMessage::protocolId:
         gmmMsg = dynamic_pointer_cast<GameMapMovementMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }        
+        
         dofusBotParent->mapInfos->updateActorPosition(gmmMsg->actorId, gmmMsg->keyMovements.back() & 0xFFF);
         Logger::write(to_string(gmmMsg->actorId) + " moved from cell " + to_string(gmmMsg->keyMovements.front() & 0xFFF) + " to cell " + to_string(gmmMsg->keyMovements.back() & 0xFFF), LOG_INFO);
         break;
@@ -227,6 +244,11 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameActionFightPointsVariationMessage::protocolId:
         gafpvMsg = dynamic_pointer_cast<GameActionFightPointsVariationMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+
         {
             sp<FighterData> target = dofusBotParent->getMapInfosAsFight()->getFighter(gafpvMsg->targetId);
             if(target) {
@@ -257,6 +279,11 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             Logger::write("TODO : HANDLE SHIELD POINTS IN FightContextFrame WHEN CHARACTER RECEIVE BUFF !!!!!", LOG_ERROR);
     case GameActionFightLifePointsLostMessage::protocolId:
         gaflplMsg = dynamic_pointer_cast<GameActionFightLifePointsLostMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+
         {
             sp<FighterData> target = dofusBotParent->getMapInfosAsFight()->getFighter(gaflplMsg->targetId);
             if(target) {
@@ -271,6 +298,11 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameActionFightLifePointsGainMessage::protocolId:
         gaflpgMsg = dynamic_pointer_cast<GameActionFightLifePointsGainMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+
         {
             sp<FighterData> target = dofusBotParent->getMapInfosAsFight()->getFighter(gaflpgMsg->targetId);
             if(target) {
@@ -284,12 +316,22 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameActionFightTeleportOnSameMapMessage::protocolId:
         gaftosmMsg = dynamic_pointer_cast<GameActionFightTeleportOnSameMapMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+
         Logger::write(to_string(gaftosmMsg->targetId) + " teleported on cell " + to_string(gaftosmMsg->cellId) + ".", LOG_INFO);
         dofusBotParent->mapInfos->updateActorPosition(gaftosmMsg->targetId, gaftosmMsg->cellId);
         break;
 
     case GameActionFightExchangePositionsMessage::protocolId:
         gafepMsg = dynamic_pointer_cast<GameActionFightExchangePositionsMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+
         Logger::write(to_string(gafepMsg->sourceId) + " exchanged positions with " + to_string(gafepMsg->targetId), LOG_INFO);
         dofusBotParent->mapInfos->updateActorPosition(gafepMsg->sourceId, gafepMsg->targetCellId);
         dofusBotParent->mapInfos->updateActorPosition(gafepMsg->targetId, gafepMsg->casterCellId);
@@ -297,24 +339,44 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameActionFightSlideMessage::protocolId:
         gafsMsg = dynamic_pointer_cast<GameActionFightSlideMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+
         Logger::write(to_string(gafsMsg->targetId) + " slided to cell " + to_string(gafsMsg->endCellId), LOG_INFO);
         dofusBotParent->mapInfos->updateActorPosition(gafsMsg->targetId, gafsMsg->endCellId);
         break;
 
     case GameActionFightMarkCellsMessage::protocolId:
         gafmcMsg = dynamic_pointer_cast<GameActionFightMarkCellsMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+        
         dofusBotParent->mapInfos->addMark(gafmcMsg->mark);
         Logger::write("Cells marked.", LOG_INFO);
         break;
 
     case GameActionFightUnmarkCellsMessage::protocolId:
         gafucMsg = dynamic_pointer_cast<GameActionFightUnmarkCellsMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+        
         dofusBotParent->mapInfos->removeMark(gafucMsg->markId);
         Logger::write("Cells unmarked.", LOG_INFO);
         break;
 
     case GameActionFightDeathMessage::protocolId:
         gafdMsg = dynamic_pointer_cast<GameActionFightDeathMessage>(message);
+        if(!dofusBotParent->getMapInfosAsFight()) {
+            Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
+            break;
+        }
+
         dofusBotParent->getMapInfosAsFight()->fighterDied(gafdMsg->targetId);
         
         if(gafdMsg->sourceId != gafdMsg->targetId)
@@ -339,6 +401,11 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         break;    
 
     // TODO : case GameActionFightInvisibilityStateEnum::protocolId: -> change canSeeThrough & canWalkThrough 
+
+    case GameFightEndMessage::protocolId:
+        gfeMsg = dynamic_pointer_cast<GameFightEndMessage>(message);
+        // this->processGameFightEndMessage(gfeMsg);
+        break;
 
     default:
         return false;
@@ -451,3 +518,22 @@ bool FightContextFrame::sendGameActionAcknowledgementMessage(sp<SequenceEndMessa
     return true;
 
 }
+
+// void FightContextFrame::processGameFightEndMessage(sp<GameFightEndMessage> gfeMsg) {
+//     sp<FightResultPlayerListEntry> frple = nullptr;
+
+//     for(auto result : gfeMsg->results) {
+//         frple = dynamic_pointer_cast<FightResultPlayerListEntry>(result);
+//         if(frple && frple->id == dofusBotParent->playedCharacter->contextualId) {
+//             sp<FightResultExperienceData> fred = nullptr;
+            
+//             for(auto additional : frple->additional) {
+//                 fred = dynamic_pointer_cast<FightResultExperienceData>(additional);
+//                 if(fred) {
+//                     Logger::write("Gained experience : +" + to_string(fred->experienceFightDelta) + " points; current xp : " + to_string(fred->experience));
+//                     dofusBotParent->characterManager.setXp(fred->experience, fred->experienceLevelFloor, fred->experienceNextLevelFloor);
+//                 }
+//             }
+//         }
+//     }
+// }

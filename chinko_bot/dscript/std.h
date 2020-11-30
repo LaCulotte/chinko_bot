@@ -16,6 +16,6 @@ void is_valid_call(std::vector<sp<IVar>> *args, int nb_params, ...);
 
 sp<IVar> stdprint(std::vector<sp<IVar>> params);
 sp<IVar> stdpow(std::vector<sp<IVar>> params);
-
+sp<IVar> test(std::vector<sp<IVar>> params);
 
 #endif // __STD__

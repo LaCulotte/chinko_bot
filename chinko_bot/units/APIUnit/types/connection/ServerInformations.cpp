@@ -1,6 +1,6 @@
-#include "ServerSelectInformations.h"
+#include "ServerInformations.h"
 
-bool ServerSelectInformations::serialize(sp<MessageDataBuffer> output) {
+bool ServerInformations::serialize(sp<MessageDataBuffer> output) {
     output->writeVarShort(id);
     output->writeUTF(name);
     output->writeVarShort(charactersCount);
@@ -11,7 +11,7 @@ bool ServerSelectInformations::serialize(sp<MessageDataBuffer> output) {
     return true;
 }
 
-bool ServerSelectInformations::deserialize(sp<MessageDataBuffer> input) {
+bool ServerInformations::deserialize(sp<MessageDataBuffer> input) {
     id = input->readVarShort();
     name = input->readUTF();
     charactersCount = input->readVarShort();

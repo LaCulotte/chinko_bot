@@ -1,5 +1,7 @@
 #include "GameServerConnectionFrame.h"
 
+#include "APIClientDisconnectedMessage.h"
+
 bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     sp<BeginGameServerConnectionMessage> bgscMsg;
     sp<ConnectionSuccessMessage> csMsg;
@@ -156,6 +158,14 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
             Logger::write("Received AuthenticationTicketAcceptedMessage when not supposed to.", LOG_WARNING);
         }
 
+        break;
+
+    case APIClientDisconnectedMessage::protocolId:
+        Logger::write("API client disconnected during game server connection : bot will be reset.", LOG_WARNING);
+
+        if(manager)
+            manager->interruptAuthentification();
+        dofusBotParent->resetNextTick();
         break;
 
     default:

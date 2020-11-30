@@ -1,5 +1,13 @@
 #include "CharacterSelectionFrame.h"
 
+#include "CharacterUpdatesFrame.h"
+
+#include "APIClientDisconnectedMessage.h"
+
+#include "CharacterSelectionSuccessMessage.h"
+#include "CharacterSelectionFailureMessage.h"
+
+
 bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<CharactersListRequestMessage> clrMsg;
@@ -8,13 +16,6 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
     sp<CharacterSelectionMessage> csMsg;
     sp<CharacterSelectedSuccessMessage> cssMsg;
 
-    sp<InventoryContentMessage> icMsg;
-    sp<InventoryWeightMessage> iwMsg;
-    sp<ShortcutBarContentMessage> sbcMsg;
-    sp<JobExperienceMultiUpdateMessage> jemuMsg;
-    sp<AlmanachCalendarDateMessage> acdMsg;
-    sp<CharacterExperienceGainMessage> cegMsg;
-    sp<SpellListMessage> slMsg;
 
     switch (message->getId()) {
     case BeginCharacterSelectionMessage::protocolId:
@@ -79,14 +80,24 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
             cssMsg = dynamic_pointer_cast<CharacterSelectedSuccessMessage>(message);
             currentState = rcv_CharacterLoadingCompleteMessage;
             Logger::write("Successfully selected " + cssMsg->infos.name, LOG_INFO);
+            dofusBotParent->sendMessage(make_shared<CharacterSelectionSuccessMessage>(cssMsg->infos.name), dofusBotParent->getAPIUnitId());
             
             dofusBotParent->playedCharacter = make_shared<RoleplayCharacterData>();
             dofusBotParent->playedCharacter->contextualId = cssMsg->infos.id;
             // dofusBotParent->playerId = cssMsg->infos.id;
+            
+            dofusBotParent->characterManager->setId(cssMsg->infos.id);
+            dofusBotParent->characterManager->setName(cssMsg->infos.name);
+            dofusBotParent->characterManager->setLevel(cssMsg->infos.level);
+            dofusBotParent->characterManager->setBreed(cssMsg->infos.breed);
+            dofusBotParent->characterManager->setSex(cssMsg->infos.sex);
 
             // Sends ClientKeyMessage with a 'hash' at the end 
             if(!sendClientKeyMessageWithHash()) {
                 this->killBot();
+            } else {
+                parent->addFrame(make_shared<CharacterUpdatesFrame>());
+                dofusBotParent->setConnectedToGameServer();
             }
         } else {
             Logger::write("Received CharacterSelectedSuccessMessage when not supposed to.", LOG_WARNING);
@@ -101,6 +112,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
             currentState = csf_idle;
             parent->sendSelfMessage(make_shared<BeginCharacterSelectionMessage>());
             Logger::write("Error while selecting requested character. Please select a valid character.", LOG_WARNING);
+            dofusBotParent->sendMessage(make_shared<CharacterSelectionFailureMessage>(), dofusBotParent->getAPIUnitId());
         } else {
             Logger::write("Received CharacterSelectedErrorMessage when not supposed to.", LOG_WARNING);
         }
@@ -113,58 +125,23 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
             currentState = csf_idle;
             Logger::write("Character loading complete !", LOG_INFO);
 
+            dofusBotParent->characterManager->loadingFinished();
             // TODO : mettre ca en fonction?
-            // Delete this Frame (self destruct) and introduces a brand new ContextFrame
+            // Delete this Frame (self destruct) and introduces a brand new SwitchContextFrame
             dofusBotParent->addFrame(make_shared<SwitchContextFrame>());
+            dofusBotParent->removeFrame(this);
             // Requests GameContext building
             dofusBotParent->sendSelfMessage(make_shared<BeginGameContextRequestMessage>());
-            dofusBotParent->removeFrame(this);
+
         } else {
             Logger::write("Received CharacterLoadingCompleteMessage when not supposed to.", LOG_WARNING);
         }
         break;        
 
-    // TODO : à enlever
-    case InventoryContentMessage::protocolId:
-        icMsg = dynamic_pointer_cast<InventoryContentMessage>(message);
-        Logger::write("Received InventoryContentMessage", LOG_INFO);
-        break;
+    case APIClientDisconnectedMessage::protocolId:
+        Logger::write("API client disconnected during authentification : bot will be reset.", LOG_WARNING);
 
-    // TODO : à enlever
-    case ShortcutBarContentMessage::protocolId:
-        sbcMsg = dynamic_pointer_cast<ShortcutBarContentMessage>(message);
-        Logger::write("Received ShortcutBarContentMessage", LOG_INFO);
-        break;
-
-    // TODO : à enlever
-    case JobExperienceMultiUpdateMessage::protocolId:
-        jemuMsg = dynamic_pointer_cast<JobExperienceMultiUpdateMessage>(message);
-        Logger::write("Received JobExperienceMultiUpdateMessage", LOG_INFO);
-        break;
-    
-    // TODO : à enlever
-    case InventoryWeightMessage::protocolId:
-        iwMsg = dynamic_pointer_cast<InventoryWeightMessage>(message);
-        Logger::write("Received JobExperienceMultiUpdateMessage", LOG_INFO);
-        Logger::write("Current weight : " + to_string(iwMsg->inventoryWeight) + "/" + to_string(iwMsg->weightMax), LOG_INFO);
-        break;
-
-    // TODO : à enlever
-    case AlmanachCalendarDateMessage::protocolId:
-        acdMsg = dynamic_pointer_cast<AlmanachCalendarDateMessage>(message);
-        Logger::write("Received AlmanachCalendarDateMessage", LOG_INFO);
-        break;
-
-    // TODO : à enlever
-    case CharacterExperienceGainMessage::protocolId:
-        cegMsg = dynamic_pointer_cast<CharacterExperienceGainMessage>(message);
-        Logger::write("Received CharacterExperienceGainMessage", LOG_INFO);
-        break;
-
-    // TODO : à enlever
-    case SpellListMessage::protocolId:
-        slMsg = dynamic_pointer_cast<SpellListMessage>(message);
-        Logger::write("Received SpellListMessage", LOG_INFO);
+        dofusBotParent->resetNextTick();
         break;
 
     default:

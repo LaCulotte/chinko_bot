@@ -1,37 +1,36 @@
-#ifndef SERVERSELECTINFORMATION_H
-#define SERVERSELECTINFORMATION_H
+#ifndef CHARACTERINFORMATIONS_H
+#define CHARACTERINFORMATIONS_H
 
 #include "APIType.h"
 
-class ServerSelectInformations : public APIType {
+class CharacterInformations : public APIType {
 public:
     // Constructor
-    ServerSelectInformations() : APIType() {};
+    CharacterInformations() : APIType() {};
     // Copy constructor
-    ServerSelectInformations(const ServerSelectInformations& other) = default;
+    CharacterInformations(const CharacterInformations& other) = default;
 
     // Copy operator
-    virtual ServerSelectInformations& operator=(const ServerSelectInformations& other) = default;
+    virtual CharacterInformations& operator=(const CharacterInformations& other) = default;
     // Destructor
-    virtual ~ServerSelectInformations() = default;
+    virtual ~CharacterInformations() = default;
   
     // Returns the type's id
     virtual unsigned int getId() { return typeId; };
     // Type's id
-    static const unsigned int typeId = 1;
+    static const unsigned int typeId = 2;
 
     // Turns raw data into the usable data (type's attributes)
     virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;
     // Turns the type's attributes into raw data
     virtual bool serialize(shared_ptr<MessageDataBuffer> output) override;
 
-    int id;
+    uint64_t id;
     string name;
-    int charactersCount;
-    int slotsCount;
-    int status;
+    int breed;
+    bool sex;
+    int level;
     bool isSelectable;
-
 };
 
 #endif

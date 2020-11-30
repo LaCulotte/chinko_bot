@@ -1,1 +1,6 @@
-print(45);
+double test = 45f;
+print("cool ", test);
+int32 a = 5;
+a = test(2);
+print("a :", a);
+print(test(a));

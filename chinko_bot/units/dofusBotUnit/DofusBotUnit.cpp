@@ -6,6 +6,11 @@
 #include "BasicDofusBotFrame.h"
 #include "APIActionsFrame.h"
 
+DofusBotUnit::DofusBotUnit() : MessagingUnit() {
+    characterManager = make_shared<PlayedCharacterManager>(); 
+    characterManager->dofusBot = this;
+}
+
 // TODO : check si l'ordre d'ajout des frames est important dans ce cas la!!
 void DofusBotUnit::initFrames() {
     MessagingUnit::initFrames();
@@ -84,8 +89,7 @@ int DofusBotUnit::getAPIUnitId() {
 }
 
 void DofusBotUnit::fullReset() {
-    Logger::write("Bot will be reset!", LOG_WARNING);
-    
+    // TODO : hard remove de toutes les frames (ici tout ce que ca fait c'est marquer les frames comme "à remove")
     this->removeFrames(getAllFrames<Frame>());
     this->messagesToProcess.clear();
 

@@ -565,14 +565,14 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    76,    76,    78,    79,    81,    82,    84,    85,    87,
-      88,    89,    91,    92,    93,    94,    95,    96,    97,    98,
-     100,   101,   102,   103,   104,   105,   106,   108,   109,   110,
-     111,   112,   113,   114,   115,   117,   117,   117,   117,   117,
-     117,   117,   117,   118,   119,   120,   121,   122,   123,   124,
-     125,   126,   127,   128,   129,   130,   131,   132,   133,   134,
-     135,   136,   137,   138,   139,   140,   141,   142,   144,   145,
-     146,   147,   148,   149,   150,   151
+       0,    75,    75,    77,    78,    80,    81,    83,    84,    86,
+      87,    88,    90,    91,    92,    93,    94,    95,    96,    97,
+      99,   100,   101,   102,   103,   104,   105,   107,   108,   109,
+     110,   111,   112,   113,   114,   116,   116,   116,   116,   116,
+     116,   116,   116,   117,   118,   119,   120,   121,   122,   123,
+     124,   125,   126,   127,   128,   129,   130,   131,   132,   133,
+     134,   135,   136,   137,   138,   139,   140,   141,   143,   144,
+     145,   146,   147,   148,   149,   150
 };
 #endif
 
@@ -1324,403 +1324,403 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: Functions  */
-#line 76 "chinko_bot/dscript/parser.y"
+#line 75 "chinko_bot/dscript/parser.y"
                                                                                         { execute(data, (yyvsp[0].instr)); }
 #line 1330 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 3: /* Functions: Sequence  */
-#line 78 "chinko_bot/dscript/parser.y"
+#line 77 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = (yyvsp[0].instr); }
 #line 1336 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 4: /* Functions: Functions LET IDENT LPAREN Args RPAREN LBRACK Sequence RBRACK  */
-#line 79 "chinko_bot/dscript/parser.y"
+#line 78 "chinko_bot/dscript/parser.y"
                                                                                               { declarefunc(data, (yyvsp[-6].strval), (yyvsp[-4].instr), (yyvsp[-1].instr)); (yyval.instr) = (yyvsp[-8].instr); }
 #line 1342 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 5: /* Args: ArgsRec Type Var  */
-#line 81 "chinko_bot/dscript/parser.y"
+#line 80 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = seq(createvar(data, (yyvsp[-1].intval), (yyvsp[0].instr)), (yyvsp[-2].instr)); }
 #line 1348 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 6: /* Args: %empty  */
-#line 82 "chinko_bot/dscript/parser.y"
+#line 81 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
 #line 1354 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 7: /* ArgsRec: ArgsRec Type Var COMMA  */
-#line 84 "chinko_bot/dscript/parser.y"
+#line 83 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = seq(createvar(data, (yyvsp[-2].intval), (yyvsp[-1].instr)), (yyvsp[-3].instr)); }
 #line 1360 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 8: /* ArgsRec: %empty  */
-#line 85 "chinko_bot/dscript/parser.y"
+#line 84 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
 #line 1366 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 9: /* Sequence: Instruction Sequence  */
-#line 87 "chinko_bot/dscript/parser.y"
+#line 86 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = seq((yyvsp[-1].instr), (yyvsp[0].instr)); }
 #line 1372 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 10: /* Sequence: Instruction  */
-#line 88 "chinko_bot/dscript/parser.y"
+#line 87 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = (yyvsp[0].instr); }
 #line 1378 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 11: /* Sequence: %empty  */
-#line 89 "chinko_bot/dscript/parser.y"
+#line 88 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
 #line 1384 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 12: /* Instruction: IF Expression LBRACK Sequence RBRACK  */
-#line 91 "chinko_bot/dscript/parser.y"
+#line 90 "chinko_bot/dscript/parser.y"
                                                     { (yyval.instr) = ifinst(data, (yyvsp[-3].instr), (yyvsp[-1].instr)); }
 #line 1390 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 13: /* Instruction: IF Expression LBRACK Sequence RBRACK ELSE LBRACK Sequence RBRACK  */
-#line 92 "chinko_bot/dscript/parser.y"
+#line 91 "chinko_bot/dscript/parser.y"
                                                                                                         { (yyval.instr) = ifelseinst(data, (yyvsp[-7].instr), (yyvsp[-5].instr), (yyvsp[-1].instr)); }
 #line 1396 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 14: /* Instruction: WHILE Expression LBRACK Sequence RBRACK  */
-#line 93 "chinko_bot/dscript/parser.y"
+#line 92 "chinko_bot/dscript/parser.y"
                                                                                                                                 { (yyval.instr) = whileinst(data, (yyvsp[-3].instr), (yyvsp[-1].instr)); }
 #line 1402 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 15: /* Instruction: FOR Assignment TO Expression LBRACK Sequence RBRACK  */
-#line 94 "chinko_bot/dscript/parser.y"
+#line 93 "chinko_bot/dscript/parser.y"
                                                                                                                         { (yyval.instr) = forinst(data, (yyvsp[-5].instr), (yyvsp[-3].instr), (yyvsp[-1].instr)); }
 #line 1408 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 16: /* Instruction: Assignment PTV  */
-#line 95 "chinko_bot/dscript/parser.y"
+#line 94 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = (yyvsp[-1].instr); }
 #line 1414 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 17: /* Instruction: IDENT LPAREN Expression RPAREN PTV  */
-#line 96 "chinko_bot/dscript/parser.y"
+#line 95 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = loadfunction(data, (yyvsp[-4].strval), (yyvsp[-2].instr)); }
 #line 1420 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 18: /* Instruction: IDENT LPAREN RPAREN PTV  */
-#line 97 "chinko_bot/dscript/parser.y"
+#line 96 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = loadfunction(data, (yyvsp[-3].strval), NULL); }
 #line 1426 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 19: /* Instruction: RETURN Expression PTV  */
-#line 98 "chinko_bot/dscript/parser.y"
+#line 97 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = unary_operator(data, (yyvsp[-1].instr), RETURN); }
 #line 1432 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 20: /* Assignment: Var ASSIGN Expression  */
-#line 100 "chinko_bot/dscript/parser.y"
+#line 99 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = assignment(data, (yyvsp[-2].instr), (yyvsp[0].instr)); }
 #line 1438 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 21: /* Assignment: Var PLUSASS Expression  */
-#line 101 "chinko_bot/dscript/parser.y"
+#line 100 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), PLUSASS); }
 #line 1444 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 22: /* Assignment: Var MINUSASS Expression  */
-#line 102 "chinko_bot/dscript/parser.y"
+#line 101 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MINUSASS); }
 #line 1450 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 23: /* Assignment: Var MULTASS Expression  */
-#line 103 "chinko_bot/dscript/parser.y"
+#line 102 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MULTASS); }
 #line 1456 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 24: /* Assignment: Var DIVASS Expression  */
-#line 104 "chinko_bot/dscript/parser.y"
+#line 103 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), DIVASS); }
 #line 1462 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 25: /* Assignment: Type Var ASSIGN Expression  */
-#line 105 "chinko_bot/dscript/parser.y"
+#line 104 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = create_assign(data, (yyvsp[-3].intval), (yyvsp[-2].instr), (yyvsp[0].instr)); }
 #line 1468 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 26: /* Assignment: Type Var  */
-#line 106 "chinko_bot/dscript/parser.y"
+#line 105 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = createvar(data, (yyvsp[-1].intval), (yyvsp[0].instr)); }
 #line 1474 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 27: /* Type: TBOOL  */
-#line 108 "chinko_bot/dscript/parser.y"
+#line 107 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.intval) = BOOL; }
 #line 1480 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 28: /* Type: TCHAR  */
-#line 109 "chinko_bot/dscript/parser.y"
+#line 108 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = CHAR; }
 #line 1486 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 29: /* Type: TINT8  */
-#line 110 "chinko_bot/dscript/parser.y"
+#line 109 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = INT8; }
 #line 1492 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 30: /* Type: TUINT8  */
-#line 111 "chinko_bot/dscript/parser.y"
+#line 110 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = UINT8; }
 #line 1498 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 31: /* Type: TINT32  */
-#line 112 "chinko_bot/dscript/parser.y"
+#line 111 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = INT32; }
 #line 1504 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 32: /* Type: TUINT32  */
-#line 113 "chinko_bot/dscript/parser.y"
+#line 112 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = UINT32; }
 #line 1510 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 33: /* Type: TDOUBLE  */
-#line 114 "chinko_bot/dscript/parser.y"
+#line 113 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = DOUBLE; }
 #line 1516 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 34: /* Type: TSTR  */
-#line 115 "chinko_bot/dscript/parser.y"
+#line 114 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = STRING; }
 #line 1522 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 42: /* Expression: Paren  */
-#line 117 "chinko_bot/dscript/parser.y"
+#line 116 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = (yyvsp[0].instr); }
 #line 1528 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 43: /* Ops: Expression EQ Expression  */
-#line 118 "chinko_bot/dscript/parser.y"
+#line 117 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), EQ); }
 #line 1534 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 44: /* Ops: Expression NEQ Expression  */
-#line 119 "chinko_bot/dscript/parser.y"
+#line 118 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), NEQ); }
 #line 1540 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 45: /* Ops: Expression GT Expression  */
-#line 120 "chinko_bot/dscript/parser.y"
+#line 119 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), GT); }
 #line 1546 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 46: /* Ops: Expression LT Expression  */
-#line 121 "chinko_bot/dscript/parser.y"
+#line 120 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LT); }
 #line 1552 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 47: /* Ops: Expression GTEQ Expression  */
-#line 122 "chinko_bot/dscript/parser.y"
+#line 121 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), GTEQ); }
 #line 1558 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 48: /* Ops: Expression LTEQ Expression  */
-#line 123 "chinko_bot/dscript/parser.y"
+#line 122 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LTEQ); }
 #line 1564 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 49: /* Ops: Expression PLUS Expression  */
-#line 124 "chinko_bot/dscript/parser.y"
+#line 123 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), PLUS); }
 #line 1570 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 50: /* Ops: Expression MINUS Expression  */
-#line 125 "chinko_bot/dscript/parser.y"
+#line 124 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MINUS); }
 #line 1576 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 51: /* Ops: Expression MULT Expression  */
-#line 126 "chinko_bot/dscript/parser.y"
+#line 125 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MULT); }
 #line 1582 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 52: /* Ops: Expression DIV Expression  */
-#line 127 "chinko_bot/dscript/parser.y"
+#line 126 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), DIV); }
 #line 1588 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 53: /* Ops: Expression MOD Expression  */
-#line 128 "chinko_bot/dscript/parser.y"
+#line 127 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MOD); }
 #line 1594 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 54: /* Ops: Expression POW Expression  */
-#line 129 "chinko_bot/dscript/parser.y"
+#line 128 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), POW); }
 #line 1600 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 55: /* Ops: Expression LAND Expression  */
-#line 130 "chinko_bot/dscript/parser.y"
+#line 129 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LAND); }
 #line 1606 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 56: /* Ops: Expression LOR Expression  */
-#line 131 "chinko_bot/dscript/parser.y"
+#line 130 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LOR); }
 #line 1612 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 57: /* Ops: Expression BAND Expression  */
-#line 132 "chinko_bot/dscript/parser.y"
+#line 131 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BAND); }
 #line 1618 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 58: /* Ops: Expression BXOR Expression  */
-#line 133 "chinko_bot/dscript/parser.y"
+#line 132 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BXOR); }
 #line 1624 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 59: /* Ops: Expression BOR Expression  */
-#line 134 "chinko_bot/dscript/parser.y"
+#line 133 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BOR); }
 #line 1630 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 60: /* Ops: Expression LSHIFT Expression  */
-#line 135 "chinko_bot/dscript/parser.y"
+#line 134 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LSHIFT); }
 #line 1636 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 61: /* Ops: Expression RSHIFT Expression  */
-#line 136 "chinko_bot/dscript/parser.y"
+#line 135 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), RSHIFT); }
 #line 1642 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 62: /* Ops: Expression COMMA Expression  */
-#line 137 "chinko_bot/dscript/parser.y"
+#line 136 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), COMMA); }
 #line 1648 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 63: /* Ops: LNOT Expression  */
-#line 138 "chinko_bot/dscript/parser.y"
+#line 137 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), LNOT); }
 #line 1654 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 64: /* Ops: BNOT Expression  */
-#line 139 "chinko_bot/dscript/parser.y"
+#line 138 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), BNOT); }
 #line 1660 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 65: /* Ops: MINUS Expression  */
-#line 140 "chinko_bot/dscript/parser.y"
+#line 139 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), UNARY_MINUS); }
 #line 1666 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 66: /* Ops: IDENT LPAREN Expression RPAREN  */
-#line 141 "chinko_bot/dscript/parser.y"
+#line 140 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = loadfunction(data, (yyvsp[-3].strval), (yyvsp[-1].instr)); }
 #line 1672 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 67: /* Ops: IDENT LPAREN RPAREN  */
-#line 142 "chinko_bot/dscript/parser.y"
+#line 141 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadfunction(data, (yyvsp[-2].strval), NULL); }
 #line 1678 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 68: /* Paren: LPAREN Expression RPAREN  */
-#line 144 "chinko_bot/dscript/parser.y"
+#line 143 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = (yyvsp[-1].instr); }
 #line 1684 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 69: /* Nat: NATURAL  */
-#line 145 "chinko_bot/dscript/parser.y"
+#line 144 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadnatural(data, (yyvsp[0].intval)); }
 #line 1690 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 70: /* Real: REAL  */
-#line 146 "chinko_bot/dscript/parser.y"
+#line 145 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadreal(data, (yyvsp[0].doubleval)); }
 #line 1696 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 71: /* Char: CHARACT  */
-#line 147 "chinko_bot/dscript/parser.y"
+#line 146 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadnatural(data, (yyvsp[0].intval)); }
 #line 1702 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 72: /* Bool: TRUE  */
-#line 148 "chinko_bot/dscript/parser.y"
+#line 147 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadnatural(data, 1); }
 #line 1708 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 73: /* Bool: FALSE  */
-#line 149 "chinko_bot/dscript/parser.y"
+#line 148 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = loadnatural(data, 0); }
 #line 1714 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 74: /* Str: STR  */
-#line 150 "chinko_bot/dscript/parser.y"
+#line 149 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = loadstr(data, (yyvsp[0].strval)); }
 #line 1720 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 75: /* Var: IDENT  */
-#line 151 "chinko_bot/dscript/parser.y"
+#line 150 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadvar(data, (yyvsp[0].strval)); }
 #line 1726 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
@@ -1920,7 +1920,7 @@ yyreturn:
   return yyresult;
 }
 
-#line 153 "chinko_bot/dscript/parser.y"
+#line 152 "chinko_bot/dscript/parser.y"
 
 
 #include "products/parser.tab.h"

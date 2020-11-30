@@ -35,7 +35,7 @@ public:
     int getConnectionUnitId();
     int getDofusBotUnitId();
     int getAPIConnectionId() { return apiConnectionId; };
-    void setAPIConnectionId(int apiConnectionId);
+    bool setAPIConnectionId(int apiConnectionId);
     void resetAPIConnectionId() { apiConnectionId = -1; };
 
 

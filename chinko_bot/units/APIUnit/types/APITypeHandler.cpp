@@ -4,7 +4,13 @@
 APITypeHandler * APITypeHandler::typeHandler = nullptr;
 
 APITypeHandler::APITypeHandler() {
-	id_to_builder[ServerSelectInformations::typeId] 	= make_shared<ServerSelectInformations>;
+	id_to_builder[ServerInformations::typeId] 	= make_shared<ServerInformations>;
+	id_to_builder[CharacterInformations::typeId] 	= make_shared<CharacterInformations>;
+
+	id_to_builder[SkillInformations::typeId] 	        = make_shared<SkillInformations>;
+	id_to_builder[JobInformations::typeId]   	        = make_shared<JobInformations>;
+	id_to_builder[PlayedCharacterInformations::typeId]  = make_shared<PlayedCharacterInformations>;
+	id_to_builder[ItemInformations::typeId]             = make_shared<ItemInformations>;
 }
 
 APITypeHandler * APITypeHandler::getInstance() {

@@ -1,6 +1,6 @@
-#include "ServerSelectionListMessage.h"
+#include "ServerInformationsListMessage.h"
 
-bool ServerSelectionListMessage::serialize(sp<MessageDataBuffer> output) {
+bool ServerInformationsListMessage::serialize(sp<MessageDataBuffer> output) {
     output->writeVarInt(servers.size());
 
     for(int i = 0; i < servers.size(); i++)
@@ -10,11 +10,11 @@ bool ServerSelectionListMessage::serialize(sp<MessageDataBuffer> output) {
     return true;
 }
 
-bool ServerSelectionListMessage::deserialize(sp<MessageDataBuffer> input) {
+bool ServerInformationsListMessage::deserialize(sp<MessageDataBuffer> input) {
     int size = input->readVarInt();
 
     for(int i = 0; i < size; i++) {
-        ServerSelectInformations server;
+        ServerInformations server;
         if(!server.deserialize(input))
             return false;
 

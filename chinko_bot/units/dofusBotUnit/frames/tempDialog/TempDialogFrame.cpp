@@ -40,7 +40,7 @@ bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
             dofusBotParent->sendSelfMessage(make_shared<ChangeToDownMapMessage>(floor));
             Logger::write("Moving to down map.", LOG_INFO);
         } else if (csMsg->content == "collect") {
-            dofusBotParent->sendSelfMessage(make_shared<CollectInteractivesMessage>(vector<int>({17})));
+            dofusBotParent->sendSelfMessage(make_shared<CollectInteractivesMessage>(vector<int>({17, 53})));
             // dofusBotParent->sendSelfMessage(make_shared<CollectInteractiveTypeIdMessage>(17));
             Logger::write("Collecting.", LOG_INFO);
         } else if (csMsg->content == "attack" && dofusBotParent->getMapInfosAsFight()) {
