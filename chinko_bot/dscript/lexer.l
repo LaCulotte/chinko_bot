@@ -40,8 +40,8 @@ tbool		bool
 tchar		char
 tint8		(byte|int8)
 tuint8		(ubyte|uint8)
-tint32		(int32|dword)
-tuint32		(uint32|udword)
+tint32		(int32|int)
+tuint32		(uint32|uint)
 tdouble		(double|fp)
 tstr		string
 let			let

@@ -86,7 +86,6 @@ ast *unary_operator(parser_data_t *data, ast *expr, int token) {
 void disp_recur(ast *x, int nbsp);
 void declarefunc(parser_data_t *data, char *funcname, ast *inits , ast *seq) {
 	ast *ast_inits = new_ast_entry(data, INIT_ARGS, seq, inits);
-	ast *ast_func = new_ast_entry(data, INIT_FUNC, NULL, ast_inits);
 	if(data->usrfuncs.find(string(funcname)) != data->usrfuncs.end()) {
 		string err = "redefinition of "+string(funcname)+" function.\n";
 		throw_exception(err, data->nline);

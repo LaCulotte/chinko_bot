@@ -156,42 +156,41 @@ enum yysymbol_kind_t
   YYSYMBOL_LET = 44,                       /* LET  */
   YYSYMBOL_FUNC = 45,                      /* FUNC  */
   YYSYMBOL_INIT_ARGS = 46,                 /* INIT_ARGS  */
-  YYSYMBOL_INIT_FUNC = 47,                 /* INIT_FUNC  */
-  YYSYMBOL_IF = 48,                        /* IF  */
-  YYSYMBOL_ELSE = 49,                      /* ELSE  */
-  YYSYMBOL_LBRACK = 50,                    /* LBRACK  */
-  YYSYMBOL_RBRACK = 51,                    /* RBRACK  */
-  YYSYMBOL_PTV = 52,                       /* PTV  */
-  YYSYMBOL_ASSIGN = 53,                    /* ASSIGN  */
-  YYSYMBOL_WHILE = 54,                     /* WHILE  */
-  YYSYMBOL_FOR = 55,                       /* FOR  */
-  YYSYMBOL_TO = 56,                        /* TO  */
-  YYSYMBOL_IFELSE = 57,                    /* IFELSE  */
-  YYSYMBOL_CREATEVAR = 58,                 /* CREATEVAR  */
-  YYSYMBOL_CREATEASSIGN = 59,              /* CREATEASSIGN  */
-  YYSYMBOL_TYPE = 60,                      /* TYPE  */
-  YYSYMBOL_PLUSASS = 61,                   /* PLUSASS  */
-  YYSYMBOL_MINUSASS = 62,                  /* MINUSASS  */
-  YYSYMBOL_MULTASS = 63,                   /* MULTASS  */
-  YYSYMBOL_DIVASS = 64,                    /* DIVASS  */
-  YYSYMBOL_YYACCEPT = 65,                  /* $accept  */
-  YYSYMBOL_Program = 66,                   /* Program  */
-  YYSYMBOL_Functions = 67,                 /* Functions  */
-  YYSYMBOL_Args = 68,                      /* Args  */
-  YYSYMBOL_ArgsRec = 69,                   /* ArgsRec  */
-  YYSYMBOL_Sequence = 70,                  /* Sequence  */
-  YYSYMBOL_Instruction = 71,               /* Instruction  */
-  YYSYMBOL_Assignment = 72,                /* Assignment  */
-  YYSYMBOL_Type = 73,                      /* Type  */
-  YYSYMBOL_Expression = 74,                /* Expression  */
-  YYSYMBOL_Ops = 75,                       /* Ops  */
-  YYSYMBOL_Paren = 76,                     /* Paren  */
-  YYSYMBOL_Nat = 77,                       /* Nat  */
-  YYSYMBOL_Real = 78,                      /* Real  */
-  YYSYMBOL_Char = 79,                      /* Char  */
-  YYSYMBOL_Bool = 80,                      /* Bool  */
-  YYSYMBOL_Str = 81,                       /* Str  */
-  YYSYMBOL_Var = 82                        /* Var  */
+  YYSYMBOL_IF = 47,                        /* IF  */
+  YYSYMBOL_ELSE = 48,                      /* ELSE  */
+  YYSYMBOL_LBRACK = 49,                    /* LBRACK  */
+  YYSYMBOL_RBRACK = 50,                    /* RBRACK  */
+  YYSYMBOL_PTV = 51,                       /* PTV  */
+  YYSYMBOL_ASSIGN = 52,                    /* ASSIGN  */
+  YYSYMBOL_WHILE = 53,                     /* WHILE  */
+  YYSYMBOL_FOR = 54,                       /* FOR  */
+  YYSYMBOL_TO = 55,                        /* TO  */
+  YYSYMBOL_IFELSE = 56,                    /* IFELSE  */
+  YYSYMBOL_CREATEVAR = 57,                 /* CREATEVAR  */
+  YYSYMBOL_CREATEASSIGN = 58,              /* CREATEASSIGN  */
+  YYSYMBOL_TYPE = 59,                      /* TYPE  */
+  YYSYMBOL_PLUSASS = 60,                   /* PLUSASS  */
+  YYSYMBOL_MINUSASS = 61,                  /* MINUSASS  */
+  YYSYMBOL_MULTASS = 62,                   /* MULTASS  */
+  YYSYMBOL_DIVASS = 63,                    /* DIVASS  */
+  YYSYMBOL_YYACCEPT = 64,                  /* $accept  */
+  YYSYMBOL_Program = 65,                   /* Program  */
+  YYSYMBOL_Functions = 66,                 /* Functions  */
+  YYSYMBOL_Args = 67,                      /* Args  */
+  YYSYMBOL_ArgsRec = 68,                   /* ArgsRec  */
+  YYSYMBOL_Sequence = 69,                  /* Sequence  */
+  YYSYMBOL_Instruction = 70,               /* Instruction  */
+  YYSYMBOL_Assignment = 71,                /* Assignment  */
+  YYSYMBOL_Type = 72,                      /* Type  */
+  YYSYMBOL_Expression = 73,                /* Expression  */
+  YYSYMBOL_Ops = 74,                       /* Ops  */
+  YYSYMBOL_Paren = 75,                     /* Paren  */
+  YYSYMBOL_Nat = 76,                       /* Nat  */
+  YYSYMBOL_Real = 77,                      /* Real  */
+  YYSYMBOL_Char = 78,                      /* Char  */
+  YYSYMBOL_Bool = 79,                      /* Bool  */
+  YYSYMBOL_Str = 80,                       /* Str  */
+  YYSYMBOL_Var = 81                        /* Var  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -501,19 +500,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  46
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   493
+#define YYLAST   525
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  65
+#define YYNTOKENS  64
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  18
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  75
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  144
+#define YYNSTATES  147
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   319
+#define YYMAXUTOK   318
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -558,7 +557,7 @@ static const yytype_int8 yytranslate[] =
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
       45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
-      55,    56,    57,    58,    59,    60,    61,    62,    63,    64
+      55,    56,    57,    58,    59,    60,    61,    62,    63
 };
 
 #if YYDEBUG
@@ -594,12 +593,12 @@ static const char *const yytname[] =
   "LAND", "BOR", "BXOR", "BAND", "EQ", "NEQ", "GT", "LT", "GTEQ", "LTEQ",
   "LSHIFT", "RSHIFT", "PLUS", "MINUS", "MULT", "DIV", "MOD", "POW", "LNOT",
   "BNOT", "RETURN", "UNARY_MINUS", "LPAREN", "RPAREN", "LET", "FUNC",
-  "INIT_ARGS", "INIT_FUNC", "IF", "ELSE", "LBRACK", "RBRACK", "PTV",
-  "ASSIGN", "WHILE", "FOR", "TO", "IFELSE", "CREATEVAR", "CREATEASSIGN",
-  "TYPE", "PLUSASS", "MINUSASS", "MULTASS", "DIVASS", "$accept", "Program",
-  "Functions", "Args", "ArgsRec", "Sequence", "Instruction", "Assignment",
-  "Type", "Expression", "Ops", "Paren", "Nat", "Real", "Char", "Bool",
-  "Str", "Var", YY_NULLPTR
+  "INIT_ARGS", "IF", "ELSE", "LBRACK", "RBRACK", "PTV", "ASSIGN", "WHILE",
+  "FOR", "TO", "IFELSE", "CREATEVAR", "CREATEASSIGN", "TYPE", "PLUSASS",
+  "MINUSASS", "MULTASS", "DIVASS", "$accept", "Program", "Functions",
+  "Args", "ArgsRec", "Sequence", "Instruction", "Assignment", "Type",
+  "Expression", "Ops", "Paren", "Nat", "Real", "Char", "Bool", "Str",
+  "Var", YY_NULLPTR
 };
 
 static const char *
@@ -620,16 +619,16 @@ static const yytype_int16 yytoknum[] =
      285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
      295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
      305,   306,   307,   308,   309,   310,   311,   312,   313,   314,
-     315,   316,   317,   318,   319
+     315,   316,   317,   318
 };
 #endif
 
-#define YYPACT_NINF (-48)
+#define YYPACT_NINF (-121)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-7)
+#define YYTABLE_NINF (-1)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -638,21 +637,21 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      16,   -48,   -48,   -48,   -48,   -48,   -48,   -48,   -48,   -30,
-     141,   141,   141,   265,    18,   -24,   -48,    16,   -31,     5,
-     -14,    -1,   -48,   -48,   -48,   -48,   -48,   -48,   -11,   141,
-     141,   141,   141,   166,   -48,   -48,   -48,   -48,   -48,   -48,
-     -48,   -48,   201,   234,   -48,   -20,   -48,    26,   -48,   -48,
-     -13,   141,   141,   141,   141,   141,    -7,   300,   110,    24,
-     378,   378,   326,   141,   141,   141,   141,   141,   141,   141,
-     141,   141,   141,   141,   141,   141,   141,   141,   141,   141,
-     141,   141,   141,   -48,    16,    16,   141,     4,   141,   378,
-     378,   378,   378,   378,   -48,    10,   -48,   352,   -48,   397,
-     415,   432,   448,   136,   180,   213,   213,   275,   275,   275,
-     275,   -26,   -26,    24,    24,    14,    14,    14,    14,     6,
-      12,   267,    22,   378,   -48,   -48,    17,   -48,    16,    29,
-     479,    30,    28,    32,     5,    16,   -48,    16,    49,    55,
-      56,   -48,   -48,   -48
+      19,  -121,  -121,  -121,  -121,  -121,  -121,  -121,  -121,   -39,
+     156,   156,   156,    -3,    15,   -28,  -121,    19,   -27,     8,
+     -40,   110,  -121,  -121,  -121,  -121,  -121,  -121,     1,   156,
+     156,   156,   156,   181,  -121,  -121,  -121,  -121,  -121,  -121,
+    -121,  -121,   215,   247,  -121,    -6,  -121,    33,  -121,  -121,
+      -1,   156,   156,   156,   156,   156,     6,   311,   141,    11,
+     389,   389,   337,   156,   156,   156,   156,   156,   156,   156,
+     156,   156,   156,   156,   156,   156,   156,   156,   156,   156,
+     156,   156,   156,  -121,    19,    19,   156,    14,   156,   389,
+     389,   389,   389,   389,  -121,     7,  -121,   363,  -121,   408,
+     426,   443,   459,   474,   488,   193,   193,   133,   133,   133,
+     133,     5,     5,    11,    11,    24,    24,    24,    24,    10,
+      12,   279,   246,   389,  -121,  -121,    16,  -121,    19,    20,
+       8,    18,    21,    30,    47,    19,  -121,    19,   246,  -121,
+      32,    56,     8,  -121,  -121,    47,  -121
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -672,134 +671,140 @@ static const yytype_int8 yydefact[] =
       21,    22,    23,    24,    18,     0,    67,     0,    68,    62,
       56,    55,    59,    58,    57,    43,    44,    45,    46,    47,
       48,    60,    61,    49,    50,    51,    52,    53,    54,     0,
-       0,     0,     8,    25,    17,    66,    12,    14,    11,     0,
-       0,     0,     0,     0,     0,    11,    15,    11,     5,     0,
-       0,     7,    13,     4
+       0,     0,     6,    25,    17,    66,    12,    14,    11,     0,
+       0,     0,     0,     0,     8,    11,    15,    11,     0,     5,
+       0,     0,     0,    13,     4,     8,     7
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -48,   -48,   -48,   -48,   -48,   -16,   -48,    60,   -47,    23,
-     -48,   -48,   -48,   -48,   -48,   -48,   -48,     0
+    -121,  -121,  -121,  -121,   -75,   -16,  -121,    67,  -120,    23,
+    -121,  -121,  -121,  -121,  -121,  -121,  -121,     0
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,    14,    15,   129,   130,    16,    17,    18,    19,    33,
+      -1,    14,    15,   129,   139,    16,    17,    18,    19,    33,
       34,    35,    36,    37,    38,    39,    40,    41
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const yytype_int16 yytable[] =
+static const yytype_uint8 yytable[] =
 {
-      20,    48,    22,    23,    24,    25,    77,    78,    79,    80,
-      81,    82,    21,    20,    26,    27,    28,    20,    46,    50,
-      47,    49,    44,     1,     2,     3,     4,     5,     6,     7,
-       8,    58,    29,     9,    42,    43,    86,    30,    31,    51,
-      88,    32,    56,    87,    57,    94,   122,    52,    53,    54,
-      55,    82,    59,    60,    61,    62,    10,   126,    79,    80,
-      81,    82,   124,   127,    11,    -6,   131,   141,   119,   120,
-      12,    13,   133,    45,    89,    90,    91,    92,    93,   136,
-     135,    97,   137,   134,    20,    20,    99,   100,   101,   102,
+      20,    48,   130,    21,     1,     2,     3,     4,     5,     6,
+       7,     8,    51,    20,    44,    46,    47,    20,   142,    50,
+      52,    53,    54,    55,    49,    44,     1,     2,     3,     4,
+       5,     6,     7,     8,    42,    43,     9,    77,    78,    79,
+      80,    81,    82,    58,    57,    79,    80,    81,    82,    86,
+      87,    88,    59,    60,    61,    62,   122,    94,   124,    10,
+     126,    82,   127,   133,   131,   138,    11,   135,   119,   120,
+     146,   136,    12,    13,    89,    90,    91,    92,    93,   137,
+      45,    97,   143,     0,    20,    20,    99,   100,   101,   102,
      103,   104,   105,   106,   107,   108,   109,   110,   111,   112,
-     113,   114,   115,   116,   117,   118,   142,   143,     0,   121,
-       0,   123,   132,    22,    23,    24,    25,     0,     0,   139,
-       0,   140,     0,     0,     0,    26,    27,    28,    20,     0,
-       0,     0,     0,     0,   138,    20,     0,    20,     0,     0,
-       0,     0,     0,    29,    22,    23,    24,    25,    30,    31,
-       0,     0,    32,    96,     0,     0,    26,    27,    28,    68,
-      69,    70,    71,    72,    73,    74,    75,    76,    77,    78,
-      79,    80,    81,    82,    29,     0,     0,     0,     0,    30,
-      31,     0,     0,    32,    63,    64,    65,    66,    67,    68,
-      69,    70,    71,    72,    73,    74,    75,    76,    77,    78,
-      79,    80,    81,    82,    69,    70,    71,    72,    73,    74,
-      75,    76,    77,    78,    79,    80,    81,    82,    83,    63,
+     113,   114,   115,   116,   117,   118,   144,     0,     0,   121,
+       0,   123,   132,    22,    23,    24,    25,     0,     0,   140,
+       0,   141,     0,     0,     0,    26,    27,    28,    20,     0,
+     134,     0,     0,     0,     0,    20,     0,    20,     0,     0,
+       0,     0,   145,    29,    22,    23,    24,    25,    30,    31,
+       0,     0,    32,    56,     0,     0,    26,    27,    28,    22,
+      23,    24,    25,    75,    76,    77,    78,    79,    80,    81,
+      82,    26,    27,    28,    29,     0,     0,     0,     0,    30,
+      31,     0,     0,    32,    96,     0,     0,     0,     0,    29,
+       0,     0,     0,     0,    30,    31,     0,     0,    32,    63,
       64,    65,    66,    67,    68,    69,    70,    71,    72,    73,
       74,    75,    76,    77,    78,    79,    80,    81,    82,    71,
       72,    73,    74,    75,    76,    77,    78,    79,    80,    81,
-      82,    84,    63,    64,    65,    66,    67,    68,    69,    70,
-      71,    72,    73,    74,    75,    76,    77,    78,    79,    80,
-      81,    82,     1,     2,     3,     4,     5,     6,     7,     8,
-       0,     0,    44,     0,    85,    63,    64,    65,    66,    67,
-      68,    69,    70,    71,    72,    73,    74,    75,    76,    77,
-      78,    79,    80,    81,    82,    75,    76,    77,    78,    79,
-      80,    81,    82,     0,     0,     0,     0,   128,    63,    64,
-      65,    66,    67,    68,    69,    70,    71,    72,    73,    74,
-      75,    76,    77,    78,    79,    80,    81,    82,     0,     0,
-       0,     0,     0,    95,    63,    64,    65,    66,    67,    68,
-      69,    70,    71,    72,    73,    74,    75,    76,    77,    78,
-      79,    80,    81,    82,     0,     0,     0,     0,     0,    98,
-      63,    64,    65,    66,    67,    68,    69,    70,    71,    72,
-      73,    74,    75,    76,    77,    78,    79,    80,    81,    82,
-       0,     0,     0,     0,     0,   125,    63,    64,    65,    66,
-      67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
-      77,    78,    79,    80,    81,    82,    64,    65,    66,    67,
-      68,    69,    70,    71,    72,    73,    74,    75,    76,    77,
-      78,    79,    80,    81,    82,    65,    66,    67,    68,    69,
+      82,     0,    83,    63,    64,    65,    66,    67,    68,    69,
       70,    71,    72,    73,    74,    75,    76,    77,    78,    79,
-      80,    81,    82,    66,    67,    68,    69,    70,    71,    72,
-      73,    74,    75,    76,    77,    78,    79,    80,    81,    82,
+      80,    81,    82,     1,     2,     3,     4,     5,     6,     7,
+       8,     0,     0,     0,    84,    63,    64,    65,    66,    67,
+      68,    69,    70,    71,    72,    73,    74,    75,    76,    77,
+      78,    79,    80,    81,    82,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    85,    63,    64,    65,
+      66,    67,    68,    69,    70,    71,    72,    73,    74,    75,
+      76,    77,    78,    79,    80,    81,    82,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,   128,    63,
+      64,    65,    66,    67,    68,    69,    70,    71,    72,    73,
+      74,    75,    76,    77,    78,    79,    80,    81,    82,     0,
+       0,     0,     0,     0,    95,    63,    64,    65,    66,    67,
+      68,    69,    70,    71,    72,    73,    74,    75,    76,    77,
+      78,    79,    80,    81,    82,     0,     0,     0,     0,     0,
+      98,    63,    64,    65,    66,    67,    68,    69,    70,    71,
+      72,    73,    74,    75,    76,    77,    78,    79,    80,    81,
+      82,     0,     0,     0,     0,     0,   125,    63,    64,    65,
+      66,    67,    68,    69,    70,    71,    72,    73,    74,    75,
+      76,    77,    78,    79,    80,    81,    82,    64,    65,    66,
       67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
-      77,    78,    79,    80,    81,    82,     1,     2,     3,     4,
-       5,     6,     7,     8
+      77,    78,    79,    80,    81,    82,    65,    66,    67,    68,
+      69,    70,    71,    72,    73,    74,    75,    76,    77,    78,
+      79,    80,    81,    82,    66,    67,    68,    69,    70,    71,
+      72,    73,    74,    75,    76,    77,    78,    79,    80,    81,
+      82,    67,    68,    69,    70,    71,    72,    73,    74,    75,
+      76,    77,    78,    79,    80,    81,    82,    68,    69,    70,
+      71,    72,    73,    74,    75,    76,    77,    78,    79,    80,
+      81,    82,    69,    70,    71,    72,    73,    74,    75,    76,
+      77,    78,    79,    80,    81,    82
 };
 
 static const yytype_int16 yycheck[] =
 {
-       0,    17,     3,     4,     5,     6,    32,    33,    34,    35,
-      36,    37,    42,    13,    15,    16,    17,    17,     0,    19,
-      44,    52,    17,     7,     8,     9,    10,    11,    12,    13,
-      14,    42,    33,    17,    11,    12,    56,    38,    39,    53,
-      53,    42,    43,    17,    21,    52,    42,    61,    62,    63,
-      64,    37,    29,    30,    31,    32,    40,    51,    34,    35,
-      36,    37,    52,    51,    48,    43,    49,    18,    84,    85,
-      54,    55,    43,    13,    51,    52,    53,    54,    55,    51,
-      50,    58,    50,   130,    84,    85,    63,    64,    65,    66,
+       0,    17,   122,    42,     7,     8,     9,    10,    11,    12,
+      13,    14,    52,    13,    17,     0,    44,    17,   138,    19,
+      60,    61,    62,    63,    51,    17,     7,     8,     9,    10,
+      11,    12,    13,    14,    11,    12,    17,    32,    33,    34,
+      35,    36,    37,    42,    21,    34,    35,    36,    37,    55,
+      17,    52,    29,    30,    31,    32,    42,    51,    51,    40,
+      50,    37,    50,    43,    48,    18,    47,    49,    84,    85,
+     145,    50,    53,    54,    51,    52,    53,    54,    55,    49,
+      13,    58,    50,    -1,    84,    85,    63,    64,    65,    66,
       67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
-      77,    78,    79,    80,    81,    82,    51,    51,    -1,    86,
+      77,    78,    79,    80,    81,    82,    50,    -1,    -1,    86,
       -1,    88,   128,     3,     4,     5,     6,    -1,    -1,   135,
       -1,   137,    -1,    -1,    -1,    15,    16,    17,   128,    -1,
-      -1,    -1,    -1,    -1,   134,   135,    -1,   137,    -1,    -1,
-      -1,    -1,    -1,    33,     3,     4,     5,     6,    38,    39,
-      -1,    -1,    42,    43,    -1,    -1,    15,    16,    17,    23,
-      24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-      34,    35,    36,    37,    33,    -1,    -1,    -1,    -1,    38,
-      39,    -1,    -1,    42,    18,    19,    20,    21,    22,    23,
-      24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-      34,    35,    36,    37,    24,    25,    26,    27,    28,    29,
-      30,    31,    32,    33,    34,    35,    36,    37,    52,    18,
+     130,    -1,    -1,    -1,    -1,   135,    -1,   137,    -1,    -1,
+      -1,    -1,   142,    33,     3,     4,     5,     6,    38,    39,
+      -1,    -1,    42,    43,    -1,    -1,    15,    16,    17,     3,
+       4,     5,     6,    30,    31,    32,    33,    34,    35,    36,
+      37,    15,    16,    17,    33,    -1,    -1,    -1,    -1,    38,
+      39,    -1,    -1,    42,    43,    -1,    -1,    -1,    -1,    33,
+      -1,    -1,    -1,    -1,    38,    39,    -1,    -1,    42,    18,
       19,    20,    21,    22,    23,    24,    25,    26,    27,    28,
       29,    30,    31,    32,    33,    34,    35,    36,    37,    26,
       27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
-      37,    50,    18,    19,    20,    21,    22,    23,    24,    25,
-      26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-      36,    37,     7,     8,     9,    10,    11,    12,    13,    14,
-      -1,    -1,    17,    -1,    50,    18,    19,    20,    21,    22,
-      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    30,    31,    32,    33,    34,
-      35,    36,    37,    -1,    -1,    -1,    -1,    50,    18,    19,
-      20,    21,    22,    23,    24,    25,    26,    27,    28,    29,
-      30,    31,    32,    33,    34,    35,    36,    37,    -1,    -1,
-      -1,    -1,    -1,    43,    18,    19,    20,    21,    22,    23,
-      24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-      34,    35,    36,    37,    -1,    -1,    -1,    -1,    -1,    43,
-      18,    19,    20,    21,    22,    23,    24,    25,    26,    27,
-      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
-      -1,    -1,    -1,    -1,    -1,    43,    18,    19,    20,    21,
-      22,    23,    24,    25,    26,    27,    28,    29,    30,    31,
-      32,    33,    34,    35,    36,    37,    19,    20,    21,    22,
-      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    20,    21,    22,    23,    24,
+      37,    -1,    51,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    21,    22,    23,    24,    25,    26,    27,
-      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
+      35,    36,    37,     7,     8,     9,    10,    11,    12,    13,
+      14,    -1,    -1,    -1,    49,    18,    19,    20,    21,    22,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+      33,    34,    35,    36,    37,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    49,    18,    19,    20,
+      21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    37,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    49,    18,
+      19,    20,    21,    22,    23,    24,    25,    26,    27,    28,
+      29,    30,    31,    32,    33,    34,    35,    36,    37,    -1,
+      -1,    -1,    -1,    -1,    43,    18,    19,    20,    21,    22,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+      33,    34,    35,    36,    37,    -1,    -1,    -1,    -1,    -1,
+      43,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+      27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+      37,    -1,    -1,    -1,    -1,    -1,    43,    18,    19,    20,
+      21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    37,    19,    20,    21,
       22,    23,    24,    25,    26,    27,    28,    29,    30,    31,
-      32,    33,    34,    35,    36,    37,     7,     8,     9,    10,
-      11,    12,    13,    14
+      32,    33,    34,    35,    36,    37,    20,    21,    22,    23,
+      24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
+      34,    35,    36,    37,    21,    22,    23,    24,    25,    26,
+      27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+      37,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    37,    23,    24,    25,
+      26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
+      36,    37,    24,    25,    26,    27,    28,    29,    30,    31,
+      32,    33,    34,    35,    36,    37
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -807,33 +812,33 @@ static const yytype_int16 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,     7,     8,     9,    10,    11,    12,    13,    14,    17,
-      40,    48,    54,    55,    66,    67,    70,    71,    72,    73,
-      82,    42,     3,     4,     5,     6,    15,    16,    17,    33,
-      38,    39,    42,    74,    75,    76,    77,    78,    79,    80,
-      81,    82,    74,    74,    17,    72,     0,    44,    70,    52,
-      82,    53,    61,    62,    63,    64,    43,    74,    42,    74,
-      74,    74,    74,    18,    19,    20,    21,    22,    23,    24,
+      40,    47,    53,    54,    65,    66,    69,    70,    71,    72,
+      81,    42,     3,     4,     5,     6,    15,    16,    17,    33,
+      38,    39,    42,    73,    74,    75,    76,    77,    78,    79,
+      80,    81,    73,    73,    17,    71,     0,    44,    69,    51,
+      81,    52,    60,    61,    62,    63,    43,    73,    42,    73,
+      73,    73,    73,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    52,    50,    50,    56,    17,    53,    74,
-      74,    74,    74,    74,    52,    43,    43,    74,    43,    74,
-      74,    74,    74,    74,    74,    74,    74,    74,    74,    74,
-      74,    74,    74,    74,    74,    74,    74,    74,    74,    70,
-      70,    74,    42,    74,    52,    43,    51,    51,    50,    68,
-      69,    49,    70,    43,    73,    50,    51,    50,    82,    70,
-      70,    18,    51,    51
+      35,    36,    37,    51,    49,    49,    55,    17,    52,    73,
+      73,    73,    73,    73,    51,    43,    43,    73,    43,    73,
+      73,    73,    73,    73,    73,    73,    73,    73,    73,    73,
+      73,    73,    73,    73,    73,    73,    73,    73,    73,    69,
+      69,    73,    42,    73,    51,    43,    50,    50,    49,    67,
+      72,    48,    69,    43,    81,    49,    50,    49,    18,    68,
+      69,    69,    72,    50,    50,    81,    68
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    65,    66,    67,    67,    68,    68,    69,    69,    70,
-      70,    70,    71,    71,    71,    71,    71,    71,    71,    71,
-      72,    72,    72,    72,    72,    72,    72,    73,    73,    73,
-      73,    73,    73,    73,    73,    74,    74,    74,    74,    74,
-      74,    74,    74,    75,    75,    75,    75,    75,    75,    75,
-      75,    75,    75,    75,    75,    75,    75,    75,    75,    75,
-      75,    75,    75,    75,    75,    75,    75,    75,    76,    77,
-      78,    79,    80,    80,    81,    82
+       0,    64,    65,    66,    66,    67,    67,    68,    68,    69,
+      69,    69,    70,    70,    70,    70,    70,    70,    70,    70,
+      71,    71,    71,    71,    71,    71,    71,    72,    72,    72,
+      72,    72,    72,    72,    72,    73,    73,    73,    73,    73,
+      73,    73,    73,    74,    74,    74,    74,    74,    74,    74,
+      74,    74,    74,    74,    74,    74,    74,    74,    74,    74,
+      74,    74,    74,    74,    74,    74,    74,    74,    75,    76,
+      77,    78,    79,    79,    80,    81
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -1326,407 +1331,407 @@ yyreduce:
   case 2: /* Program: Functions  */
 #line 75 "chinko_bot/dscript/parser.y"
                                                                                         { execute(data, (yyvsp[0].instr)); }
-#line 1330 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1335 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 3: /* Functions: Sequence  */
 #line 77 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = (yyvsp[0].instr); }
-#line 1336 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1341 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 4: /* Functions: Functions LET IDENT LPAREN Args RPAREN LBRACK Sequence RBRACK  */
 #line 78 "chinko_bot/dscript/parser.y"
                                                                                               { declarefunc(data, (yyvsp[-6].strval), (yyvsp[-4].instr), (yyvsp[-1].instr)); (yyval.instr) = (yyvsp[-8].instr); }
-#line 1342 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1347 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
-  case 5: /* Args: ArgsRec Type Var  */
+  case 5: /* Args: Type Var ArgsRec  */
 #line 80 "chinko_bot/dscript/parser.y"
-                                                                                { (yyval.instr) = seq(createvar(data, (yyvsp[-1].intval), (yyvsp[0].instr)), (yyvsp[-2].instr)); }
-#line 1348 "chinko_bot/dscript/products/parser.tab.cpp"
+                                                                                { (yyval.instr) = seq(createvar(data, (yyvsp[-2].intval), (yyvsp[-1].instr)), (yyvsp[0].instr)); }
+#line 1353 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 6: /* Args: %empty  */
 #line 81 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
-#line 1354 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1359 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
-  case 7: /* ArgsRec: ArgsRec Type Var COMMA  */
+  case 7: /* ArgsRec: COMMA Type Var ArgsRec  */
 #line 83 "chinko_bot/dscript/parser.y"
-                                                                        { (yyval.instr) = seq(createvar(data, (yyvsp[-2].intval), (yyvsp[-1].instr)), (yyvsp[-3].instr)); }
-#line 1360 "chinko_bot/dscript/products/parser.tab.cpp"
+                                                                        { (yyval.instr) = seq(createvar(data, (yyvsp[-2].intval), (yyvsp[-1].instr)), (yyvsp[0].instr)); }
+#line 1365 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 8: /* ArgsRec: %empty  */
 #line 84 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
-#line 1366 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1371 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 9: /* Sequence: Instruction Sequence  */
 #line 86 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = seq((yyvsp[-1].instr), (yyvsp[0].instr)); }
-#line 1372 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1377 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 10: /* Sequence: Instruction  */
 #line 87 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = (yyvsp[0].instr); }
-#line 1378 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1383 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 11: /* Sequence: %empty  */
 #line 88 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = NULL; }
-#line 1384 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1389 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 12: /* Instruction: IF Expression LBRACK Sequence RBRACK  */
 #line 90 "chinko_bot/dscript/parser.y"
                                                     { (yyval.instr) = ifinst(data, (yyvsp[-3].instr), (yyvsp[-1].instr)); }
-#line 1390 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1395 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 13: /* Instruction: IF Expression LBRACK Sequence RBRACK ELSE LBRACK Sequence RBRACK  */
 #line 91 "chinko_bot/dscript/parser.y"
                                                                                                         { (yyval.instr) = ifelseinst(data, (yyvsp[-7].instr), (yyvsp[-5].instr), (yyvsp[-1].instr)); }
-#line 1396 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1401 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 14: /* Instruction: WHILE Expression LBRACK Sequence RBRACK  */
 #line 92 "chinko_bot/dscript/parser.y"
                                                                                                                                 { (yyval.instr) = whileinst(data, (yyvsp[-3].instr), (yyvsp[-1].instr)); }
-#line 1402 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1407 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 15: /* Instruction: FOR Assignment TO Expression LBRACK Sequence RBRACK  */
 #line 93 "chinko_bot/dscript/parser.y"
                                                                                                                         { (yyval.instr) = forinst(data, (yyvsp[-5].instr), (yyvsp[-3].instr), (yyvsp[-1].instr)); }
-#line 1408 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1413 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 16: /* Instruction: Assignment PTV  */
 #line 94 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = (yyvsp[-1].instr); }
-#line 1414 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1419 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 17: /* Instruction: IDENT LPAREN Expression RPAREN PTV  */
 #line 95 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = loadfunction(data, (yyvsp[-4].strval), (yyvsp[-2].instr)); }
-#line 1420 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1425 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 18: /* Instruction: IDENT LPAREN RPAREN PTV  */
 #line 96 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = loadfunction(data, (yyvsp[-3].strval), NULL); }
-#line 1426 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1431 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 19: /* Instruction: RETURN Expression PTV  */
 #line 97 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = unary_operator(data, (yyvsp[-1].instr), RETURN); }
-#line 1432 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1437 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 20: /* Assignment: Var ASSIGN Expression  */
 #line 99 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = assignment(data, (yyvsp[-2].instr), (yyvsp[0].instr)); }
-#line 1438 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1443 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 21: /* Assignment: Var PLUSASS Expression  */
 #line 100 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), PLUSASS); }
-#line 1444 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1449 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 22: /* Assignment: Var MINUSASS Expression  */
 #line 101 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MINUSASS); }
-#line 1450 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1455 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 23: /* Assignment: Var MULTASS Expression  */
 #line 102 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MULTASS); }
-#line 1456 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1461 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 24: /* Assignment: Var DIVASS Expression  */
 #line 103 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), DIVASS); }
-#line 1462 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1467 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 25: /* Assignment: Type Var ASSIGN Expression  */
 #line 104 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = create_assign(data, (yyvsp[-3].intval), (yyvsp[-2].instr), (yyvsp[0].instr)); }
-#line 1468 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1473 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 26: /* Assignment: Type Var  */
 #line 105 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = createvar(data, (yyvsp[-1].intval), (yyvsp[0].instr)); }
-#line 1474 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1479 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 27: /* Type: TBOOL  */
 #line 107 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.intval) = BOOL; }
-#line 1480 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1485 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 28: /* Type: TCHAR  */
 #line 108 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = CHAR; }
-#line 1486 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1491 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 29: /* Type: TINT8  */
 #line 109 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = INT8; }
-#line 1492 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1497 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 30: /* Type: TUINT8  */
 #line 110 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = UINT8; }
-#line 1498 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1503 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 31: /* Type: TINT32  */
 #line 111 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = INT32; }
-#line 1504 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1509 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 32: /* Type: TUINT32  */
 #line 112 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = UINT32; }
-#line 1510 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1515 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 33: /* Type: TDOUBLE  */
 #line 113 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = DOUBLE; }
-#line 1516 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1521 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 34: /* Type: TSTR  */
 #line 114 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.intval) = STRING; }
-#line 1522 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1527 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 42: /* Expression: Paren  */
 #line 116 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = (yyvsp[0].instr); }
-#line 1528 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1533 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 43: /* Ops: Expression EQ Expression  */
 #line 117 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), EQ); }
-#line 1534 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1539 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 44: /* Ops: Expression NEQ Expression  */
 #line 118 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), NEQ); }
-#line 1540 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1545 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 45: /* Ops: Expression GT Expression  */
 #line 119 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), GT); }
-#line 1546 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1551 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 46: /* Ops: Expression LT Expression  */
 #line 120 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LT); }
-#line 1552 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1557 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 47: /* Ops: Expression GTEQ Expression  */
 #line 121 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), GTEQ); }
-#line 1558 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1563 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 48: /* Ops: Expression LTEQ Expression  */
 #line 122 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LTEQ); }
-#line 1564 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1569 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 49: /* Ops: Expression PLUS Expression  */
 #line 123 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), PLUS); }
-#line 1570 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1575 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 50: /* Ops: Expression MINUS Expression  */
 #line 124 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MINUS); }
-#line 1576 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1581 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 51: /* Ops: Expression MULT Expression  */
 #line 125 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MULT); }
-#line 1582 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1587 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 52: /* Ops: Expression DIV Expression  */
 #line 126 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), DIV); }
-#line 1588 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1593 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 53: /* Ops: Expression MOD Expression  */
 #line 127 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), MOD); }
-#line 1594 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1599 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 54: /* Ops: Expression POW Expression  */
 #line 128 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), POW); }
-#line 1600 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1605 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 55: /* Ops: Expression LAND Expression  */
 #line 129 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LAND); }
-#line 1606 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1611 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 56: /* Ops: Expression LOR Expression  */
 #line 130 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LOR); }
-#line 1612 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1617 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 57: /* Ops: Expression BAND Expression  */
 #line 131 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BAND); }
-#line 1618 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1623 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 58: /* Ops: Expression BXOR Expression  */
 #line 132 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BXOR); }
-#line 1624 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1629 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 59: /* Ops: Expression BOR Expression  */
 #line 133 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), BOR); }
-#line 1630 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1635 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 60: /* Ops: Expression LSHIFT Expression  */
 #line 134 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), LSHIFT); }
-#line 1636 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1641 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 61: /* Ops: Expression RSHIFT Expression  */
 #line 135 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), RSHIFT); }
-#line 1642 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1647 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 62: /* Ops: Expression COMMA Expression  */
 #line 136 "chinko_bot/dscript/parser.y"
                                                                                 { (yyval.instr) = binary_operator(data, (yyvsp[-2].instr), (yyvsp[0].instr), COMMA); }
-#line 1648 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1653 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 63: /* Ops: LNOT Expression  */
 #line 137 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), LNOT); }
-#line 1654 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1659 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 64: /* Ops: BNOT Expression  */
 #line 138 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), BNOT); }
-#line 1660 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1665 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 65: /* Ops: MINUS Expression  */
 #line 139 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = unary_operator(data, (yyvsp[0].instr), UNARY_MINUS); }
-#line 1666 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1671 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 66: /* Ops: IDENT LPAREN Expression RPAREN  */
 #line 140 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = loadfunction(data, (yyvsp[-3].strval), (yyvsp[-1].instr)); }
-#line 1672 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1677 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 67: /* Ops: IDENT LPAREN RPAREN  */
 #line 141 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadfunction(data, (yyvsp[-2].strval), NULL); }
-#line 1678 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1683 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 68: /* Paren: LPAREN Expression RPAREN  */
 #line 143 "chinko_bot/dscript/parser.y"
                                                                         { (yyval.instr) = (yyvsp[-1].instr); }
-#line 1684 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1689 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 69: /* Nat: NATURAL  */
 #line 144 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadnatural(data, (yyvsp[0].intval)); }
-#line 1690 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1695 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 70: /* Real: REAL  */
 #line 145 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadreal(data, (yyvsp[0].doubleval)); }
-#line 1696 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1701 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 71: /* Char: CHARACT  */
 #line 146 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadnatural(data, (yyvsp[0].intval)); }
-#line 1702 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1707 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 72: /* Bool: TRUE  */
 #line 147 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadnatural(data, 1); }
-#line 1708 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1713 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 73: /* Bool: FALSE  */
 #line 148 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = loadnatural(data, 0); }
-#line 1714 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1719 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 74: /* Str: STR  */
 #line 149 "chinko_bot/dscript/parser.y"
                                                                                                 { (yyval.instr) = loadstr(data, (yyvsp[0].strval)); }
-#line 1720 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1725 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
   case 75: /* Var: IDENT  */
 #line 150 "chinko_bot/dscript/parser.y"
                                                                                         { (yyval.instr) = loadvar(data, (yyvsp[0].strval)); }
-#line 1726 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1731 "chinko_bot/dscript/products/parser.tab.cpp"
     break;
 
 
-#line 1730 "chinko_bot/dscript/products/parser.tab.cpp"
+#line 1735 "chinko_bot/dscript/products/parser.tab.cpp"
 
       default: break;
     }
@@ -1941,11 +1946,15 @@ int yyerror(yyscan_t scanner, parser_data_t *data, const char *s) {
 }
 
 
-void dscript_cmd(const char *code) {
+void dscript_cmd(const char *code, bool *stop) {
+	ctx_vars_t glob_ctx = {};
+	glob_ctx.variables = {};
+
 	parser_data_t data = {};
 	data.nline = 1;
 	data.fst_el = NULL;
-	data.variables = {};
+	data.ctx = &glob_ctx;
+	data.stop = stop;
 	initstd(&data);
 
 	yyscan_t scanner;
@@ -1968,7 +1977,7 @@ void dscript_cmd(const char *code) {
 	free_list(data.fst_el);
 }
 
-void dscript(const char *file) {
+void dscript(const char *file, bool *stop) {
 	FILE *fp = fopen(file, "r");
 	fseek(fp, 0L, SEEK_END);
 	size_t size = ftell(fp);
@@ -1978,7 +1987,7 @@ void dscript(const char *file) {
 	fread(code, 1, size, fp);
 	code[size] = 0x0;
 	try {
-		dscript_cmd(code);
+		dscript_cmd(code, stop);
 	} catch(const exception& e) {
 		fclose(fp);
 		// ...ET ICI
@@ -2154,15 +2163,30 @@ sp<IVar> parse_expr(parser_data_t *data, ast *ast) {
 			return make_shared<Var<string>>(*ast->strvalue);
 		case IDENT:
 			string varname = *ast->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
-				throw_exception("unknown variable!", ast->nline);
-			return data->variables.at(varname);
+			ctx_vars_t *ctx = find_ctx(data, varname, ast->nline);
+			return ctx->variables.at(varname);
 	}
 	return 0;
 }
 
+ctx_vars_t *find_ctx(parser_data_t *data, string varname, int nline) {
+	/**
+	 * @returns the context structure from which varname belongs
+	 * @throws an error if this context does not exist
+	 */
+	ctx_vars_t *cur_ctx = data->ctx;
+	while(cur_ctx != NULL) {
+		if(cur_ctx->variables.find(varname) != cur_ctx->variables.end())
+			return cur_ctx;
+		cur_ctx = cur_ctx->parent;
+	}
+	throw_exception("unknown variable!", nline);
+}
+
 
 sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
+	if(data->stop != NULL)
+		while(*data->stop) {}
 	if(ast==NULL)
 		return NULL;
 	switch(ast->token) {
@@ -2186,29 +2210,28 @@ sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
 			const IVar ONE = Var<int>(1);
 			while(*(bool*)(*parse_expr(data, ast->fst_child->next_sibling)).value) {
 				run(data, ast->fst_child->next_sibling->next_sibling, true);
-				data->variables.at(varname) = cast_type(data->variables.at(varname)->get_type(), *data->variables.at(varname)+ONE);
+				data->ctx->variables.at(varname) = cast_type(data->ctx->variables.at(varname)->get_type(), *data->ctx->variables.at(varname)+ONE);
 			}
 			break;
 		} case CREATEVAR: {
 			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(data->variables.find(varname) != data->variables.end())
+			if(data->ctx->variables.find(varname) != data->ctx->variables.end()) // on ne cherche que dans l'actuel contexte car s'il y a conflit, c'est la variable qui est dans le contexte le plus proche qui est utilisée
 				throw_exception("variable initialized twice!", ast->nline);
 			const sp<IVar> ZERO = cast_type(ast->fst_child->intvalue, make_shared<Var<int>>(0));
-			data->variables.insert({varname, ZERO});
+			data->ctx->variables.insert({varname, ZERO});
 			break;
 		} case CREATEASSIGN: {
 			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(data->variables.find(varname) != data->variables.end())
+			if(data->ctx->variables.find(varname) != data->ctx->variables.end())
 				throw_exception("variable initialized twice!", ast->nline);
 			sp<IVar> val = cast_type(ast->fst_child->intvalue, parse_expr(data, ast->fst_child->next_sibling->next_sibling));
-			data->variables.insert({varname, val});
+			data->ctx->variables.insert({varname, val});
 			break;
 		} case ASSIGN: {
 			string varname = *ast->fst_child->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
-				throw_exception("unknown variable!", ast->nline);
-			sp<IVar> val = cast_type(data->variables.at(varname)->get_type(), parse_expr(data, ast->fst_child->next_sibling));
-			data->variables.at(varname) = val;
+			ctx_vars_t *ctx = find_ctx(data, varname, ast->nline);
+			sp<IVar> val = cast_type(ctx->variables.at(varname)->get_type(), parse_expr(data, ast->fst_child->next_sibling));
+			ctx->variables.at(varname) = val;
 			break;
 		}
 		case PLUSASS:
@@ -2216,21 +2239,20 @@ sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
 		case MULTASS:
 		case DIVASS: {
 			string varname = *ast->fst_child->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
-				throw_exception("unknown variable!", ast->nline);
+			ctx_vars_t *ctx = find_ctx(data, varname, ast->nline);
 			const sp<IVar> expr = parse_expr(data, ast->fst_child->next_sibling);
-			watchdog_type(data->variables.at(varname)->get_type(), expr->get_type(), ast);
+			watchdog_type(ctx->variables.at(varname)->get_type(), expr->get_type(), ast);
 			sp<IVar> val;
 			if(ast->token==PLUSASS)
-				val = *data->variables.at(varname) + *expr;
+				val = *ctx->variables.at(varname) + *expr;
 			else if(ast->token==MINUSASS)
-				val = *data->variables.at(varname) - *expr;
+				val = *ctx->variables.at(varname) - *expr;
 			else if(ast->token==MULTASS)
-				val = *data->variables.at(varname) * *expr;
+				val = *ctx->variables.at(varname) * *expr;
 			else if(ast->token==DIVASS)
-				val = *data->variables.at(varname) / *expr;
+				val = *ctx->variables.at(varname) / *expr;
 			
-			data->variables.at(varname) = cast_type(data->variables.at(varname)->get_type(), val);
+			ctx->variables.at(varname) = cast_type(ctx->variables.at(varname)->get_type(), val);
 			break;
 		} case FUNC: {
 			runfunc(data, *ast->strvalue, ast);
@@ -2247,28 +2269,47 @@ sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
 }
 
 
-sp<IVar> runfunc(parser_data_t *data, string funcname, ast *ast) {
+sp<IVar> runfunc(parser_data_t *data, string funcname, ast *node) {
 	vector<sp<IVar>> params{};
-	if(ast->fst_child!=NULL)
-		parse_params(data, &params, ast->fst_child);
+	if(node->fst_child!=NULL)
+		parse_params(data, &params, node->fst_child);
 
 	if(data->stdfuncs.find(funcname) != data->stdfuncs.end())
 		return data->stdfuncs[funcname](params);
 
 	if(data->usrfuncs.find(funcname) != data->usrfuncs.end()) {
+		cout << "FONCTION!!" << endl;
 
-		// A FAIRE MAINTENANT : LA PORTÉE DES VARIABLES
-		// SUR LE COUP JE ME SUIS DIT QUE JE METTRAIS EN PARAM DE RUN ET DES PARSE_*** LA THASH DES VARS
-		// SAUF QU'IL FAUT PAS OUBLIER LE CONTEXTE PRINCIPAL
-		// + EST-CE QU'ON PEUT IMBRIQUER LES DÉCLARATIONS DE FONCTIONS ?
-		//			-> SI OUI FAUT TROUVER UN MOYEN DE METTRE EN PLACE ÇA
-		// Idée, je peux mettre en place une structure de cette sorte (un peu cheloue avec pas forcément un pointeur 
-		// vers le fils mais plutôt un pointeur vers le père)
 
-		return run(data, data->usrfuncs[funcname]->next_sibling, true);
+		ctx_vars_t child_ctx = {};
+		child_ctx.variables = {};
+		// Adding argument variables
+		ast *curvar;
+		curvar = data->usrfuncs[funcname]->fst_child;
+		int i=0;
+		while(curvar != NULL) {
+			sp<IVar> val = cast_type(curvar->fst_child->intvalue, params[i]);
+			string varname = *curvar->fst_child->next_sibling->strvalue;
+			if(child_ctx.variables.find(varname) != data->ctx->variables.end())
+				throw_exception("name used for two different arguments", data->usrfuncs[funcname]->nline);
+			child_ctx.variables.insert({varname, val});
+			curvar = curvar->next_sibling;
+			i++;
+		}
+
+		// switching context
+		ctx_vars_t *old_ctx = data->ctx;
+		child_ctx.parent = old_ctx;
+		data->ctx = &child_ctx;
+
+
+		sp<IVar> retval = run(data, data->usrfuncs[funcname]->next_sibling, true);
+		
+		data->ctx = old_ctx;
+		return retval;
 	}
 
-	throw_exception("function not found...", ast->nline);
+	throw_exception("function not found...", node->nline);
 }
 
 
@@ -2279,7 +2320,7 @@ bool castable(int type1, int type2) {
 
 sp<IVar> cast_type(int type, sp<IVar> value) {
 	if(!castable(type, value->get_type()))
-		throw_exception("conversion from number to string!", 0);
+		throw_exception("invalid types!", 0);
 	switch(type) {
 		case BOOL:
 			return make_shared<Var<bool>>(*value);
@@ -2307,5 +2348,5 @@ void watchdog_type(int typedst, int typesrc, ast *op) {
 	if(typesrc==STRING && op->token!=PLUS && op->token!=PLUSASS)
 		throw_exception("operation undefined for string objects.", nl);
 	if((typedst==STRING && typesrc!=STRING) || (typedst!=STRING && typesrc==STRING))
-		throw_exception("cannont convert STRING to a canonical type!", nl);
+		throw_exception("cannot convert STRING to a canonical type!", nl);
 }

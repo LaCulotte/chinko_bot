@@ -52,7 +52,7 @@ using namespace std;
 %left MULT DIV MOD
 %right POW
 %token LNOT BNOT
-%token RETURN UNARY_MINUS LPAREN RPAREN LET FUNC INIT_ARGS INIT_FUNC IF ELSE LBRACK RBRACK PTV ASSIGN WHILE FOR TO IFELSE CREATEVAR CREATEASSIGN TYPE PLUSASS MINUSASS MULTASS DIVASS
+%token RETURN UNARY_MINUS LPAREN RPAREN LET FUNC INIT_ARGS IF ELSE LBRACK RBRACK PTV ASSIGN WHILE FOR TO IFELSE CREATEVAR CREATEASSIGN TYPE PLUSASS MINUSASS MULTASS DIVASS
 %type <instr> Program Sequence Instruction Expression Ops Paren Nat Real Char Bool Str Var Assignment Functions Args ArgsRec
 %type <intval> NATURAL CHARACT Type
 %type <strval> IDENT STR
@@ -61,14 +61,11 @@ using namespace std;
 
 %%
 
-// TODO : 	- Fonctions personnelles
+// TODO :
 //			- Enlever typage fort (donc enlever le type byte)
 //			- Il n'y a pas d'analyse paresseuse des expressions booléennes...
 //			- tableaux
-//			- pouvoir arrêter à tout moment
 //			- pouvoir appeler un script
-//			- enlever les segfault notamment quand une fonction n'existe pas
-//			- mon comptage de ligne est faux (puisque nline est la dernière ligne traitée) : il parait qu'il y a une fonction pour connaitre la ligne du token mais elle a pas l'air commode
 
 
 
@@ -77,10 +74,10 @@ Program:		Functions							{ execute(data, $1); }
 Functions:		Sequence							{ $$ = $1; }
 		|		Functions LET IDENT LPAREN Args RPAREN LBRACK Sequence RBRACK { declarefunc(data, $3, $5, $8); $$ = $1; }
 
-Args:			ArgsRec Type Var					{ $$ = seq(createvar(data, $2, $3), $1); }
+Args:			Type Var ArgsRec					{ $$ = seq(createvar(data, $1, $2), $3); }
 		|		%empty								{ $$ = NULL; }
 
-ArgsRec:		ArgsRec Type Var COMMA				{ $$ = seq(createvar(data, $2, $3), $1); }
+ArgsRec:		COMMA Type Var ArgsRec				{ $$ = seq(createvar(data, $2, $3), $4); }
 		|		%empty								{ $$ = NULL; }
 
 Sequence:		Instruction Sequence				{ $$ = seq($1, $2); }
@@ -169,11 +166,15 @@ int yyerror(yyscan_t scanner, parser_data_t *data, const char *s) {
 }
 
 
-void dscript_cmd(const char *code) {
+void dscript_cmd(const char *code, bool *stop) {
+	ctx_vars_t glob_ctx = {};
+	glob_ctx.variables = {};
+
 	parser_data_t data = {};
 	data.nline = 1;
 	data.fst_el = NULL;
-	data.variables = {};
+	data.ctx = &glob_ctx;
+	data.stop = stop;
 	initstd(&data);
 
 	yyscan_t scanner;
@@ -196,7 +197,7 @@ void dscript_cmd(const char *code) {
 	free_list(data.fst_el);
 }
 
-void dscript(const char *file) {
+void dscript(const char *file, bool *stop) {
 	FILE *fp = fopen(file, "r");
 	fseek(fp, 0L, SEEK_END);
 	size_t size = ftell(fp);
@@ -206,7 +207,7 @@ void dscript(const char *file) {
 	fread(code, 1, size, fp);
 	code[size] = 0x0;
 	try {
-		dscript_cmd(code);
+		dscript_cmd(code, stop);
 	} catch(const exception& e) {
 		fclose(fp);
 		// ...ET ICI
@@ -382,15 +383,30 @@ sp<IVar> parse_expr(parser_data_t *data, ast *ast) {
 			return make_shared<Var<string>>(*ast->strvalue);
 		case IDENT:
 			string varname = *ast->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
-				throw_exception("unknown variable!", ast->nline);
-			return data->variables.at(varname);
+			ctx_vars_t *ctx = find_ctx(data, varname, ast->nline);
+			return ctx->variables.at(varname);
 	}
 	return 0;
 }
 
+ctx_vars_t *find_ctx(parser_data_t *data, string varname, int nline) {
+	/**
+	 * @returns the context structure from which varname belongs
+	 * @throws an error if this context does not exist
+	 */
+	ctx_vars_t *cur_ctx = data->ctx;
+	while(cur_ctx != NULL) {
+		if(cur_ctx->variables.find(varname) != cur_ctx->variables.end())
+			return cur_ctx;
+		cur_ctx = cur_ctx->parent;
+	}
+	throw_exception("unknown variable!", nline);
+}
+
 
 sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
+	if(data->stop != NULL)
+		while(*data->stop) {}
 	if(ast==NULL)
 		return NULL;
 	switch(ast->token) {
@@ -414,29 +430,28 @@ sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
 			const IVar ONE = Var<int>(1);
 			while(*(bool*)(*parse_expr(data, ast->fst_child->next_sibling)).value) {
 				run(data, ast->fst_child->next_sibling->next_sibling, true);
-				data->variables.at(varname) = cast_type(data->variables.at(varname)->get_type(), *data->variables.at(varname)+ONE);
+				data->ctx->variables.at(varname) = cast_type(data->ctx->variables.at(varname)->get_type(), *data->ctx->variables.at(varname)+ONE);
 			}
 			break;
 		} case CREATEVAR: {
 			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(data->variables.find(varname) != data->variables.end())
+			if(data->ctx->variables.find(varname) != data->ctx->variables.end()) // on ne cherche que dans l'actuel contexte car s'il y a conflit, c'est la variable qui est dans le contexte le plus proche qui est utilisée
 				throw_exception("variable initialized twice!", ast->nline);
 			const sp<IVar> ZERO = cast_type(ast->fst_child->intvalue, make_shared<Var<int>>(0));
-			data->variables.insert({varname, ZERO});
+			data->ctx->variables.insert({varname, ZERO});
 			break;
 		} case CREATEASSIGN: {
 			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(data->variables.find(varname) != data->variables.end())
+			if(data->ctx->variables.find(varname) != data->ctx->variables.end())
 				throw_exception("variable initialized twice!", ast->nline);
 			sp<IVar> val = cast_type(ast->fst_child->intvalue, parse_expr(data, ast->fst_child->next_sibling->next_sibling));
-			data->variables.insert({varname, val});
+			data->ctx->variables.insert({varname, val});
 			break;
 		} case ASSIGN: {
 			string varname = *ast->fst_child->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
-				throw_exception("unknown variable!", ast->nline);
-			sp<IVar> val = cast_type(data->variables.at(varname)->get_type(), parse_expr(data, ast->fst_child->next_sibling));
-			data->variables.at(varname) = val;
+			ctx_vars_t *ctx = find_ctx(data, varname, ast->nline);
+			sp<IVar> val = cast_type(ctx->variables.at(varname)->get_type(), parse_expr(data, ast->fst_child->next_sibling));
+			ctx->variables.at(varname) = val;
 			break;
 		}
 		case PLUSASS:
@@ -444,21 +459,20 @@ sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
 		case MULTASS:
 		case DIVASS: {
 			string varname = *ast->fst_child->strvalue;
-			if(data->variables.find(varname) == data->variables.end())
-				throw_exception("unknown variable!", ast->nline);
+			ctx_vars_t *ctx = find_ctx(data, varname, ast->nline);
 			const sp<IVar> expr = parse_expr(data, ast->fst_child->next_sibling);
-			watchdog_type(data->variables.at(varname)->get_type(), expr->get_type(), ast);
+			watchdog_type(ctx->variables.at(varname)->get_type(), expr->get_type(), ast);
 			sp<IVar> val;
 			if(ast->token==PLUSASS)
-				val = *data->variables.at(varname) + *expr;
+				val = *ctx->variables.at(varname) + *expr;
 			else if(ast->token==MINUSASS)
-				val = *data->variables.at(varname) - *expr;
+				val = *ctx->variables.at(varname) - *expr;
 			else if(ast->token==MULTASS)
-				val = *data->variables.at(varname) * *expr;
+				val = *ctx->variables.at(varname) * *expr;
 			else if(ast->token==DIVASS)
-				val = *data->variables.at(varname) / *expr;
+				val = *ctx->variables.at(varname) / *expr;
 			
-			data->variables.at(varname) = cast_type(data->variables.at(varname)->get_type(), val);
+			ctx->variables.at(varname) = cast_type(ctx->variables.at(varname)->get_type(), val);
 			break;
 		} case FUNC: {
 			runfunc(data, *ast->strvalue, ast);
@@ -475,28 +489,47 @@ sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
 }
 
 
-sp<IVar> runfunc(parser_data_t *data, string funcname, ast *ast) {
+sp<IVar> runfunc(parser_data_t *data, string funcname, ast *node) {
 	vector<sp<IVar>> params{};
-	if(ast->fst_child!=NULL)
-		parse_params(data, &params, ast->fst_child);
+	if(node->fst_child!=NULL)
+		parse_params(data, &params, node->fst_child);
 
 	if(data->stdfuncs.find(funcname) != data->stdfuncs.end())
 		return data->stdfuncs[funcname](params);
 
 	if(data->usrfuncs.find(funcname) != data->usrfuncs.end()) {
+		cout << "FONCTION!!" << endl;
 
-		// A FAIRE MAINTENANT : LA PORTÉE DES VARIABLES
-		// SUR LE COUP JE ME SUIS DIT QUE JE METTRAIS EN PARAM DE RUN ET DES PARSE_*** LA THASH DES VARS
-		// SAUF QU'IL FAUT PAS OUBLIER LE CONTEXTE PRINCIPAL
-		// + EST-CE QU'ON PEUT IMBRIQUER LES DÉCLARATIONS DE FONCTIONS ?
-		//			-> SI OUI FAUT TROUVER UN MOYEN DE METTRE EN PLACE ÇA
-		// Idée, je peux mettre en place une structure de cette sorte (un peu cheloue avec pas forcément un pointeur 
-		// vers le fils mais plutôt un pointeur vers le père)
 
-		return run(data, data->usrfuncs[funcname]->next_sibling, true);
+		ctx_vars_t child_ctx = {};
+		child_ctx.variables = {};
+		// Adding argument variables
+		ast *curvar;
+		curvar = data->usrfuncs[funcname]->fst_child;
+		int i=0;
+		while(curvar != NULL) {
+			sp<IVar> val = cast_type(curvar->fst_child->intvalue, params[i]);
+			string varname = *curvar->fst_child->next_sibling->strvalue;
+			if(child_ctx.variables.find(varname) != data->ctx->variables.end())
+				throw_exception("name used for two different arguments", data->usrfuncs[funcname]->nline);
+			child_ctx.variables.insert({varname, val});
+			curvar = curvar->next_sibling;
+			i++;
+		}
+
+		// switching context
+		ctx_vars_t *old_ctx = data->ctx;
+		child_ctx.parent = old_ctx;
+		data->ctx = &child_ctx;
+
+
+		sp<IVar> retval = run(data, data->usrfuncs[funcname]->next_sibling, true);
+		
+		data->ctx = old_ctx;
+		return retval;
 	}
 
-	throw_exception("function not found...", ast->nline);
+	throw_exception("function not found...", node->nline);
 }
 
 
@@ -507,7 +540,7 @@ bool castable(int type1, int type2) {
 
 sp<IVar> cast_type(int type, sp<IVar> value) {
 	if(!castable(type, value->get_type()))
-		throw_exception("conversion from number to string!", 0);
+		throw_exception("invalid types!", 0);
 	switch(type) {
 		case BOOL:
 			return make_shared<Var<bool>>(*value);
@@ -535,5 +568,5 @@ void watchdog_type(int typedst, int typesrc, ast *op) {
 	if(typesrc==STRING && op->token!=PLUS && op->token!=PLUSASS)
 		throw_exception("operation undefined for string objects.", nl);
 	if((typedst==STRING && typesrc!=STRING) || (typedst!=STRING && typesrc==STRING))
-		throw_exception("cannont convert STRING to a canonical type!", nl);
+		throw_exception("cannot convert STRING to a canonical type!", nl);
 }

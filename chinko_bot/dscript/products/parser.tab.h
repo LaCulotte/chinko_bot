@@ -112,24 +112,23 @@ extern int yylex(YYSTYPE * yylval_param , yyscan_t yyscanner);
     LET = 299,                     /* LET  */
     FUNC = 300,                    /* FUNC  */
     INIT_ARGS = 301,               /* INIT_ARGS  */
-    INIT_FUNC = 302,               /* INIT_FUNC  */
-    IF = 303,                      /* IF  */
-    ELSE = 304,                    /* ELSE  */
-    LBRACK = 305,                  /* LBRACK  */
-    RBRACK = 306,                  /* RBRACK  */
-    PTV = 307,                     /* PTV  */
-    ASSIGN = 308,                  /* ASSIGN  */
-    WHILE = 309,                   /* WHILE  */
-    FOR = 310,                     /* FOR  */
-    TO = 311,                      /* TO  */
-    IFELSE = 312,                  /* IFELSE  */
-    CREATEVAR = 313,               /* CREATEVAR  */
-    CREATEASSIGN = 314,            /* CREATEASSIGN  */
-    TYPE = 315,                    /* TYPE  */
-    PLUSASS = 316,                 /* PLUSASS  */
-    MINUSASS = 317,                /* MINUSASS  */
-    MULTASS = 318,                 /* MULTASS  */
-    DIVASS = 319                   /* DIVASS  */
+    IF = 302,                      /* IF  */
+    ELSE = 303,                    /* ELSE  */
+    LBRACK = 304,                  /* LBRACK  */
+    RBRACK = 305,                  /* RBRACK  */
+    PTV = 306,                     /* PTV  */
+    ASSIGN = 307,                  /* ASSIGN  */
+    WHILE = 308,                   /* WHILE  */
+    FOR = 309,                     /* FOR  */
+    TO = 310,                      /* TO  */
+    IFELSE = 311,                  /* IFELSE  */
+    CREATEVAR = 312,               /* CREATEVAR  */
+    CREATEASSIGN = 313,            /* CREATEASSIGN  */
+    TYPE = 314,                    /* TYPE  */
+    PLUSASS = 315,                 /* PLUSASS  */
+    MINUSASS = 316,                /* MINUSASS  */
+    MULTASS = 317,                 /* MULTASS  */
+    DIVASS = 318                   /* DIVASS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -145,7 +144,7 @@ union YYSTYPE
 	double doubleval;
 	char* strval;
 
-#line 149 "chinko_bot/dscript/products/parser.tab.h"
+#line 148 "chinko_bot/dscript/products/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
