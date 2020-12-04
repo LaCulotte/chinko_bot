@@ -12,12 +12,14 @@
 #include <vector>
 #include "../../Var/Var.h"
 
-typedef sp<IVar> (*stdf)(std::vector<sp<IVar>>);
+struct parser_data;
+typedef sp<IVar> (*stdf)(struct parser_data*, std::vector<sp<IVar>>, int nline);
 
 
 typedef struct _ast {
 	int token;
-	uint32_t intvalue;
+	int32_t intvalue;
+	char charvalue;
 	double doublevalue;
 	std::string *strvalue;
 	struct _ast *next_sibling;
@@ -46,6 +48,7 @@ typedef struct parser_data {
 } parser_data_t;
 
 
+
 ast *seq(ast *inst, ast *seq);
 
 ast *ifinst(parser_data_t *data, ast *expr, ast *seq);
@@ -68,6 +71,8 @@ void declarefunc(parser_data_t *data, char *funcname, ast *inits , ast *seq);
 
 ast *loadnatural(parser_data_t *data, int natural);
 
+ast *loadchar(parser_data_t *data, char charact);
+
 ast *loadreal(parser_data_t *data, double real);
 
 ast *loadstr(parser_data_t *data, char *str);
@@ -75,10 +80,6 @@ ast *loadstr(parser_data_t *data, char *str);
 ast *loadvar(parser_data_t *data, char *varname);
 
 ast *loadtype(parser_data_t *data, int token);
-
-ast *createvar(parser_data_t *data, int vartype, ast *var);
-
-ast *create_assign(parser_data_t *data, int vartype, ast *var, ast *expr);
 
 ast *new_ast_entry(parser_data_t *data, int token, ast *sibling, ast *child);
 

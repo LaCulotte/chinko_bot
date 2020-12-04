@@ -12,9 +12,9 @@ int main(void) {
 		bool stop = false;
 		dscript("chinko_bot/dscript/dscript.txt", &stop);
 	} catch(const exception& e) {
+		cout << "Une erreur : " << endl;
 		cout << e.what() << endl;
 	}
-
 	
 	return 0;
 }

@@ -1,4 +1,23 @@
-for byte i=0 to 5 {
-	print("VOILA: ", i);
+test = 45f;
+hello("Mathis");
+print("test = ", test);
+machin("wolo", 21.7);
+carre = carre(8f);
+print("Le carre de ", 8f, " est ", carre);
+
+let machin(ok, zizi) {
+	print(ok, zizi);
+	ok += " wa";
+	hello(ok);
 }
-print("ok");
+
+let hello(name) {
+	test = 8;
+	print("HeLlO ", name, " ", test);
+}
+
+let carre(num) {
+	carre = num*num;
+	return carre+1;
+	print("EH NONNNNN!");
+}

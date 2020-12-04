@@ -101,7 +101,6 @@ void declarefunc(parser_data_t *data, char *funcname, ast *inits , ast *seq) {
 
 ast *loadfunction(parser_data_t *data, char *funcname, ast *expr) {
 	ast *ast_func = new_ast_entry(data, FUNC, NULL, expr);
-	//ast_func->strvalue = make_shared<string>(funcname);
 	ast_func->strvalue = new string(funcname);
 	push_freelist(data, ast_func->strvalue, 1);
 	free(funcname);
@@ -111,7 +110,14 @@ ast *loadfunction(parser_data_t *data, char *funcname, ast *expr) {
 
 ast *loadnatural(parser_data_t *data, int natural) {
 	ast *new_ast = new_ast_entry(data, NATURAL, NULL, NULL);
-	new_ast->intvalue = (uint32_t)natural; // pour l'instant je stocke dans le plus grand type qu'on puisse avoir
+	new_ast->intvalue = (int32_t)natural;
+	return new_ast;
+}
+
+
+ast *loadchar(parser_data_t *data, char charact) {
+	ast *new_ast = new_ast_entry(data, CHARACT, NULL, NULL);
+	new_ast->charvalue = (char)charact;
 	return new_ast;
 }
 
@@ -126,7 +132,6 @@ ast *loadreal(parser_data_t *data, double real) {
 ast *loadstr(parser_data_t *data, char *str) {
 	string nstr = string(str).substr(1, strlen(str)-2);
 	ast *new_ast = new_ast_entry(data, STR, NULL, NULL);
-	//new_ast->strvalue = make_shared<string>(nstr);
 	new_ast->strvalue = new string(nstr);
 	push_freelist(data, new_ast->strvalue, 1);
 	free(str);
@@ -136,30 +141,11 @@ ast *loadstr(parser_data_t *data, char *str) {
 
 ast *loadvar(parser_data_t *data, char *varname) {
 	ast *new_ast = new_ast_entry(data, IDENT, NULL, NULL);
-	//new_ast->strvalue = make_shared<string>(varname);
 	new_ast->strvalue = new string(varname);
 	push_freelist(data, new_ast->strvalue, 1);
 	free(varname);
 	return new_ast;
 }
-
-
-ast *createvar(parser_data_t *data, int vartype, ast *var) {
-	ast *type_ast = new_ast_entry(data, TYPE, var, NULL);
-	type_ast->intvalue = vartype;
-	ast *new_ast = new_ast_entry(data, CREATEVAR, NULL, type_ast);
-	return new_ast;
-}
-
-
-ast *create_assign(parser_data_t *data, int vartype, ast *var, ast *expr) {
-	ast *type_ast = new_ast_entry(data, TYPE, var, NULL);
-	type_ast->intvalue = vartype;
-	ast *new_ast = new_ast_entry(data, CREATEASSIGN, NULL, type_ast);
-	var->next_sibling = expr;
-	return new_ast;
-}
-
 
 
 ast *new_ast_entry(parser_data_t *data, int token, ast *sibling, ast *child) {
@@ -170,10 +156,6 @@ ast *new_ast_entry(parser_data_t *data, int token, ast *sibling, ast *child) {
 	new_ast->nline = data->nline;
 
 	push_freelist(data, new_ast, 0);
-	// el_alloced_t *el = (el_alloced_t*)malloc(sizeof(el_alloced_t));
-	// el->el = new_ast;
-	// el->next = data->fst_el;
-	// data->fst_el = el;
 	return new_ast;
 }
 
@@ -182,10 +164,6 @@ ast *ast_cpy(parser_data_t *data, ast *atome) {
 	memcpy(new_ast, atome, sizeof(ast));
 
 	push_freelist(data, new_ast, 0);
-	// el_alloced_t *el = (el_alloced_t*)malloc(sizeof(el_alloced_t));
-	// el->el = new_ast;
-	// el->next = data->fst_el;
-	// data->fst_el = el;
 	return new_ast;
 }
 

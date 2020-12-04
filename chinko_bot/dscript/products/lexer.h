@@ -497,7 +497,7 @@ extern int yylex \
 #undef yyTABLES_NAME
 #endif
 
-#line 146 "chinko_bot/dscript/lexer.l"
+#line 129 "chinko_bot/dscript/lexer.l"
 
 #line 503 "chinko_bot/dscript/products/lexer.h"
 #undef yyIN_HEADER

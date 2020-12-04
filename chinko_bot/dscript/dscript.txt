@@ -1,15 +1,4 @@
-double test = 45f;
-print("cool ", test);
-hello("Mathis");
-machins("wolo", 21.7);
-
-let machin(string ok, double zizi) {
-	print(ok, zizi);
-	ok += " wa";
-	hello(ok);
-}
-
-let hello(string name) {
-	print("HeLlO ", name, " ", test);
-}
-
+println("DEBUT");
+print(bool("true"));
+println(" ", millis());
+println("FIN");
