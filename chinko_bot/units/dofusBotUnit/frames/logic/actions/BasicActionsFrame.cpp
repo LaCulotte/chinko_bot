@@ -5,6 +5,9 @@
 
 #include "InteractiveUseErrorMessage.h"
 
+#include "TimedMessage.h"
+#include "SendUseRequestMessage.h"
+
 bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
     sp<ChangeToUpMapMessage>    ctuMsg;
     sp<ChangeToDownMapMessage>  ctdMsg;
@@ -50,17 +53,27 @@ bool BasicActionsFrame::computeMessage(sp<Message> message, int srcId) {
 
     case PlayerMovementEndedMessage::protocolId:
         if(currentState == baf_pathfindToSide) {
-            dofusBotParent->sendSelfMessage(make_shared<ChangeToMapMessage>(changeMapId));
+            dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<ChangeToMapMessage>(changeMapId), 500 + (rand() % 500)));
             currentState = baf_changeMap;
         } else if (currentState == baf_pathfindToCollect) {
-            if(sendInteractiveUseRequestMessage(elementToCollectId, skillToUseId))
-                currentState = baf_collect;
-            else 
-                currentState = baf_idle;
+            dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<SendUseRequestMessage>(), 100 + (rand() % 200)));    
         } else if (currentState == baf_pathfindToMonster) {
             sendGameRolePlayAttackMonsterRequestMessage(monsterId);
             currentState = baf_idle;            
         }
+        break;
+
+    case SendUseRequestMessage::protocolId:
+        if(currentState != baf_pathfindToCollect) {
+            Logger::write("Received SendUseRequestMessage while not pathfinding to collect an interactive.", LOG_WARNING);
+            break;
+        }
+
+        if(sendInteractiveUseRequestMessage(elementToCollectId, skillToUseId)) 
+            currentState = baf_collect;
+        else 
+            currentState = baf_idle;
+            
         break;
 
     case InteractiveUseEndedMessage::protocolId:

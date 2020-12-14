@@ -40,6 +40,7 @@
 // #include "InteractiveElementUpdatedMessage.h"
 // #include "InteractiveUsedMessage.h"
 
+// TODO : faire des fichiers séparés pour chaque enum
 enum GameContextEnum {
     Roleplay = 1,
     Fight = 2

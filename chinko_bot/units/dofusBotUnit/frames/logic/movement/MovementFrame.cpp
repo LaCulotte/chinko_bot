@@ -265,7 +265,7 @@ vector<int> MovementFrame::getCellsOnFloor(vector<int> cells, int floor) {
     vector<int> filtered_cells;
 
     for(int cellId : cells) {
-        if(dofusBotParent->mapInfos->getCell(cellId)->floor == floor)
+        if(floor == -1 || dofusBotParent->mapInfos->getCell(cellId)->floor == floor)
             filtered_cells.push_back(cellId);
     }
     

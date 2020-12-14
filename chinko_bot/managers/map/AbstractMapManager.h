@@ -36,6 +36,7 @@ public:
     sp<Cell> getCell(int cellId) { if(isInMap(cellId)) return cells[cellId]; else return nullptr; }
     int getCellsCount() { return cells.size(); }
     double getMapId() { return mapId; }
+    bool areCellsLoaded() { return cellsLoaded; };
 
     bool updateActorPosition(double actorId, int newCellId);
     void updateActorInfos(sp<GameContextActorInformations> actorInfos);
@@ -94,6 +95,8 @@ protected:
 // public:
     vector<sp<Cell>> cells;
     unordered_map<int, sp<Mark>> marks;
+    bool cellsLoaded = false;
+
 public:
     vector<int> upChangeMapCellsId;
     vector<int> rightChangeMapCellsId;

@@ -18,7 +18,9 @@ public:
     bool mov = false;
     bool los = false;
     bool nonWalkableDuringFight = false;
+    bool nonWalkableDuringRP = false;
     bool isBlockedByObstacle = false;
+    bool farmCell = false;
     int floor = 0;
     int moveZone = 0;
     int speed = 0;

@@ -118,7 +118,8 @@ ast *loadstr(char *str) {
 	cout << "STR " << str << endl;
 	string nstr = string(str).substr(1, strlen(str)-2);
 	ast *new_ast = new_ast_entry(STR, NULL, NULL);
-	new_ast->strvalue = make_shared<string>(nstr);
+	sp<string> s = make_shared<string>(nstr);
+	new_ast->strvalue = s;
 	free(str);
 	return new_ast;
 }

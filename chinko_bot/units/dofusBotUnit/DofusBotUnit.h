@@ -61,9 +61,6 @@ public:
 
     void resetNextTick() { toReset = true; };
 
-    // TODO : remove
-    bool tempFlag = false;
-
 protected:
     void tick() override;
 

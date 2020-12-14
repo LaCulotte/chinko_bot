@@ -29,4 +29,6 @@
 #include "PlayedCharacterLevelMessage.h"
 #include "PlayedCharacterXpMessage.h"
 
+#include "LaunchScriptMessage.h"
+
 #endif

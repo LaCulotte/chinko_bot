@@ -4,7 +4,7 @@
 #include "Frame.h"
 #include "APIUnit.h"
 
-class APIFrame : public Frame {
+class APIFrame : virtual public Frame {
 public:
     // Constructor
     APIFrame() {};

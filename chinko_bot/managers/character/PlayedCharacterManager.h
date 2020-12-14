@@ -53,6 +53,8 @@ public:
 
     void setWeight(int weight) { infos->weight = weight; };
     void setMaxWeight(int maxWeight) { infos->maxWeight = maxWeight; };
+    int getWeight() { return infos->weight; };
+    int getMaxWeight() { return infos->maxWeight; };
 
     void loadJobs(sp<JobDescriptionMessage> jdMsg);
     void setJobLevel(int jobId, int newLevel);

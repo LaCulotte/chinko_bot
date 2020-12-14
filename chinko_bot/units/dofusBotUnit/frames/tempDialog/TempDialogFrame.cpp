@@ -2,6 +2,8 @@
 
 #include "CollectInteractivesMessage.h"
 
+#include "LaunchScriptMessage.h"
+
 bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<ChatServerMessage> csMsg;
@@ -21,8 +23,11 @@ bool TempDialogFrame::computeMessage(sp<Message> message, int srcId) {
         csMsg = dynamic_pointer_cast<ChatServerMessage>(message);
         actor_caller = dofusBotParent->mapInfos->getActor(csMsg->senderId);
 
-        if(csMsg->content == "combat") {
-            dofusBotParent->tempFlag = true;
+        if(csMsg->content == "launch") {
+            dofusBotParent->sendMessage(make_shared<LaunchScriptMessage>("./scripts/script.txt"), dofusBotParent->getAPIUnitId());
+        } else if (csMsg->content == "temp") {
+            sp<MoveToCellMessage> m = make_shared<MoveToCellMessage>(139);
+            dofusBotParent->sendSelfMessage(m);
         } else if(csMsg->content == "droite" && actor_caller)  {
             int floor = dofusBotParent->mapInfos->getCell(actor_caller->cellId)->floor;
             dofusBotParent->sendSelfMessage(make_shared<ChangeToRightMapMessage>(floor));

@@ -42,7 +42,7 @@ protected:
     // Frame's parent. Basically the object that calls 'computeMessage'
     MessagingUnit* parent = nullptr;
 
-    // The lower, the latter it will compute messages. Can be negative. 
+    // The lower, the earlier it will compute messages. Can be negative. 
     int priority = 0;
 };
 

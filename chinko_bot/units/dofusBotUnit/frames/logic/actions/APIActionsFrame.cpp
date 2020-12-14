@@ -1,5 +1,7 @@
 #include "APIActionsFrame.h"
 
+#include "AllInteractivesCollectedMessage.h"
+
 bool APIActionsFrame::computeMessage(sp<Message> message, int srcId) {
     sp<CollectInteractivesMessage> ciMsg;
 
@@ -38,6 +40,7 @@ bool APIActionsFrame::computeMessage(sp<Message> message, int srcId) {
                 currentInteractiveIndex = 0;
                 currentState = aaf_idle;
                 Logger::write("All interactives collected.", LOG_INFO);
+                dofusBotParent->sendSelfMessage(make_shared<AllInteractivesCollectedMessage>());
             }
         }
         break;
@@ -57,5 +60,5 @@ void APIActionsFrame::collectNextInteractive() {
 
     int interactiveId = this->interactivesTypesIdsToCollect[currentInteractiveIndex];
 
-    this->dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<CollectInteractiveTypeIdMessage>(interactiveId), 500));
+    this->dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<CollectInteractiveTypeIdMessage>(interactiveId), 500 + (rand() % 500)));
 }

@@ -5,6 +5,7 @@
 #include "QueueFrame.h"
 #include "BasicDofusBotFrame.h"
 #include "APIActionsFrame.h"
+#include "CommandFrame.h"
 
 DofusBotUnit::DofusBotUnit() : MessagingUnit() {
     characterManager = make_shared<PlayedCharacterManager>(); 
@@ -22,7 +23,10 @@ void DofusBotUnit::initFrames() {
     this->addFrame(make_shared<FightFrame>());
 
     this->addFrame(make_shared<QueueFrame>());
-    this->addFrame(make_shared<APIActionsFrame>());
+
+    sp<Frame> cmdFrame = make_shared<CommandFrame>();
+    cmdFrame->setPriority(-1);
+    this->addFrame(cmdFrame);
 }
 
 void DofusBotUnit::tick() {

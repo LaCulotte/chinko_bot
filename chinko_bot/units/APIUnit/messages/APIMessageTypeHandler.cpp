@@ -28,6 +28,7 @@ APIMessageTypeHandler::APIMessageTypeHandler() {
     id_to_builder[PlayedCharacterLevelMessage::protocolId]              = make_shared<PlayedCharacterLevelMessage>;
     id_to_builder[PlayedCharacterXpMessage::protocolId]                 = make_shared<PlayedCharacterXpMessage>;
 
+    id_to_builder[LaunchScriptMessage::protocolId]                 = make_shared<LaunchScriptMessage>;
 }
 
 sp<Message> APIMessageTypeHandler::generateMessageById(int id) {

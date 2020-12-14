@@ -1,5 +1,7 @@
 #include "RoleplayContextFrame.h"
 
+#include "APIActionsFrame.h"
+
 bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
     
     sp<CurrentMapMessage> ccMsg;
@@ -35,10 +37,9 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
         Logger::write("Received CurrentMapMessage.", LOG_INFO);
         Logger::write("Map id : " + to_string(ccMsg->mapId) + ". Map key : " + ccMsg->mapKey, LOG_INFO);
 
-        // Request for more map infos
+        // Requests for more map infos
         dofusBotParent->currentMapId = ccMsg->mapId;
         sendMapInformationsRequestMessage(ccMsg->mapId);
-        dofusBotParent->sendSelfMessage(make_shared<CurrentMapChangedMessage>());
         break;
 
     case MapComplementaryInformationsDataMessage::protocolId:
@@ -70,8 +71,11 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
             }
             if(!dofusBotParent->getFrame<BasicActionsFrame>())
                 dofusBotParent->addFrame(make_shared<BasicActionsFrame>());
+            if(!dofusBotParent->getFrame<APIActionsFrame>())
+                dofusBotParent->addFrame(make_shared<APIActionsFrame>());
         }
         Logger::write("Received MapComplementaryInformationsDataMessage", LOG_INFO);
+        dofusBotParent->sendSelfMessage(make_shared<CurrentMapChangedMessage>());
         break;
 
     case GameMapMovementMessage::protocolId:
@@ -211,6 +215,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
 
         dofusBotParent->popAllFrames<MovementFrame>();
         dofusBotParent->popAllFrames<BasicActionsFrame>();
+        dofusBotParent->popAllFrames<APIActionsFrame>();
         dofusBotParent->popAllFrames<TempDialogFrame>();
 
         break;

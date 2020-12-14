@@ -7,7 +7,7 @@
 
 
 // Frame that has updates if it computes a message
-class UpdatingFrame : public virtual Frame {
+class UpdatingFrame : virtual public Frame {
 public:
     // Constructor
     UpdatingFrame() {};

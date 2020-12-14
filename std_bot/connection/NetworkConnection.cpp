@@ -41,7 +41,14 @@ sp<MessageDataBuffer> NetworkConnection::readData(int length){
         uchar *data = (uchar *) malloc(length * sizeof(uchar));
         int recv_len = recv(sock, data, length, 0);
 
-        if(recv_len == 0){
+        if(recv_len < 0) {
+            // If length < 0, there was an error while reading data.
+            string recv_error = "Gotten error while reading data : " ;
+            recv_error.append(strerror(errno));
+            Logger::write(recv_error + "; Error number : " + to_string(errno) + ".", LOG_ERROR);
+
+            return ret;
+        } else if(recv_len == 0){
             // If the length is 0, while it annonced that there was data to read, it means that the connection was closed
 
             // Logs the deconnection

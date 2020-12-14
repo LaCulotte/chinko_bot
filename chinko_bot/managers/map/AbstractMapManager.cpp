@@ -117,6 +117,7 @@ bool AbstractMapManager::loadMapInformations(int mapId) {
     this->clearAll();
     
     this->mapId = mapId;
+    this->cellsLoaded = false;
     
     return this->loadMapCellsInformations();
 }
@@ -156,6 +157,8 @@ bool AbstractMapManager::loadMapCellsInformations() {
         cell->mov = cell_json["mov"].asBool();
         cell->los = cell_json["los"].asBool();
         cell->nonWalkableDuringFight = cell_json["nonWalkableDuringFight"].asBool();
+        cell->nonWalkableDuringRP = cell_json["nonWalkableDuringRP"].asBool();
+        cell->farmCell = cell_json["farmCell"].asBool();
         cell->floor = cell_json["floor"].asInt();
         cell->moveZone = cell_json["moveZone"].asInt();
         cell->speed = cell_json["speed"].asInt();
@@ -178,6 +181,8 @@ bool AbstractMapManager::loadMapCellsInformations() {
     downMapId = mapFile_json["bottomNeighbourId"].asDouble();
     leftMapId = mapFile_json["leftNeighbourId"].asDouble();
     upMapId = mapFile_json["topNeighbourId"].asDouble();
+
+    cellsLoaded = true;
 
     return true;
 }
@@ -230,7 +235,7 @@ bool AbstractMapManager::canMove(int cellId, int previousCellId, int endCellId, 
     if(!isInMap(cellId))
         return false;
 
-    bool mov = cells[cellId]->mov && !cells[cellId]->isBlockedByObstacle && (!this->isFight() || !cells[cellId]->nonWalkableDuringFight); 
+    bool mov = cells[cellId]->mov && !cells[cellId]->isBlockedByObstacle && ((this->isFight() && !cells[cellId]->nonWalkableDuringFight) || (!this->isFight() && !cells[cellId]->nonWalkableDuringRP)); 
     
     if(mov && previousCellId != -1 && previousCellId != cellId) {
         sp<Cell> cell = cells[cellId];

@@ -14,9 +14,12 @@
 
 #include "FightFrame.h"
 
+#include "ScriptManager.h"
+#include "ScriptFrame.h"
+
 int main(){    
     Logger::beginInstance();
-    
+        
     sp<ConnectionUnit> cu (new ConnectionUnit());
     sp<DofusBotUnit> dbu (new DofusBotUnit());
     sp<APIUnit> au(new APIUnit());
@@ -29,6 +32,7 @@ int main(){
     cu->initFrames();
     au->addFrame(make_shared<APIBotConnectionFrame>());
     au->addFrame(make_shared<APIClientConnectionFrame>());
+    au->addFrame(make_shared<ScriptFrame>(), true);
 
     MessagingUnit::link(cu, dbu);
     MessagingUnit::link(au, dbu);

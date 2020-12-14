@@ -66,13 +66,9 @@ void FightAIFrame::getNextAction() {
     if(!dofusBotParent->playedCharacter || !dofusBotParent->getMapInfosAsFight())
         return;
 
-    if(dofusBotParent->tempFlag) {
-        if(!tryDirectAttack()) {
-            if(!tryMoveToAttack() && !moveTowardsEnnemy())
-                    dofusBotParent->sendSelfMessage(make_shared<EndTurnMessage>());
-        }
-    } else {
-        dofusBotParent->sendSelfMessage(make_shared<EndTurnMessage>());
+    if(!tryDirectAttack()) {
+        if(!tryMoveToAttack() && !moveTowardsEnnemy())
+                dofusBotParent->sendSelfMessage(make_shared<EndTurnMessage>());
     }
 }
 
