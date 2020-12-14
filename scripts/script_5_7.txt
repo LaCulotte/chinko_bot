@@ -1,0 +1,77 @@
+while(isFull() == false) {
+    log("Current weight : ", getWeightStatusAsString());
+
+    mapRight(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapDown(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapRight(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapRight(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapUp(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapUp(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapLeft(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapUp(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapUp(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapLeft(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapDown(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapLeft(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    collect();
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapDown(0);
+    usleep(randRange(1000, 2000) * 1000);
+
+    mapDown(0);
+    usleep(randRange(1000, 2000) * 1000);
+}
+
+log("Inventaire plein, Job fini!!!!");

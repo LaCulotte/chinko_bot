@@ -1,0 +1,73 @@
+while(isFull() == false) {
+    log("Current weight : ", getWeightStatusAsString());
+
+    collect(1);
+    usleep(100 * 1000);
+
+    mapRight(-360);
+    usleep(100 * 1000);
+
+    mapDown(0);
+    usleep(100 * 1000);
+
+    collect();
+    usleep(100 * 1000);
+
+    mapUp(0);
+    usleep(100 * 1000);
+
+    mapLeft(0);
+    usleep(100 * 1000);
+
+    mapLeft(0);
+    usleep(100 * 1000);
+
+    mapDown(0);
+    usleep(100 * 1000);
+
+    mapDown(0);
+    usleep(100 * 1000);
+
+    mapRight(-100);
+    usleep(100 * 1000);
+
+    collect();
+    usleep(100 * 1000);
+
+    mapLeft(-100);
+    usleep(100 * 1000);
+
+    mapRight(0);
+    usleep(100 * 1000);
+
+    mapRight(0);
+    usleep(100 * 1000);
+
+    mapDown(0);
+    usleep(100 * 1000);
+
+    collect();
+    usleep(100 * 1000);
+
+    mapUp(0);
+    usleep(100 * 1000);
+
+    mapLeft(0);
+    usleep(100 * 1000);
+
+    mapLeft(0);
+    usleep(100 * 1000);
+
+    mapUp(0);
+    usleep(100 * 1000);
+
+    mapUp(0);
+    usleep(100 * 1000);
+
+    mapRight(0);
+    usleep(100 * 1000);
+
+    usleep(3000 * 1000);
+}
+
+log("Inventaire plein, Job fini!!!!");
