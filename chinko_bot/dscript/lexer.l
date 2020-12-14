@@ -1,3 +1,9 @@
+%option header-file = "chinko_bot/dscript/products/lexer.h"
+%option outfile     = "chinko_bot/dscript/products/lexer.cpp"
+%option reentrant
+%option bison-bridge
+%option extra-type="parser_data_t*"
+%option noyywrap nounput noinput
 %{
 #include "parser.tab.h"
 #include <stdio.h>
@@ -5,8 +11,8 @@
 #include "../gramm_funcs.h"
 #include "../../../Var/Var.h"
 using namespace std;
-int nline = 1;
 %}
+
 
 %option noyywrap
 
@@ -20,6 +26,7 @@ elseinst	else
 whileinst	while
 forinst		for
 to			to
+ret			return
 lbrack		\{
 rbrack		\}
 ptvirg		\;
@@ -28,15 +35,6 @@ plusass		\+=
 minusass	\-=
 multass		\*=
 divass		\/=
-/* TYPES */
-tbool		bool
-tchar		char
-tint8		(byte|int8)
-tuint8		(ubyte|uint8)
-tint32		(int32|dword)
-tuint32		(uint32|udword)
-tdouble		(double|fp)
-tstr		str
 let			let
 /* EXPRESSIONS */
 equal		==
@@ -56,16 +54,16 @@ rparen		\)
 land		&&
 lor			\|\|
 lnot		!
-bnot		~	
 band		&
 bor			\|
 bxor		\^
 lshift		<<
 rshift		>>
 comma		,
+global		@
 /* IDENTITIES */
 ident		[a-zA-Z_][a-zA-Z0-9_]*
-real		[0-9]+((\.[0-9]+f?)|f)
+real		[0-9]*((\.[0-9]*f?)|f)
 naturaldec	[0-9]+
 naturalhex	0x[0-9A-Fa-f]+
 naturalbin	0b[01]+
@@ -78,14 +76,14 @@ strv		\"[^\"]*\"
 %%
 
 {blanks}	{ /* ignore */ }
-{newline}	{ nline++; }
-{comment}	{ nline++; }
-{real}		{ yylval.doubleval = atof(yytext); return(REAL); }
-{naturaldec} { yylval.intval = atoi(yytext); return(NATURAL); }
-{naturalhex} { yylval.intval = strtol(yytext+2, NULL, 16); return(NATURAL); }
-{naturalbin} { yylval.intval = strtol(yytext+2, NULL, 2); return(NATURAL); }
-{charv}		{ yylval.intval = *((char*)yytext+1); return(CHARACT); }
-{strv}		{ yylval.strval = (char*)malloc(strlen(yytext)+1); strcpy(yylval.strval, yytext); return(STR); }
+{newline}	{ yyextra->nline++; }
+{comment}	{ yyextra->nline++; }
+{real}		{ yylval->doubleval = atof(yytext); return(REAL); }
+{naturaldec} { yylval->intval = atoi(yytext); return(NATURAL); }
+{naturalhex} { yylval->intval = strtol(yytext+2, NULL, 16); return(NATURAL); }
+{naturalbin} { yylval->intval = strtol(yytext+2, NULL, 2); return(NATURAL); }
+{charv}		{ yylval->charval = *((char*)yytext+1); return(CHARACT); }
+{strv}		{ yylval->strval = (char*)malloc(strlen(yytext)+1); strcpy(yylval->strval, yytext); return(STR); }
 {truev}		{ return(TRUE); }
 {falsev}	{ return(FALSE); }
 {ifinst}	{ return(IF); }
@@ -93,15 +91,8 @@ strv		\"[^\"]*\"
 {whileinst}	{ return(WHILE); }
 {forinst}	{ return(FOR); }
 {to}		{ return(TO); }
+{ret}		{ return(RETURN); }
 {let}		{ return(LET); }
-{tbool}		{ return(TBOOL); }
-{tchar}		{ return(TCHAR); }
-{tint8}		{ return(TINT8); }
-{tuint8}	{ return(TUINT8); }
-{tint32}	{ return(TINT32); }
-{tuint32}	{ return(TUINT32); }
-{tdouble}	{ return(TDOUBLE); }
-{tstr}		{ return(TSTR); }
 {equal}		{ return(EQ); }
 {nequal}	{ return(NEQ); }
 {gt}		{ return(GT); }
@@ -119,7 +110,6 @@ strv		\"[^\"]*\"
 {land}		{ return(LAND); }
 {lor}		{ return(LOR); }
 {lnot}		{ return(LNOT); }
-{bnot}		{ return(BNOT); }
 {band}		{ return(BAND); }
 {bor}		{ return(BOR); }
 {bxor}		{ return(BXOR); }
@@ -134,4 +124,5 @@ strv		\"[^\"]*\"
 {divass}	{ return(DIVASS); }
 {ptvirg}	{ return(PTV); }
 {comma}		{ return(COMMA); }
-{ident}		{ yylval.strval = (char*)malloc(strlen(yytext)+1); strcpy(yylval.strval, yytext); return(IDENT); }
+{global}	{ return(GLOBAL); }
+{ident}		{ yylval->strval = (char*)malloc(strlen(yytext)+1); strcpy(yylval->strval, yytext); return(IDENT); }

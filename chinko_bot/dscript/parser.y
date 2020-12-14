@@ -1,32 +1,47 @@
 %require "3.2"
-%{
+%define api.pure full
+%lex-param   { yyscan_t scanner }
+%parse-param { yyscan_t scanner }
+%parse-param { parser_data_t *data }
+
+%code requires{
+#include "parser.h"
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void* yyscan_t;
+#endif
+
+void fatal_error(const char* msg, yyscan_t yyscanner);
+#define YY_FATAL_ERROR(msg) fatal_error(msg, yyscanner)
+}
+
+%code provides{
 #include <unordered_map>
+#include <stdexcept>
 #include <stdio.h>
 #include <iostream>
 #include <string>
 #include <math.h>
 #include "std.h"
 #include "../../../Var/Var.h"
+#include "gramm_funcs.h"
 
-using namespace std; 
-int error;
-extern int nline;
-extern unordered_map<string, stdf> stdfuncs;
-unordered_map<string, sp<IVar>> variables;
-%}
+using namespace std;
 
-%code requires{
-#include "parser.h"
+int yyerror(yyscan_t scanner, parser_data_t *data, const char *s);
+extern int yylex(YYSTYPE * yylval_param , yyscan_t yyscanner);
 }
+
 
 %union {
 	ast *instr;
 	int intval;
+	char charval;
 	double doubleval;
 	char* strval;
 }
 
-%token NATURAL REAL CHARACT STR TBOOL TCHAR TINT8 TUINT8 TINT32 TUINT32 TDOUBLE TSTR TRUE FALSE IDENT
+%token NATURAL REAL CHARACT STR TRUE FALSE IDENT
 %left COMMA
 %left LOR
 %left LAND
@@ -39,126 +54,184 @@ unordered_map<string, sp<IVar>> variables;
 %left PLUS MINUS
 %left MULT DIV MOD
 %right POW
-%token LNOT BNOT
-%token UNARY_MINUS LPAREN RPAREN LET FUNC INIT_ARGS INIT_FUNC IF ELSE LBRACK RBRACK PTV ASSIGN WHILE FOR TO IFELSE CREATEVAR CREATEASSIGN TYPE PLUSASS MINUSASS MULTASS DIVASS
-%type <instr> Program Sequence Instruction Expression Ops Paren Nat Real Char Bool Str Var Assignment Functions Args ArgsRec
-%type <intval> NATURAL CHARACT Type
+%token LNOT
+%token GLOBAL
+%token RETURN UNARY_MINUS LPAREN RPAREN LET FUNC INIT_ARGS INIT_VAR IF ELSE LBRACK RBRACK PTV ASSIGN WHILE FOR TO IFELSE CREATEVAR CREATEASSIGN TYPE PLUSASS MINUSASS MULTASS DIVASS
+%type <instr> Program Sequence Instruction Expression Ops Paren Nat Real Char Bool Str Var ExtendedVar Assignment Functions Args ArgsRec
+%type <intval> NATURAL
+%type <charval> CHARACT
 %type <strval> IDENT STR
 %type <doubleval> REAL
 %start Program
 
 %%
 
-// TODO : 	- Fonctions personnelles ?
-//			- Demander à Chriggz de faire en sorte que char+int = char (dans un print par exemple) : quioque, je crois que c'est juste qu'un char est mal affiché dans un print
-//			- Discuter avec Chriggz du fait de ne garder que 1 type de var parmi (u)int8_t et (u)int32_t
-//					-> en effet ce qu'on veut faire un langage haut niveau très simple, et ça simplifierait le langage
-//			- Changer les malloc en make_shared (notamment dans new_ast())
-//			- Il n'y a pas d'analyse paresseuse des expressions booléennes...
+// TODO :
+//			- tableaux
+//			- Quand on fait une division, ne faudrait-il pas renvoyer un double quoiqu'il arrive ?
 
 
-// CURRENT : NORMALEMENT ÇA DEVRAIT MARCHER MAIS LES FONCTIONS ACCEPTANT STRCIT PLUS DE 2 ARGS FONT PLANTER
 
-
-Program:		Functions							{ execute($1); }
+Program:		Functions							{ execute(data, $1); }
 
 Functions:		Sequence							{ $$ = $1; }
-		|		Functions LET IDENT LPAREN Args RPAREN LBRACK Sequence RBRACK { $$ = declarefunc($3, $5, $8); }
+		|		Functions LET IDENT LPAREN Args RPAREN LBRACK Sequence RBRACK { declarefunc(data, $3, $5, $8); $$ = $1; }
 
-Args:			ArgsRec Type Var					{ $$ = seq(createvar($2, $3), $1); }
+Args:			Var ArgsRec							{ $$ = seq(unary_operator(data, $1, INIT_VAR), $2); }
 		|		%empty								{ $$ = NULL; }
 
-ArgsRec:		ArgsRec Type Var COMMA				{ $$ = seq(createvar($2, $3), $1); }
+ArgsRec:		COMMA Var ArgsRec					{ $$ = seq(unary_operator(data, $2, INIT_VAR), $3); }
 		|		%empty								{ $$ = NULL; }
 
 Sequence:		Instruction Sequence				{ $$ = seq($1, $2); }
 		|		Instruction							{ $$ = $1; }
 		|		%empty								{ $$ = NULL; }
 
-Instruction:	IF Expression LBRACK Sequence RBRACK{ $$ = ifinst($2, $4); }
-		|		IF Expression LBRACK Sequence RBRACK ELSE LBRACK Sequence RBRACK	{ $$ = ifelseinst($2, $4, $8); }
-		|		WHILE Expression LBRACK Sequence RBRACK								{ $$ = whileinst($2, $4); }
-		|		FOR Assignment TO Expression LBRACK Sequence RBRACK					{ $$ = forinst($2, $4, $6); }
+Instruction:	IF Expression LBRACK Sequence RBRACK								{ $$ = ifinst(data, $2, $4); }
+		|		IF Expression Instruction											{ $$ = ifinst(data, $2, $3); }
+		|		IF Expression LBRACK Sequence RBRACK ELSE LBRACK Sequence RBRACK	{ $$ = ifelseinst(data, $2, $4, $8); }
+		|		IF Expression Instruction ELSE LBRACK Sequence RBRACK				{ $$ = ifelseinst(data, $2, $3, $6); }
+		|		IF Expression LBRACK Sequence RBRACK ELSE Instruction				{ $$ = ifelseinst(data, $2, $4, $7); }
+		|		IF Expression Instruction ELSE Instruction							{ $$ = ifelseinst(data, $2, $3, $5); }
+		|		WHILE Expression LBRACK Sequence RBRACK								{ $$ = whileinst(data, $2, $4); }
+		|		WHILE Expression Instruction										{ $$ = whileinst(data, $2, $3); }
+		|		FOR Assignment TO Expression LBRACK Sequence RBRACK					{ $$ = forinst(data, $2, $4, $6); }
+		|		FOR Assignment TO Expression Instruction							{ $$ = forinst(data, $2, $4, $5); }
 		|		Assignment PTV						{ $$ = $1; }
-		|		Expression PTV						{ /* Do nothing */ }
+		|		IDENT LPAREN Expression RPAREN PTV	{ $$ = loadfunction(data, $1, $3); }
+		|		IDENT LPAREN RPAREN PTV				{ $$ = loadfunction(data, $1, NULL); }
+		|		RETURN Expression PTV				{ $$ = unary_operator(data, $2, RETURN); }
 
-Assignment:		Var ASSIGN Expression				{ $$ = assignment($1, $3); }
-		|		Var PLUSASS Expression				{ $$ = binary_operator($1, $3, PLUSASS); }
-		|		Var MINUSASS Expression				{ $$ = binary_operator($1, $3, MINUSASS); }
-		|		Var MULTASS Expression				{ $$ = binary_operator($1, $3, MULTASS); }
-		|		Var DIVASS Expression				{ $$ = binary_operator($1, $3, DIVASS); }
-		|		Type Var ASSIGN Expression			{ $$ = create_assign($1, $2, $4); }
-		|		Type Var							{ $$ = createvar($1, $2); }
+Assignment:		ExtendedVar ASSIGN Expression		{ $$ = assignment(data, $1, $3); }
+		|		ExtendedVar PLUSASS Expression		{ $$ = binary_operator(data, $1, $3, PLUSASS); }
+		|		ExtendedVar MINUSASS Expression		{ $$ = binary_operator(data, $1, $3, MINUSASS); }
+		|		ExtendedVar MULTASS Expression		{ $$ = binary_operator(data, $1, $3, MULTASS); }
+		|		ExtendedVar DIVASS Expression		{ $$ = binary_operator(data, $1, $3, DIVASS); }
 
-Type:			TBOOL 								{ $$ = BOOL; }
-		|		TCHAR								{ $$ = CHAR; }
-		|		TINT8								{ $$ = INT8; }
-		|		TUINT8								{ $$ = UINT8; }
-		|		TINT32								{ $$ = INT32; }
-		|		TUINT32								{ $$ = UINT32; }
-		|		TDOUBLE								{ $$ = DOUBLE; }
-		|		TSTR								{ $$ = STRING; }
-
-Expression:		Nat | Real | Char | Bool | Str | Var | Ops | Paren	{ $$ = $1; }
-Ops:			Expression EQ Expression			{ $$ = binary_operator($1, $3, EQ); }
-		|		Expression NEQ Expression			{ $$ = binary_operator($1, $3, NEQ); }
-		|		Expression GT Expression			{ $$ = binary_operator($1, $3, GT); }
-		|		Expression LT Expression			{ $$ = binary_operator($1, $3, LT); }
-		|		Expression GTEQ Expression			{ $$ = binary_operator($1, $3, GTEQ); }
-		|		Expression LTEQ Expression			{ $$ = binary_operator($1, $3, LTEQ); }
-		|		Expression PLUS Expression			{ $$ = binary_operator($1, $3, PLUS); }
-		|		Expression MINUS Expression			{ $$ = binary_operator($1, $3, MINUS); }
-		|		Expression MULT Expression			{ $$ = binary_operator($1, $3, MULT); }
-		|		Expression DIV Expression			{ $$ = binary_operator($1, $3, DIV); }
-		|		Expression MOD Expression			{ $$ = binary_operator($1, $3, MOD); }
-		|		Expression POW Expression			{ $$ = binary_operator($1, $3, POW); }
-		|		Expression LAND Expression			{ $$ = binary_operator($1, $3, LAND); }
-		|		Expression LOR Expression			{ $$ = binary_operator($1, $3, LOR); }
-		|		Expression BAND Expression			{ $$ = binary_operator($1, $3, BAND); }
-		|		Expression BXOR Expression			{ $$ = binary_operator($1, $3, BXOR); }
-		|		Expression BOR Expression			{ $$ = binary_operator($1, $3, BOR); }
-		|		Expression LSHIFT Expression		{ $$ = binary_operator($1, $3, LSHIFT); }
-		|		Expression RSHIFT Expression		{ $$ = binary_operator($1, $3, RSHIFT); }
-		|		Expression COMMA Expression			{ $$ = binary_operator($1, $3, COMMA); }
-		|		LNOT Expression						{ $$ = unary_operator($2, LNOT); }
-		|		BNOT Expression						{ $$ = unary_operator($2, BNOT); }
-		|		MINUS Expression					{ $$ = unary_operator($2, UNARY_MINUS); }
-		|		IDENT LPAREN Expression RPAREN		{ $$ = loadfunction($1, $3); }
-		|		IDENT LPAREN RPAREN					{ $$ = loadfunction($1, NULL); }
+Expression:		Nat | Real | Char | Bool | Str | ExtendedVar | Ops | Paren	{ $$ = $1; }
+Ops:			Expression EQ Expression			{ $$ = binary_operator(data, $1, $3, EQ); }
+		|		Expression NEQ Expression			{ $$ = binary_operator(data, $1, $3, NEQ); }
+		|		Expression GT Expression			{ $$ = binary_operator(data, $1, $3, GT); }
+		|		Expression LT Expression			{ $$ = binary_operator(data, $1, $3, LT); }
+		|		Expression GTEQ Expression			{ $$ = binary_operator(data, $1, $3, GTEQ); }
+		|		Expression LTEQ Expression			{ $$ = binary_operator(data, $1, $3, LTEQ); }
+		|		Expression PLUS Expression			{ $$ = binary_operator(data, $1, $3, PLUS); }
+		|		Expression MINUS Expression			{ $$ = binary_operator(data, $1, $3, MINUS); }
+		|		Expression MULT Expression			{ $$ = binary_operator(data, $1, $3, MULT); }
+		|		Expression DIV Expression			{ $$ = binary_operator(data, $1, $3, DIV); }
+		|		Expression MOD Expression			{ $$ = binary_operator(data, $1, $3, MOD); }
+		|		Expression POW Expression			{ $$ = binary_operator(data, $1, $3, POW); }
+		|		Expression LAND Expression			{ $$ = binary_operator(data, $1, $3, LAND); }
+		|		Expression LOR Expression			{ $$ = binary_operator(data, $1, $3, LOR); }
+		|		Expression BAND Expression			{ $$ = binary_operator(data, $1, $3, BAND); }
+		|		Expression BXOR Expression			{ $$ = binary_operator(data, $1, $3, BXOR); }
+		|		Expression BOR Expression			{ $$ = binary_operator(data, $1, $3, BOR); }
+		|		Expression LSHIFT Expression		{ $$ = binary_operator(data, $1, $3, LSHIFT); }
+		|		Expression RSHIFT Expression		{ $$ = binary_operator(data, $1, $3, RSHIFT); }
+		|		Expression COMMA Expression			{ $$ = binary_operator(data, $1, $3, COMMA); }
+		|		LNOT Expression						{ $$ = unary_operator(data, $2, LNOT); }
+		|		MINUS Expression					{ $$ = unary_operator(data, $2, UNARY_MINUS); }
+		|		IDENT LPAREN Expression RPAREN		{ $$ = loadfunction(data, $1, $3); }
+		|		IDENT LPAREN RPAREN					{ $$ = loadfunction(data, $1, NULL); }
 
 Paren:			LPAREN Expression RPAREN			{ $$ = $2; }
-Nat:			NATURAL								{ $$ = loadnatural($1); }
-Real:			REAL								{ $$ = loadreal($1); }
-Char:			CHARACT								{ $$ = loadnatural($1); }
-Bool:			TRUE								{ $$ = loadnatural(1); }
-		|		FALSE								{ $$ = loadnatural(0); }
-Str:			STR									{ $$ = loadstr($1); }
-Var:			IDENT								{ $$ = loadvar($1); }
+Nat:			NATURAL								{ $$ = loadnatural(data, $1); }
+Real:			REAL								{ $$ = loadreal(data, $1); }
+Char:			CHARACT								{ $$ = loadchar(data, $1); }
+Bool:			TRUE								{ $$ = loadnatural(data, 1); }
+		|		FALSE								{ $$ = loadnatural(data, 0); }
+Str:			STR									{ $$ = loadstr(data, $1); }
+Var:			IDENT								{ $$ = loadvar(data, $1); }
+ExtendedVar:	Var									{ $$ = $1; }
+		|		GLOBAL ExtendedVar					{ $$ = unary_operator(data, $2, GLOBAL); } // premet d'acceder à une variable de contexte 1-supérieur (même si une variable éponyme existe dans l'actuel contexte)
 
 %%
 
-int yyerror(const char *s) {
-	printf("Error on line %d : %s\n", nline, s);
-	return 0;
+#include "products/parser.tab.h"
+#include "products/lexer.h"
+
+
+void throw_exception(const string err, int nl) {
+	// SI TU VEUX CHANGER LA MANIÈRE DONT SONT GÉRÉES LES EXCEPTIONS C'EST ICI...
+	string error;
+	if(nl>0)
+		error = "Error on line "+to_string(nl)+": "+err;
+	else
+		error = "Error: "+err;
+	throw runtime_error(error);
+}
+
+int yyerror(yyscan_t scanner, parser_data_t *data, const char *s) {
+	throw_exception(string(s), data->nline);
+}
+
+void fatal_error(const char* msg, yyscan_t yyscanner) {
+	throw_exception(string(msg), 0);
 }
 
 
-int dscript(const char *file) {
-	//unordered_map<string, sp<IVar>> variables{{"x", 42}, {"test", 9}, {"var", 3}};
-	// std::shared_ptr<Var<double>> variable1 = std::make_shared<Var<int>>(8);
-	// std::shared_ptr<Var<int>> variable2 = std::make_shared<Var<int>>(4);
-	// vérifier que deux var n'ont pas le même nom.
-	// variables.insert({{"namevar1", variable1}, {"namevar2", variable2}});
-	// variables.find("namevar1");
-	// variable1->getType()==INT8 (un enum à check sur IVar.h);
-	// l'addition de 2 *sp est un sp.
+void dscript_cmd(string code, bool *stop) {
+	ctx_vars_t glob_ctx = {};
+	glob_ctx.variables = {};
 
-	variables = {};
-	initstd();
-	freopen(file, "r", stdin);
-	error = 0;
-	yyparse();
-	return error;
+	parser_data_t data = {};
+	data.nline = 1;
+	data.fst_el = NULL;
+	data.ctx = &glob_ctx;
+	data.stop = stop;
+	initstd(&data);
+
+	yyscan_t scanner;
+	if(yylex_init(&scanner))
+		throw_exception("unable to initialize the parser.", 0);
+	yylex_init_extra(&data, &scanner);
+	YY_BUFFER_STATE buf = yy_scan_string(code.c_str(), scanner);
+	try {
+		yyparse(scanner, &data);
+	} catch(const exception& e) {
+		yy_delete_buffer(buf, scanner);
+		yylex_destroy(scanner);
+		free_list(data.fst_el);
+		throw runtime_error(e.what());
+	}
+	yy_delete_buffer(buf, scanner);
+	yylex_destroy(scanner);
+	free_list(data.fst_el);
+}
+
+void dscript(string file, bool *stop) {
+	FILE *fp = fopen(file.c_str(), "r");
+	if(fp==NULL)
+		throw_exception(file+" not found!", 0);
+	fseek(fp, 0L, SEEK_END);
+	size_t size = ftell(fp);
+	rewind(fp);
+	char code[size+1];
+	
+	fread(code, 1, size, fp);
+	code[size] = 0x0;
+	try {
+		dscript_cmd(code, stop);
+	} catch(const exception& e) {
+		fclose(fp);
+		throw runtime_error(e.what());
+	}
+	
+	fclose(fp);
+}
+
+
+void free_list(el_alloced_t *list) {
+	el_alloced_t *cur = list;
+	while(cur!=NULL) {
+		el_alloced_t *tmp = cur->next;
+		if(cur->type==0)
+			free(cur->el);
+		else
+			delete (string*)cur->el;
+		free(cur);
+		cur = tmp;
+	}
 }
 
 
@@ -228,45 +301,42 @@ void disp_recur(ast *x, int nbsp) {
 }
 
 
-void execute(ast *x) {
-	printf("\n");
+void execute(parser_data_t *data, ast *x) {
+	cout << endl;
 	disp_recur(x, 0);
-	printf("\n");
-	run(x, true);
+	cout << endl;
+	run(data, x, true);
 }
 
 
-void parse_params(vector<sp<IVar>> *dst, ast *ast) {
+void parse_params(parser_data_t *data, vector<sp<IVar>> *dst, ast *ast) {
 	if(ast->token == COMMA) {
-		dst->insert(dst->begin(), parse_expr(ast->fst_child->next_sibling));
-		parse_params(dst, ast->fst_child);
+		dst->insert(dst->begin(), parse_expr(data, ast->fst_child->next_sibling));
+		parse_params(data, dst, ast->fst_child);
 	} else
-		dst->insert(dst->begin(), parse_expr(ast));
+		dst->insert(dst->begin(), parse_expr(data, ast));
 }
 
 
-sp<IVar> parse_expr(ast *ast) {
+sp<IVar> parse_expr(parser_data_t *data, ast *ast) {
 	/* CHECKING TYPES COMPATIBILITY */
 	sp<IVar> expr1;
 	sp<IVar> expr2;
-	if(ast->fst_child != NULL && ast->token != FUNC) {
-		expr1 = parse_expr(ast->fst_child);
+	if(ast->fst_child != NULL && ast->token != FUNC && ast->token != LAND && ast->token != LOR && ast->token != GLOBAL) {
+		expr1 = parse_expr(data, ast->fst_child);
 		if(ast->token != COMMA && ast->fst_child->next_sibling != NULL) {
-			expr2 = parse_expr(ast->fst_child->next_sibling);
-			watchdog_type(expr1->get_type(), expr2->get_type(), ast);
+			expr2 = parse_expr(data, ast->fst_child->next_sibling);
+			watchdog_type(expr1->get_type(), expr2->get_type(), ast->token, ast->nline);
 		}
 	}
 
 	switch(ast->token) {
 		case COMMA:
-			printf("Error on line %d : syntax error ','\n", ast->nline);
-			exit(-1);
+			throw_exception("syntax error ','", ast->nline);
 		case FUNC: {
-			sp<IVar> ret = runfunc(*ast->strvalue, ast);
-			if(ret==NULL) {
-				printf("Error on line %d : void function in expression\n", ast->nline);
-				exit(-1);
-			}
+			sp<IVar> ret = runfunc(data, *ast->strvalue, ast);
+			if(ret==NULL)
+				throw_exception("void function in expression", ast->nline);
 			return ret;
 		} case PLUS:
 			return *expr1+(*expr2);
@@ -280,12 +350,14 @@ sp<IVar> parse_expr(ast *ast) {
 			return *expr1%(*expr2);
 		case POW: {
 			vector<sp<IVar>> args = {expr1, expr2};
-			return stdpow(args);
+			return stdpow(data, args, ast->nline);
 		} case UNARY_MINUS: {
 			const sp<IVar> ZERO = make_shared<Var<int>>(0);
-			return *ZERO - *parse_expr(ast->fst_child);
+			return *ZERO - *parse_expr(data, ast->fst_child);
 		} case EQ:
 			return make_shared<Var<bool>>(*expr1==(*expr2));
+		case NEQ:
+			return make_shared<Var<bool>>(!(*expr1==(*expr2)));
 		case LT:
 			return make_shared<Var<bool>>(*expr1<(*expr2));
 		case GT:
@@ -294,137 +366,199 @@ sp<IVar> parse_expr(ast *ast) {
 			return make_shared<Var<bool>>(*expr1<=(*expr2));
 		case GTEQ:
 			return make_shared<Var<bool>>(*expr1>=(*expr2));
-		//case LAND:
-		//	return *expr1 && (*expr2);
-		//case LOR:
-		//	return *expr1 || (*expr2);
-		//case LNOT:
-		//	return !*expr1;
-		case BAND:
+		case LAND:
+			if(*(bool*)parse_expr(data, ast->fst_child)->value)
+				return parse_expr(data, ast->fst_child->next_sibling);
+			return make_shared<Var<bool>>(false);
+		case LOR:
+			if(*(bool*)parse_expr(data, ast->fst_child)->value)
+				return make_shared<Var<bool>>(true);
+			return parse_expr(data, ast->fst_child->next_sibling);
+		case LNOT: {
+			const sp<IVar> ZERO = make_shared<Var<int>>(0);
+			if(*ZERO==*expr1)
+				return make_shared<Var<bool>>(true);
+			else
+				return make_shared<Var<bool>>(false);
+		} case BAND:
 			return *expr1 & (*expr2);
 		case BXOR:
 			return *expr1 ^ (*expr2);
 		case BOR:
 			return *expr1 | (*expr2);
-		//case BNOT:
-		//	return ~ *expr1;
 		case NATURAL:
-			return make_shared<Var<uint32_t>>(ast->intvalue);
+			return make_shared<Var<int32_t>>(ast->intvalue);
+		case CHARACT:
+			return make_shared<Var<char>>(ast->charvalue);
 		case REAL:
 			return make_shared<Var<double>>(ast->doublevalue);
 		case STR:
 			return make_shared<Var<string>>(*ast->strvalue);
-		case IDENT:
+		case GLOBAL: {
+			ctx_vars_t *old_ctx = data->ctx;
+			if(data->ctx->parent==NULL)
+				throw_exception("cannot access to the upper context (@)", ast->nline);
+			data->ctx = data->ctx->parent;
+			sp<IVar> retval = parse_expr(data, ast->fst_child);
+			data->ctx = old_ctx;
+			return retval;
+		} case IDENT:
 			string varname = *ast->strvalue;
-			if(variables.find(varname) == variables.end()) {
-				printf("ERROR ON LINE %d : Unknown variable!\n", ast->nline);
-				exit(-1);
-			}
-			return variables.at(varname);
+			ctx_vars_t *ctx = find_ctx(data->ctx, varname, ast->nline);
+			return ctx->variables.at(varname);
 	}
 	return 0;
 }
 
+ctx_vars_t *find_ctx(ctx_vars_t *ctx, string varname, int nline) {
+	/**
+	 * @returns the context structure from which varname belongs
+	 * @throws an error if this context does not exist
+	 */
+	ctx_vars_t *cur_ctx = ctx;
+	while(cur_ctx != NULL) {
+		if(cur_ctx->variables.find(varname) != cur_ctx->variables.end())
+			return cur_ctx;
+		cur_ctx = cur_ctx->parent;
+	}
+	throw_exception("unknown variable!", nline);
+}
 
-void run(ast *ast, bool recur) {
-	if(ast==NULL)
+
+void assign_var(ctx_vars_t *ctx, sp<IVar> expr, ast *node, int op) {
+	if(node->token==GLOBAL) {
+		if(ctx->parent==NULL)
+			throw_exception("cannot access to the upper context (@)", node->nline);
+		assign_var(ctx->parent, expr, node->fst_child, op);
 		return;
+	}
+
+	string varname = *node->strvalue;
+	if(op==ASSIGN) {
+		if(ctx->variables.find(varname) != ctx->variables.end())
+			ctx->variables.at(varname) = expr;
+		else
+			ctx->variables.insert({varname, expr});
+	} else {
+		ctx_vars_t *var_ctx = find_ctx(ctx, varname, node->nline);
+		watchdog_type(var_ctx->variables.at(varname)->get_type(), expr->get_type(), op, node->nline);
+
+		if(op==PLUSASS)
+			var_ctx->variables.at(varname) = *var_ctx->variables.at(varname) + *expr;
+		else if(op==MINUSASS)
+			var_ctx->variables.at(varname) = *var_ctx->variables.at(varname) - *expr;
+		else if(op==MULTASS)
+			var_ctx->variables.at(varname) = *var_ctx->variables.at(varname) * *expr;
+		else if(op==DIVASS)
+			var_ctx->variables.at(varname) = *var_ctx->variables.at(varname) / *expr;
+	}
+}
+
+
+sp<IVar> run(parser_data_t *data, ast *ast, bool recur) {
+	if(data->stop != NULL)
+		while(*data->stop) {}
+	if(ast==NULL)
+		return NULL;
 	switch(ast->token) {
 		case IF:
-			if(parse_expr(ast->fst_child))
-				run(ast->fst_child->next_sibling, true);
+			if(*(bool*)parse_expr(data, ast->fst_child)->value)
+				run(data, ast->fst_child->next_sibling, true);
 			break;
 		case IFELSE:
-			if(parse_expr(ast->fst_child))
-				run(ast->fst_child->next_sibling->fst_child, true);
+			if(*(bool*)parse_expr(data, ast->fst_child)->value)
+				run(data, ast->fst_child->next_sibling->fst_child, true);
 			else
-				run(ast->fst_child->next_sibling->next_sibling->fst_child, true);
+				run(data, ast->fst_child->next_sibling->next_sibling->fst_child, true);
 			break;
 		case WHILE:
-			while(*(bool*)(*parse_expr(ast->fst_child)).value)
-				run(ast->fst_child->next_sibling, true);
+			while(*(bool*)(*parse_expr(data, ast->fst_child)).value)
+				run(data, ast->fst_child->next_sibling, true);
 			break;
 		case FOR: {
-			run(ast->fst_child, false);
+			run(data, ast->fst_child, false);
 			string varname = *ast->fst_child->next_sibling->fst_child->strvalue;
 			const IVar ONE = Var<int>(1);
-			while(*(bool*)(*parse_expr(ast->fst_child->next_sibling)).value) {
-				run(ast->fst_child->next_sibling->next_sibling, true);
-				variables.at(varname) = cast_type(variables.at(varname)->get_type(), *variables.at(varname)+ONE);
+			while(*(bool*)(*parse_expr(data, ast->fst_child->next_sibling)).value) {
+				run(data, ast->fst_child->next_sibling->next_sibling, true);
+				data->ctx->variables.at(varname) = cast_type(data->ctx->variables.at(varname)->get_type(), *data->ctx->variables.at(varname)+ONE, ast->nline);
 			}
-			break;
-		} case CREATEVAR: {
-			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(variables.find(varname) != variables.end()) {
-				printf("ERROR ON LINE %d : Variable initialized twice!\n", ast->nline);
-				exit(-1);
-			}
-			const sp<IVar> ZERO = cast_type(ast->fst_child->intvalue, make_shared<Var<int>>(0));
-			variables.insert({varname, ZERO});
-			break;
-		} case CREATEASSIGN: {
-			string varname = *ast->fst_child->next_sibling->strvalue;
-			if(variables.find(varname) != variables.end()) {
-				printf("ERROR ON LINE %d : Variable initialized twice!\n", ast->nline);
-				exit(-1);
-			}
-			sp<IVar> val = cast_type(ast->fst_child->intvalue, parse_expr(ast->fst_child->next_sibling->next_sibling));
-			variables.insert({varname, val});
 			break;
 		} case ASSIGN: {
-			string varname = *ast->fst_child->strvalue;
-			if(variables.find(varname) == variables.end()) {
-				printf("ERROR ON LINE %d : Unknown variable!\n", ast->nline);
-				exit(-1);
-			}
-			sp<IVar> val = cast_type(variables.at(varname)->get_type(), parse_expr(ast->fst_child->next_sibling));
-			variables.at(varname) = val;
+			// Par défaut, si on assigne une variable qui a le nom d'une variable globale (ie. de contexte supérieur), on en crée une nouvelle
+			// Pour assigner une valeur à une variable globale, ou plus généralement pour l'accéder, on utilise l'opérateur @
+			sp<IVar> expr = parse_expr(data, ast->fst_child->next_sibling);
+			assign_var(data->ctx, expr, ast->fst_child, ASSIGN);
 			break;
 		}
 		case PLUSASS:
 		case MINUSASS:
 		case MULTASS:
 		case DIVASS: {
-			string varname = *ast->fst_child->strvalue;
-			if(variables.find(varname) == variables.end()) {
-				printf("ERROR ON LINE %d : Unknown variable!\n", ast->nline);
-				exit(-1);
-			}
-			const sp<IVar> expr = parse_expr(ast->fst_child->next_sibling);
-			watchdog_type(variables.at(varname)->get_type(), expr->get_type(), ast);
-			sp<IVar> val;
-			if(ast->token==PLUSASS)
-				val = *variables.at(varname) + *expr;
-			else if(ast->token==MINUSASS)
-				val = *variables.at(varname) - *expr;
-			else if(ast->token==MULTASS)
-				val = *variables.at(varname) * *expr;
-			else if(ast->token==DIVASS)
-				val = *variables.at(varname) / *expr;
-			
-			variables.at(varname) = cast_type(variables.at(varname)->get_type(), val);
+			const sp<IVar> expr = parse_expr(data, ast->fst_child->next_sibling);
+			assign_var(data->ctx, expr, ast->fst_child, ast->token);
 			break;
 		} case FUNC: {
-			runfunc(*ast->strvalue, ast);
+			runfunc(data, *ast->strvalue, ast);
 			break;
+		} case RETURN:
+			return parse_expr(data, ast->fst_child);
+			break;
+		case IDENT: {
+			string varname = *ast->strvalue;
+			if(data->ctx->variables.find(varname) != data->ctx->variables.end())
+				return data->ctx->variables.at(varname);
+			else
+				return NULL; 
 		} default:
-			printf("Unrecognized token %d\n", ast->token);
-			break;
+			throw_exception("unrecognized token!", ast->nline);
 	}
 	if(recur)
-		run(ast->next_sibling, true);
+		return run(data, ast->next_sibling, true);
+	return NULL;
 }
 
 
-sp<IVar> runfunc(string funcname, ast *ast) {
+sp<IVar> runfunc(parser_data_t *data, string funcname, ast *node) {
 	vector<sp<IVar>> params{};
-	if(ast->fst_child!=NULL)
-		parse_params(&params, ast->fst_child);
+	if(node->fst_child!=NULL)
+		parse_params(data, &params, node->fst_child);
 
-	// for(int i=0; i<params.size(); i++)
-	// 	cout << "PARAM: " << *params[i] << endl;
+	if(data->stdfuncs.find(funcname) != data->stdfuncs.end())
+		return data->stdfuncs[funcname](data, params, node->nline);
 
-	return stdfuncs[funcname](params);
+	if(data->usrfuncs.find(funcname) != data->usrfuncs.end()) {
+		ctx_vars_t child_ctx = {};
+		child_ctx.variables = {};
+		// Adding argument variables
+		ast *curvar;
+		curvar = data->usrfuncs[funcname]->fst_child;
+		int i=0;
+		while(curvar != NULL) {
+			string varname = *curvar->fst_child->strvalue;
+			if(child_ctx.variables.find(varname) != data->ctx->variables.end())
+				throw_exception("name used for two different arguments", data->usrfuncs[funcname]->nline);
+			child_ctx.variables.insert({varname, params[i]});
+			curvar = curvar->next_sibling;
+			i++;
+		}
+
+		// switching context
+		ctx_vars_t *old_ctx = data->ctx;
+		if(old_ctx->parent==NULL) // il n'existe que 2 niveaux de contextes : le global et le local (comme les fonctions ne peuvent pas être imbriquées)
+			child_ctx.parent = old_ctx;
+		else
+			child_ctx.parent = old_ctx->parent;
+		data->ctx = &child_ctx;
+
+
+		sp<IVar> retval = run(data, data->usrfuncs[funcname]->next_sibling, true);
+		
+		data->ctx = old_ctx;
+		return retval;
+	}
+
+	throw_exception("function not found...", node->nline);
 }
 
 
@@ -433,11 +567,9 @@ bool castable(int type1, int type2) {
 }
 
 
-sp<IVar> cast_type(int type, sp<IVar> value) {
-	if(!castable(type, value->get_type())) {
-		cout << "ERR: Conversion from number to string" << endl;
-		exit(-1);
-	}
+sp<IVar> cast_type(int type, sp<IVar> value, int nline) {
+	if(!castable(type, value->get_type()))
+		throw_exception("invalid types!", nline);
 	switch(type) {
 		case BOOL:
 			return make_shared<Var<bool>>(*value);
@@ -460,14 +592,9 @@ sp<IVar> cast_type(int type, sp<IVar> value) {
 }
 
 
-void watchdog_type(int typedst, int typesrc, ast *op) {
-	const int nline = op->nline;
-	if(typesrc==STRING && op->token!=PLUS && op->token!=PLUSASS) {
-		cout << "ERROR ON LINE " << nline << ": Operation undefined for string objects." << endl;
-		exit(-1);
-	}
-	if((typedst==STRING && typesrc!=STRING) || (typedst!=STRING && typesrc==STRING)) {
-		cout << "ERROR ON LINE " << nline << ": Cannont convert STRING to a canonical type!" << endl;
-		exit(-1);
-	}
+void watchdog_type(int typedst, int typesrc, int token, int nl) {
+	if(typesrc==STRING && token!=PLUS && token!=PLUSASS && token!=EQ && token!=NEQ)
+		throw_exception("operation undefined for string objects.", nl);
+	if((typedst==STRING && typesrc!=STRING) || (typedst!=STRING && typesrc==STRING))
+		throw_exception("cannot convert STRING to a canonical type!", nl);
 }

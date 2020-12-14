@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.2.  */
+/* A Bison parser, made by GNU Bison 3.7.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -45,11 +45,18 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 18 "chinko_bot/dscript/parser.y"
+#line 7 "chinko_bot/dscript/parser.y"
 
 #include "parser.h"
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void* yyscan_t;
+#endif
 
-#line 53 "chinko_bot/dscript/products/parser.tab.h"
+void fatal_error(const char* msg, yyscan_t yyscanner);
+#define YY_FATAL_ERROR(msg) fatal_error(msg, yyscanner)
+
+#line 60 "chinko_bot/dscript/products/parser.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -64,63 +71,56 @@ extern int yydebug;
     REAL = 259,                    /* REAL  */
     CHARACT = 260,                 /* CHARACT  */
     STR = 261,                     /* STR  */
-    TBOOL = 262,                   /* TBOOL  */
-    TCHAR = 263,                   /* TCHAR  */
-    TINT8 = 264,                   /* TINT8  */
-    TUINT8 = 265,                  /* TUINT8  */
-    TINT32 = 266,                  /* TINT32  */
-    TUINT32 = 267,                 /* TUINT32  */
-    TDOUBLE = 268,                 /* TDOUBLE  */
-    TSTR = 269,                    /* TSTR  */
-    TRUE = 270,                    /* TRUE  */
-    FALSE = 271,                   /* FALSE  */
-    IDENT = 272,                   /* IDENT  */
-    COMMA = 273,                   /* COMMA  */
-    LOR = 274,                     /* LOR  */
-    LAND = 275,                    /* LAND  */
-    BOR = 276,                     /* BOR  */
-    BXOR = 277,                    /* BXOR  */
-    BAND = 278,                    /* BAND  */
-    EQ = 279,                      /* EQ  */
-    NEQ = 280,                     /* NEQ  */
-    GT = 281,                      /* GT  */
-    LT = 282,                      /* LT  */
-    GTEQ = 283,                    /* GTEQ  */
-    LTEQ = 284,                    /* LTEQ  */
-    LSHIFT = 285,                  /* LSHIFT  */
-    RSHIFT = 286,                  /* RSHIFT  */
-    PLUS = 287,                    /* PLUS  */
-    MINUS = 288,                   /* MINUS  */
-    MULT = 289,                    /* MULT  */
-    DIV = 290,                     /* DIV  */
-    MOD = 291,                     /* MOD  */
-    POW = 292,                     /* POW  */
-    LNOT = 293,                    /* LNOT  */
-    BNOT = 294,                    /* BNOT  */
-    UNARY_MINUS = 295,             /* UNARY_MINUS  */
-    LPAREN = 296,                  /* LPAREN  */
-    RPAREN = 297,                  /* RPAREN  */
-    LET = 298,                     /* LET  */
-    FUNC = 299,                    /* FUNC  */
-    INIT_ARGS = 300,               /* INIT_ARGS  */
-    INIT_FUNC = 301,               /* INIT_FUNC  */
-    IF = 302,                      /* IF  */
-    ELSE = 303,                    /* ELSE  */
-    LBRACK = 304,                  /* LBRACK  */
-    RBRACK = 305,                  /* RBRACK  */
-    PTV = 306,                     /* PTV  */
-    ASSIGN = 307,                  /* ASSIGN  */
-    WHILE = 308,                   /* WHILE  */
-    FOR = 309,                     /* FOR  */
-    TO = 310,                      /* TO  */
-    IFELSE = 311,                  /* IFELSE  */
-    CREATEVAR = 312,               /* CREATEVAR  */
-    CREATEASSIGN = 313,            /* CREATEASSIGN  */
-    TYPE = 314,                    /* TYPE  */
-    PLUSASS = 315,                 /* PLUSASS  */
-    MINUSASS = 316,                /* MINUSASS  */
-    MULTASS = 317,                 /* MULTASS  */
-    DIVASS = 318                   /* DIVASS  */
+    TRUE = 262,                    /* TRUE  */
+    FALSE = 263,                   /* FALSE  */
+    IDENT = 264,                   /* IDENT  */
+    COMMA = 265,                   /* COMMA  */
+    LOR = 266,                     /* LOR  */
+    LAND = 267,                    /* LAND  */
+    BOR = 268,                     /* BOR  */
+    BXOR = 269,                    /* BXOR  */
+    BAND = 270,                    /* BAND  */
+    EQ = 271,                      /* EQ  */
+    NEQ = 272,                     /* NEQ  */
+    GT = 273,                      /* GT  */
+    LT = 274,                      /* LT  */
+    GTEQ = 275,                    /* GTEQ  */
+    LTEQ = 276,                    /* LTEQ  */
+    LSHIFT = 277,                  /* LSHIFT  */
+    RSHIFT = 278,                  /* RSHIFT  */
+    PLUS = 279,                    /* PLUS  */
+    MINUS = 280,                   /* MINUS  */
+    MULT = 281,                    /* MULT  */
+    DIV = 282,                     /* DIV  */
+    MOD = 283,                     /* MOD  */
+    POW = 284,                     /* POW  */
+    LNOT = 285,                    /* LNOT  */
+    GLOBAL = 286,                  /* GLOBAL  */
+    RETURN = 287,                  /* RETURN  */
+    UNARY_MINUS = 288,             /* UNARY_MINUS  */
+    LPAREN = 289,                  /* LPAREN  */
+    RPAREN = 290,                  /* RPAREN  */
+    LET = 291,                     /* LET  */
+    FUNC = 292,                    /* FUNC  */
+    INIT_ARGS = 293,               /* INIT_ARGS  */
+    INIT_VAR = 294,                /* INIT_VAR  */
+    IF = 295,                      /* IF  */
+    ELSE = 296,                    /* ELSE  */
+    LBRACK = 297,                  /* LBRACK  */
+    RBRACK = 298,                  /* RBRACK  */
+    PTV = 299,                     /* PTV  */
+    ASSIGN = 300,                  /* ASSIGN  */
+    WHILE = 301,                   /* WHILE  */
+    FOR = 302,                     /* FOR  */
+    TO = 303,                      /* TO  */
+    IFELSE = 304,                  /* IFELSE  */
+    CREATEVAR = 305,               /* CREATEVAR  */
+    CREATEASSIGN = 306,            /* CREATEASSIGN  */
+    TYPE = 307,                    /* TYPE  */
+    PLUSASS = 308,                 /* PLUSASS  */
+    MINUSASS = 309,                /* MINUSASS  */
+    MULTASS = 310,                 /* MULTASS  */
+    DIVASS = 311                   /* DIVASS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -129,14 +129,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 22 "chinko_bot/dscript/parser.y"
+#line 36 "chinko_bot/dscript/parser.y"
 
 	ast *instr;
 	int intval;
+	char charval;
 	double doubleval;
 	char* strval;
 
-#line 140 "chinko_bot/dscript/products/parser.tab.h"
+#line 141 "chinko_bot/dscript/products/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -145,8 +146,26 @@ typedef union YYSTYPE YYSTYPE;
 #endif
 
 
-extern YYSTYPE yylval;
 
-int yyparse (void);
+int yyparse (yyscan_t scanner, parser_data_t *data);
+/* "%code provides" blocks.  */
+#line 18 "chinko_bot/dscript/parser.y"
+
+#include <unordered_map>
+#include <stdexcept>
+#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <math.h>
+#include "std.h"
+#include "../../../Var/Var.h"
+#include "gramm_funcs.h"
+
+using namespace std;
+
+int yyerror(yyscan_t scanner, parser_data_t *data, const char *s);
+extern int yylex(YYSTYPE * yylval_param , yyscan_t yyscanner);
+
+#line 170 "chinko_bot/dscript/products/parser.tab.h"
 
 #endif /* !YY_YY_CHINKO_BOT_DSCRIPT_PRODUCTS_PARSER_TAB_H_INCLUDED  */

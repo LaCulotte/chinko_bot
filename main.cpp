@@ -44,10 +44,10 @@ int main(){
     dbu->launch().get();
     au->launch().get();
 
-    // sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage(USERNAME, PASSWORD, false));
-    // dbu->sendSelfMessage(baMsg);
+//     // sp<BeginAuthentificationMessage> baMsg (new BeginAuthentificationMessage(USERNAME, PASSWORD, false));
+//     // dbu->sendSelfMessage(baMsg);
 
-    // usleep(1000 * 1000*1000);
+//     // usleep(1000 * 1000*1000);
     while(true);
 
     cu->stop();

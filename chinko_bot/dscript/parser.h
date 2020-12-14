@@ -5,25 +5,33 @@
 #include <vector>
 
 
-int yylex();
+void dscript(std::string file, bool *stop);
 
-int yyerror(const char *s);
+void dscript_cmd(std::string code, bool *stop);
 
-void parse_params(std::vector<sp<IVar>> *dst, ast *ast);
+void throw_exception(const std::string err, int nl);
 
-sp<IVar> parse_expr(ast *ast);
+void free_list(el_alloced_t *list);
 
-void run(ast *ast, bool recur);
+void parse_params(parser_data_t *data, std::vector<sp<IVar>> *dst, ast *ast);
 
-void execute(ast *x);
+sp<IVar> parse_expr(parser_data_t *data, ast *ast);
 
-sp<IVar> runfunc(std::string funcname, ast *ast);
+ctx_vars_t *find_ctx(ctx_vars_t *ctx, std::string varname, int nline);
+
+void assign_var(ctx_vars_t *ctx, sp<IVar> expr, ast *node, int op);
+
+sp<IVar> run(parser_data_t *data, ast *ast, bool recur);
+
+void execute(parser_data_t *data, ast *x);
+
+sp<IVar> runfunc(parser_data_t *data, std::string funcname, ast *ast);
 
 bool castable(int type1, int type2);
 
-sp<IVar> cast_type(int type, sp<IVar> value);
+sp<IVar> cast_type(int type, sp<IVar> value, int nline);
 
-void watchdog_type(int typedst, int typesrc, ast *op);
+void watchdog_type(int typedst, int typesrc, int token, int nl);
 
 
 #endif // __AST__
