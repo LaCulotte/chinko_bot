@@ -23,14 +23,15 @@ void PlayedCharacterManager::loadSkills() {
         return;
     }
 
-    skillId_to_elementId.clear();
-    skillId_to_range.clear();
+    skills.clear();
 
     for(auto skill_json : skills_json) {
-        int id = skill_json["id"].asInt();
+        sp<SkillInformations> newSkill = make_shared<SkillInformations>();
+        newSkill->skillId = skill_json["id"].asInt();
+        newSkill->interactiveId = skill_json["interactiveId"].asInt();
+        newSkill->range = skill_json["range"].asInt();
 
-        skillId_to_elementId[id] = skill_json["interactiveId"].asInt();
-        skillId_to_range[id] = skill_json["range"].asInt();
+        skills.insert({newSkill->skillId, newSkill});
     }
 }
 
@@ -78,15 +79,11 @@ void PlayedCharacterManager::addJob(JobDescription job) {
     
 
     for(auto skill : job.skills) {
-        if(skillId_to_elementId.find(skill->skillId) == skillId_to_elementId.end())
+        auto skillIt = skills.find(skill->skillId);
+        if(skillIt == skills.end())
             continue;
 
-        SkillInformations newSkill;
-        newSkill.skillId = skill->skillId;
-        newSkill.interactiveId = skillId_to_elementId.find(skill->skillId)->second;
-        newSkill.range = skillId_to_range.find(skill->skillId)->second;
-
-        newJob->skills[newSkill.skillId] = newSkill;
+        newJob->skills[skillIt->second->skillId] = skillIt->second;
     }
 
     if(oldJob == infos->jobs.end())
@@ -298,9 +295,9 @@ bool PlayedCharacterManager::hasSkill(int skillId) {
 }
 
 int PlayedCharacterManager::getSkillRange(int skillId) {
-    auto skillIt = skillId_to_range.find(skillId);
-    if(skillIt != skillId_to_range.end())
-        return skillIt->second;
+    auto skillIt = skills.find(skillId);
+    if(skillIt != skills.end())
+        return skillIt->second->range;
 
     return -1;
 }

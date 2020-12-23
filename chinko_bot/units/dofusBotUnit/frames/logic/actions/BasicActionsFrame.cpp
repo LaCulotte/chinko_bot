@@ -157,6 +157,7 @@ bool BasicActionsFrame::collectElementOfTypeId(int elementTypeId) {
             if(statedElement.elementState == 0) {
                 int usedSkillId = -1;
                 int usedSkillUID = -1;
+                // loop peut se faire sans indice : on manipules mtn des pointeurs
                 for(int i = 0; i < interactiveElementIt.second->enabledSkills.size(); i++) {
                     if(dofusBotParent->characterManager->hasSkill(interactiveElementIt.second->enabledSkills[i]->skillId)) {
                         usedSkillUID = interactiveElementIt.second->enabledSkills[i]->skillInstanceUid;
@@ -183,25 +184,57 @@ bool BasicActionsFrame::collectElement(int elementId, int skillId, int skillUID)
         return false;        
     }
 
-    auto interactiveElement = dofusBotParent->getMapInfosAsRoleplay()->interactiveElements[elementId];
-    auto statedElement = dofusBotParent->getMapInfosAsRoleplay()->statedElements[elementId];
+    sp<RoleplayMapManager> mapInfos = dofusBotParent->getMapInfosAsRoleplay();
+    auto interactiveElement = mapInfos->interactiveElements[elementId];
+    auto statedElement = mapInfos->statedElements[elementId];
 
-    MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, statedElement.elementCellId);
+    vector<int> forbiddenCells;
+    for(int i = 0; i < 8; i++) {
+        int mpId = mapInfos->getNearestCellInDirection(statedElement.elementCellId, i);
+        if(mpId != -1) {
+            sp<Cell> mp = mapInfos->getCell(mpId);
+            bool forbidden = !mp->mov || mp->farmCell;
 
-    int lastCellId = movPath.toKeyMovements().back() & 0xFFF;
+            if(!forbidden) {
+                int numWalkableCells = 8;
+                for(int j = 0; j < 8; j++) {
+                    int mp2Id = mapInfos->getNearestCellInDirection(mpId, j);
+                    int mp2X = mapInfos->cellId_to_XPosition(mp2Id);
+                    int mp2Y = mapInfos->cellId_to_YPosition(mp2Id);
 
-    int dX = abs(dofusBotParent->mapInfos->cellId_to_XPosition(statedElement.elementCellId) - dofusBotParent->mapInfos->cellId_to_XPosition(lastCellId)); 
-    int dY = abs(dofusBotParent->mapInfos->cellId_to_YPosition(statedElement.elementCellId) - dofusBotParent->mapInfos->cellId_to_YPosition(lastCellId)); 
+                    if(mp2Id != -1 && (!mapInfos->canMove(mp2Id, mpId) || !mapInfos->canMove(mapInfos->position_to_cellId(mp2X - 1, mp2Y), mpId) && mapInfos->canMove(mapInfos->position_to_cellId(mp2X, mp2Y - 1), mpId)))
+                        numWalkableCells--;
+                }
+                if(numWalkableCells <= 0)
+                    forbidden = true;
+            }
 
-    if(dX + dY <= range) {
-        dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(statedElement.elementCellId));
-        elementToCollectId = elementId;
-        skillToUseId = skillUID;
-        currentState = baf_pathfindToCollect;
-        return true;
+            if(forbidden)
+                forbiddenCells.push_back(mpId);
+        }
     }
 
-    inaccessibleElements.insert(elementId);
+    sp<Cell> interactiveCell = mapInfos->getCell(statedElement.elementCellId);
+    int minRange = 63;
+    for(sp<InteractiveElementSkill> skill : interactiveElement->enabledSkills) {
+
+    }
+    // MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, statedElement.elementCellId);
+
+    // int lastCellId = movPath.toKeyMovements().back() & 0xFFF;
+
+    // int dX = abs(dofusBotParent->mapInfos->cellId_to_XPosition(statedElement.elementCellId) - dofusBotParent->mapInfos->cellId_to_XPosition(lastCellId)); 
+    // int dY = abs(dofusBotParent->mapInfos->cellId_to_YPosition(statedElement.elementCellId) - dofusBotParent->mapInfos->cellId_to_YPosition(lastCellId)); 
+
+    // if(dX + dY <= range) {
+    //     dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(statedElement.elementCellId));
+    //     elementToCollectId = elementId;
+    //     skillToUseId = skillUID;
+    //     currentState = baf_pathfindToCollect;
+    //     return true;
+    // }
+
+    // inaccessibleElements.insert(elementId);
     return false;
 }
 

@@ -127,6 +127,12 @@ bool GameServerConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         if(currentState == rcv_RawDataMessage) {
             Logger::write("Received RawDataMessage", LOG_INFO);
 
+            // sp<RawDataMessage> rdmsg = dynamic_pointer_cast<RawDataMessage>(message);
+            // ofstream dumpFile;
+            // dumpFile.open("RMD.swf");
+            // dumpFile.write(rdmsg->content.data(), rdmsg->content.size());
+            // dumpFile.close();
+
             // Sends random CheckIntegrityMessage
             if(sendCheckIntegrityMessage())
                 currentState = snd_CheckIntegrityMessage;

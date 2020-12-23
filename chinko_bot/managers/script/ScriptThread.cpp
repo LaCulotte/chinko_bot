@@ -13,7 +13,7 @@ void ScriptThread::launchScript() {
 
 void ScriptThread::launchThread() {
     try {
-        dscript(scriptFilePath.c_str());
+        dscript(scriptFilePath.c_str(), &stop);
     } catch (string error) {
         Logger::write(error, LOG_ERROR);
     }

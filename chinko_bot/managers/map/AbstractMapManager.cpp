@@ -1,6 +1,7 @@
 #include "AbstractMapManager.h"
 
 #include "math.h"
+#include "As3_Math.h"
 #include "GameRolePlayTaxCollectorInformations.h"
 #include "GameRolePlayPortalInformations.h"
 #include "GameRolePlayPrismInformations.h"
@@ -451,6 +452,123 @@ int AbstractMapManager::getLookDirection(int fromCellX, int fromCellY, int toCel
         dir += 4;
 
     return dir;
+}
+
+int AbstractMapManager::getAdvancedOrientation(int fromCellX, int fromCellY, int toCellX, int toCellY, bool fourDir) {
+    float xDiff = toCellX - fromCellX;
+    float yDiff = fromCellY - toCellY;
+
+    float angle = acos(xDiff / sqrt(pow(xDiff, 2) + pow(yDiff, 2))) * 180 / M_PI * (toCellY > fromCellY ? -1:1);
+    int retAngle = 0;
+    if(fourDir) {
+        retAngle = as3_round(angle / 90) * 2 + 1;
+    } else {
+        retAngle = as3_round(angle / 45) + 1;
+    }
+    if(retAngle < 0)
+        retAngle += 8;
+
+    return retAngle;
+} 
+
+int AbstractMapManager::getAdvancedOrientation(int fromCellId, int toCellId, bool fourDir) {
+    return getAdvancedOrientation(cellId_to_XPosition(fromCellId), cellId_to_YPosition(fromCellId), cellId_to_XPosition(toCellId), cellId_to_YPosition(toCellId), fourDir);
+}
+
+int AbstractMapManager::getNearestCellInDirection(int srcCellId, int dir) {
+    int cellX = cellId_to_XPosition(srcCellId);
+    int cellY = cellId_to_YPosition(srcCellId);
+    switch(dir) {
+    case 0:
+        cellX++;
+        cellY++;
+        break;
+    case 1:
+        cellX++;
+        break;        
+    case 2:
+        cellX++;
+        cellY--;
+        break;
+    case 3:
+        cellY--;
+        break;
+    case 4:
+        cellX--;
+        cellY--;
+        break;
+    case 5:
+        cellX--;
+        break;
+    case 6:
+        cellX--;
+        cellY++;
+        break;  
+    case 7:
+        cellY++;
+        break;  
+    default:
+        Logger::write("Cannot get nearest cell in direction : direction must be between 0 and 7; Current direction : " + to_string(dir));
+        return -1;
+    }
+
+    if(this->isCoordsInMap(cellX, cellY))
+        return position_to_cellId(cellX, cellY);
+
+    return -1;
+}
+
+int AbstractMapManager::getNearestFreeCellInDirection(int srcCellId, int dir, bool allowItself, bool allowThroughEntity, bool ignoreSpeed, sp<vector<int>> forbiddenCells) {
+    if(!forbiddenCells)
+        forbiddenCells = make_shared<vector<int>>();
+
+    int nearCells[8];
+    int weights[8];
+
+    for(int i = 0; i < 8; i++) {
+        int mpId = getNearestCellInDirection(srcCellId, i);
+        sp<Cell> mp = getCell(mpId);
+
+        nearCells[i] = mpId;
+        if(mp) {
+            if(find(forbiddenCells->begin(), forbiddenCells->end(), mpId) == forbiddenCells->end()) {
+                if(this->canMove(mpId, srcCellId, -1, true, allowThroughEntity)) {
+                    weights[i] = getOrientationDist(i, dir) + (!ignoreSpeed ?(mp->speed >= 0?5-mp->speed :11+abs(mp->speed)) :0);
+                } else {
+                    forbiddenCells->push_back(mpId);
+                    weights[i] = -1;
+                }
+            } else {
+                if(this->canMove(mpId, srcCellId, -1, true, allowThroughEntity)) 
+                    weights[i] = 100 + getOrientationDist(i, dir) + (!ignoreSpeed ?(mp->speed >= 0?5-mp->speed :11+abs(mp->speed)) :0);
+                else 
+                    weights[i] = -1;
+            }
+        } else {
+            weights[i] = -1;
+        }
+    }
+
+    int minWeightDir = -1;
+    int minWeight = 10000;
+    for(int i = 0; i < 8; i++) {
+        if(weights[i] != -1 && weights[i] < minWeight && nearCells[i] != -1) {
+            minWeight = weights[i];
+            minWeightDir = i;
+        }
+    }
+
+    if(minWeightDir != -1)
+        return nearCells[minWeightDir];
+    else if(allowItself && this->canMove(srcCellId, srcCellId, -1, true, allowThroughEntity))
+        return srcCellId;
+
+    return -1;
+}
+
+
+int AbstractMapManager::getOrientationDist(int dir1, int dir2) {
+    return min(abs(dir2 - dir1), abs(8 - dir2 + dir1));
 }
 
 sp<ActorData> AbstractMapManager::getActor(double actorId) {

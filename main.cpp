@@ -17,6 +17,8 @@
 #include "ScriptManager.h"
 #include "ScriptFrame.h"
 
+#include "As3_Math.h"
+
 int main(){    
     Logger::beginInstance();
         

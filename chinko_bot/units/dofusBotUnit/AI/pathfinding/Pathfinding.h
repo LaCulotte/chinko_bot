@@ -5,7 +5,7 @@
 #include "MovementPath.h"
 
 #include <unordered_set>
-#include <math.h>
+#include "As3_Math.h"
 
 class PathFinding {
 public:

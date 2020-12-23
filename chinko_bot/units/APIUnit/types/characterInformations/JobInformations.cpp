@@ -9,7 +9,7 @@ bool JobInformations::serialize(sp<MessageDataBuffer> output) {
 
     output->writeVarShort(skills.size());
     for(auto skillIt = skills.begin(); skillIt != skills.end(); skillIt++) {
-        skillIt->second.serialize(output);
+        skillIt->second->serialize(output);
     }
 
     return true;
@@ -24,9 +24,9 @@ bool JobInformations::deserialize(sp<MessageDataBuffer> input) {
 
     int size = input->readVarShort();
     for(int i = 0; i < size; i++) {
-        SkillInformations skill;
-        skill.deserialize(input);
-        skills.insert({skill.skillId, skill});
+        sp<SkillInformations> skill = make_shared<SkillInformations>();
+        skill->deserialize(input);
+        skills.insert({skill->skillId, skill});
     }
     
     return true;

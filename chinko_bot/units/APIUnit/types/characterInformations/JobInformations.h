@@ -36,7 +36,7 @@ public:
     uint64_t xpNextLevelFloor;
 	uint64_t xpLevelFloor;
     uint64_t xp;
-    unordered_map<int, SkillInformations> skills;
+    unordered_map<int, sp<SkillInformations>> skills;
 };
 
 #endif

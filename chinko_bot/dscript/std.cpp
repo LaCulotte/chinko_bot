@@ -98,8 +98,8 @@ void initstd(parser_data_t *data) {
 	data->usrfuncs = {};
 
 	data->stdfuncs.insert({"pow", stdpow});
-	data->stdfuncs.insert({"log", stdlog});
-	data->stdfuncs.insert({"usleep", std_usleep});
+	data->stdfuncs.insert({"logg", log});
+	data->stdfuncs.insert({"usleep", usleep});
 	data->stdfuncs.insert({"randRange", randRange});
 
 	data->stdfuncs.insert({"mapUp", mapUp});
@@ -169,7 +169,7 @@ void is_valid_call(vector<sp<IVar>> *args, int nline, int nb_params, ...) {
 }
 
 
-sp<IVar> stdlog(parser_data_t *data, std::vector<sp<IVar>> params, int nline) {
+sp<IVar> log(parser_data_t *data, std::vector<sp<IVar>> params, int nline) {
 	string log = "";
 
 	for(int i=0; i<params.size(); i++)

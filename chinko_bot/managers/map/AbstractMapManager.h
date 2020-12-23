@@ -50,6 +50,12 @@ public:
     
     int getLookDirection(int fromCellId, int toCellId);
     int getLookDirection(int fromCellX, int fromCellY, int toCellX, int toCellY);
+    int getAdvancedOrientation(int fromCellId, int toCellId, bool fourDir = true);
+    int getAdvancedOrientation(int fromCellX, int fromCellY, int toCellX, int toCellY, bool fourDir = true);
+    int getOrientationDist(int dir1, int dir2);
+
+    int getNearestCellInDirection(int srcCellId, int dir);
+    int getNearestFreeCellInDirection(int srcCellId, int dir, bool allowItself = true, bool allowThroughEntity = true, bool ignoreSpeed = false, sp<vector<int>> forbiddenCells = nullptr);
 
     static int getManhattanDistance(int cellId1, int cellId2);
     static float getEuclidianDistance(int cellId1, int cellId2);

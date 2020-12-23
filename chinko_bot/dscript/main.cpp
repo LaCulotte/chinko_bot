@@ -7,15 +7,15 @@
 
 using namespace std;
 
-int main(void) {
-	try {
-		bool stop = false;
-		dscript("chinko_bot/dscript/dscript.txt", &stop);
-	} catch(const exception& e) {
-		cout << "Une erreur : " << endl;
-		cout << e.what() << endl;
-	}
+// int main(void) {
+// 	try {
+// 		bool stop = false;
+// 		dscript("chinko_bot/dscript/dscript.txt", &stop);
+// 	} catch(const exception& e) {
+// 		cout << "Une erreur : " << endl;
+// 		cout << e.what() << endl;
+// 	}
 	
-	return 0;
-}
+// 	return 0;
+// }
 

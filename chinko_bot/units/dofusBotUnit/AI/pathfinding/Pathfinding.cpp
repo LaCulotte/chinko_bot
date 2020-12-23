@@ -4,13 +4,6 @@
 #define DIAG_COST   15
 #define HEURISTIC_COST 10
 
-int as3_round(double x) {
-    if(x >= 0)
-        return round(x);
-    else 
-        return round(x + 0.1) - 0.1;
-}
-
 // TODO : support allowThroughEntitites = false
 MovementPath PathFinding::findPath(sp<AbstractMapManager> map, int startCellId, int endCellId, bool allowDiags, bool avoidObstacles, bool allowThroughEntities){
     if(!map) {

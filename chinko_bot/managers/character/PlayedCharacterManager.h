@@ -83,8 +83,9 @@ protected:
 
     string skillsFile_path = "database/skills/json/Skills.json";
     void loadSkills();
-    unordered_map<int, int> skillId_to_elementId;
-    unordered_map<int, int> skillId_to_range;
+    // unordered_map<int, int> skillId_to_elementId;
+    // unordered_map<int, int> skillId_to_range;
+    unordered_map<int, sp<SkillInformations>> skills;
 
     bool fullyLoaded = false;
 };

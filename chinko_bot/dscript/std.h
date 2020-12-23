@@ -15,8 +15,8 @@ void initstd(parser_data_t *data);
 void is_valid_call(std::vector<sp<IVar>> *args, int nline, int nb_params, ...);
 
 sp<IVar> stdpow(parser_data_t *data, std::vector<sp<IVar>> params, int nline);
-sp<IVar> std_usleep(parser_data_t *data, std::vector<sp<IVar>> params, int nline);
-sp<IVar> stdlog(parser_data_t *data, std::vector<sp<IVar>> params, int nline);
+sp<IVar> usleep(parser_data_t *data, std::vector<sp<IVar>> params, int nline);
+sp<IVar> log(parser_data_t *data, std::vector<sp<IVar>> params, int nline);
 sp<IVar> randRange(parser_data_t *data, std::vector<sp<IVar>> params, int nline);
 
 sp<IVar> mapUp(parser_data_t *data, std::vector<sp<IVar>> params, int nline);

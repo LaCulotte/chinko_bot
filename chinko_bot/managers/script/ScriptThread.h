@@ -39,11 +39,13 @@ public:
     // Destructor
     ~ScriptThread() = default;
 
+    bool stop = false;
+
 // Asynchronus methods
 public:
     void launchScript();
     // Careful -> will be called asynchronusly 
-    void stopScript() { cout << "---- TODO!!!!!!! : voir avec Mathis pour stopper un script en cours d'éxecution ----" << endl; };
+    void stopScript() { stop = true; };
 
     // sp<Command> getCurrentCommand();
     // bool setCommandReturnValue(sp<CommandReturnValue> return);

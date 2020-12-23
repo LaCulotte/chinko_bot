@@ -19,6 +19,7 @@ for skill in skills:
     skill_out["id"] = skill["id"]
     skill_out["interactiveId"] = skill["interactiveId"]
     skill_out["range"] = skill["range"]
+    # skill_out["useRangeInClient"] = skill["useRangeInClient"]
 
     skills_out.append(skill_out)
 
