@@ -17,7 +17,7 @@ public:
 	~FightResultAdditionalData() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 6509;
+	static const unsigned int typeId = 1833;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override { return true; };

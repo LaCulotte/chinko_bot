@@ -11,6 +11,7 @@ struct JobXp {
     uint64_t jobXpNextLevelFloor;
 };
 
+// Bot's character update : Updates jobs' Xp 
 class JobsXpMessage : public PrefixedMessage {
 public:
 	// Constructor

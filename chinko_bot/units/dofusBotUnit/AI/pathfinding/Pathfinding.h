@@ -9,6 +9,7 @@
 
 class PathFinding {
 public:
+    // Find a path : Translation of Pathfind::findpath from dofus' source code 
     static MovementPath findPath(sp<AbstractMapManager> map, int startCellId, int endCellId, bool allowDiags = true, bool avoidObstacles = true, bool allowThroughEntities = true);
 
 private:
@@ -23,6 +24,7 @@ private:
     ~PathFinding() = default;
 
 protected:
+    // Alternative weight computation : Translation of parts of Pathfind::findpath from dofus' source code
     static float alternativePointWeight(int cellId, sp<AbstractMapManager> map, bool allowThroughEntity = true);
 };
 

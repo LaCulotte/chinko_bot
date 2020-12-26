@@ -59,16 +59,19 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         gfsMsg = dynamic_pointer_cast<GameFightStartingMessage>(message);
         Logger::write("Fight (type : " + to_string(gfsMsg->fightType) + ") starting. Atttacker : " + to_string(gfsMsg->attackerId) + ".", LOG_INFO);
         // Save fight info?
+        // Builds map manager
         dofusBotParent->mapInfos = make_shared<FightMapManager>();
         break;
 
     case GameFightJoinMessage::protocolId:
+        // Builds map manager if it was not already
         if(!dofusBotParent->getMapInfosAsFight())
             dofusBotParent->mapInfos = make_shared<FightMapManager>();
         
         // TODO : check si il y a pas un moyen de récupérer l'id de la current map
+        // Loads map informations
         dofusBotParent->mapInfos->loadMapInformations(dofusBotParent->currentMapId);
-
+        // Gets the bot ready for the battle
         dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<GetFightReadyMessage>(), 5000));
         break;
 
@@ -82,6 +85,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
         
+        // Adds the fighter to the map
         dofusBotParent->getMapInfosAsFight()->updateFighter(gfsfMsg->informations);
         if(dofusBotParent->playedCharacter && gfsfMsg->informations->contextualId == dofusBotParent->playedCharacter->contextualId) {
             sp<ActorData> playedCharacter = dofusBotParent->mapInfos->getActor(dofusBotParent->playedCharacter->contextualId);
@@ -105,6 +109,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Updates actors' position
         Logger::write("GameEntitiesDispositionMessage received", LOG_INFO);
         for(auto disposition : gedMsg->dispositions) 
             dofusBotParent->mapInfos->updateActorPosition(disposition.id, disposition.cellId);
@@ -120,6 +125,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Updates actors' team
         for(auto teamMember : gfutMsg->team.teamMembers) {
             dofusBotParent->getMapInfosAsFight()->updateTeamInfos(teamMember->id, gfutMsg->team.teamId);
             // TeamEnum : teamSide; TeamTypeEnum : teamTypeId
@@ -129,7 +135,10 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameContextDestroyMessage::protocolId:
         Logger::write("Fight context destroyed.", LOG_INFO);
+        // Adds the frame to build contexts
         dofusBotParent->addFrame(make_shared<SwitchContextFrame>());
+
+        // Removes all necessary frames
         dofusBotParent->removeFrame(this);
         dofusBotParent->popAllFrames<FightActionFrame>();
         dofusBotParent->popAllFrames<FightAIFrame>();
@@ -137,6 +146,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     case GameFightHumanReadyStateMessage::protocolId:
         gfhrsMsg = dynamic_pointer_cast<GameFightHumanReadyStateMessage>(message);
+        // Logs the fighter that is ready to fight
         Logger::write(to_string(gfhrsMsg->characterId) + " is ready to fight.", LOG_INFO);
         break;
 
@@ -149,6 +159,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Starts the AI
         dofusBotParent->addFrame(make_shared<FightAIFrame>());
         break;
 
@@ -167,6 +178,8 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             Logger::write("Player in fight but map info is not initialized !!", LOG_ERROR);
             break;
         }
+
+        // Synchronize fighters with the server
         for(auto fighter : gfsyncMsg->fighters)
             dofusBotParent->getMapInfosAsFight()->updateFighter(fighter);
         
@@ -177,6 +190,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         gftsMsg = dynamic_pointer_cast<GameFightTurnStartMessage>(message);
         if(gftsMsg->id == dofusBotParent->playedCharacter->contextualId) {
             Logger::write("Beginning turn.", LOG_INFO);
+            // Sends a message if it is the bot's turn to fight
             dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<ReadyNextFightActionMessage>(), 1000));
         }
         break;
@@ -190,15 +204,19 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         }
 
         Logger::write("End of the turn of entity " + to_string(gftrrMsg->id), LOG_DEBUG);     
+        // Ends a fighter turn
         dofusBotParent->getMapInfosAsFight()->endFighterTurn(gftrrMsg->id);
+        // Sends a GameFightTurnReadyMessage to synchronize with the server
         sendGameFightTurnReadyMessage();
         break;
 
     case CurrentMapMessage::protocolId:
+        // Should never happend, but it would be nice
         Logger::write("Receiving CurrentMapMessage!!!!!!!", LOG_WARNING);
         break;
 
     case GameFightRefreshFighterMessage::protocolId:
+        // TODO : get bot's additionnal informations 
         gfrfMsg = dynamic_pointer_cast<GameFightRefreshFighterMessage>(message);
         Logger::write("TODO : HANDLE GameFightRefreshFighterMessage IN FightContextFrame !!!!!", LOG_ERROR);
         break;
@@ -216,13 +234,14 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
     case GameActionFightNoSpellCastMessage::protocolId:
         gafnscMsg = dynamic_pointer_cast<GameActionFightNoSpellCastMessage>(message);
         Logger::write("Could not cast spell of id  : " + to_string(gafnscMsg->spellLevelId), LOG_WARNING);
+        // Notify AI of the spell cast failure
         dofusBotParent->sendSelfMessage(make_shared<FightActionFailureMessage>());
         break;
 
     case FighterStatsListMessage::protocolId:
+        // TODO : get bot's additionnal informations 
         fslMsg = dynamic_pointer_cast<FighterStatsListMessage>(message);
         Logger::write("TODO : HANDLE FighterStatsListMessage IN FightContextFrame !!!!!", LOG_ERROR);
-        fslMsg->stats;
         break;
 
     case GameMapMovementMessage::protocolId:
@@ -232,6 +251,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }        
         
+        // Updates actor position
         dofusBotParent->mapInfos->updateActorPosition(gmmMsg->actorId, gmmMsg->keyMovements.back() & 0xFFF);
         Logger::write(to_string(gmmMsg->actorId) + " moved from cell " + to_string(gmmMsg->keyMovements.front() & 0xFFF) + " to cell " + to_string(gmmMsg->keyMovements.back() & 0xFFF), LOG_INFO);
         break;
@@ -239,6 +259,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
     case GameMapNoMovementMessage::protocolId:
         gmnmMsg = dynamic_pointer_cast<GameMapNoMovementMessage>(message);
         Logger::write("Unauthorized movement.", LOG_WARNING);
+        // Notify AI of the movement failure
         dofusBotParent->sendSelfMessage(make_shared<FightActionFailureMessage>());
         break;
 
@@ -250,6 +271,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         }
 
         {
+            // Updates fight points
             sp<FighterData> target = dofusBotParent->getMapInfosAsFight()->getFighter(gafpvMsg->targetId);
             if(target) {
                 switch (gafpvMsg->actionId)
@@ -273,6 +295,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         }
         break;
 
+    // Updates hp & shield
     case GameActionFightLifeAndShieldPointsLostMessage::protocolId:
         gaflasplMsg = dynamic_pointer_cast<GameActionFightLifeAndShieldPointsLostMessage>(message);
         if(gaflasplMsg->shieldLoss != 0)
@@ -304,6 +327,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         }
 
         {
+            // Updates hp
             sp<FighterData> target = dofusBotParent->getMapInfosAsFight()->getFighter(gaflpgMsg->targetId);
             if(target) {
                 target->stats->lifePoints = max(0, target->stats->lifePoints + gaflpgMsg->delta);
@@ -321,6 +345,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Updates fighter position
         Logger::write(to_string(gaftosmMsg->targetId) + " teleported on cell " + to_string(gaftosmMsg->cellId) + ".", LOG_INFO);
         dofusBotParent->mapInfos->updateActorPosition(gaftosmMsg->targetId, gaftosmMsg->cellId);
         break;
@@ -332,6 +357,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Swaps fighters positions
         Logger::write(to_string(gafepMsg->sourceId) + " exchanged positions with " + to_string(gafepMsg->targetId), LOG_INFO);
         dofusBotParent->mapInfos->updateActorPosition(gafepMsg->sourceId, gafepMsg->targetCellId);
         dofusBotParent->mapInfos->updateActorPosition(gafepMsg->targetId, gafepMsg->casterCellId);
@@ -344,6 +370,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Updates actor position
         Logger::write(to_string(gafsMsg->targetId) + " slided to cell " + to_string(gafsMsg->endCellId), LOG_INFO);
         dofusBotParent->mapInfos->updateActorPosition(gafsMsg->targetId, gafsMsg->endCellId);
         break;
@@ -355,6 +382,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
         
+        // Adds a mark on the map
         dofusBotParent->mapInfos->addMark(gafmcMsg->mark);
         Logger::write("Cells marked.", LOG_INFO);
         break;
@@ -366,6 +394,7 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
         
+        // Remove a mark from the map
         dofusBotParent->mapInfos->removeMark(gafucMsg->markId);
         Logger::write("Cells unmarked.", LOG_INFO);
         break;
@@ -377,8 +406,10 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Kills the fighter
         dofusBotParent->getMapInfosAsFight()->fighterDied(gafdMsg->targetId);
         
+        // Logs the kill
         if(gafdMsg->sourceId != gafdMsg->targetId)
             Logger::write(to_string(gafdMsg->sourceId) + " killed " + to_string(gafdMsg->targetId), LOG_INFO);
         else 
@@ -389,12 +420,14 @@ bool FightContextFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case GameActionFightKillMessage::protocolId:
+        // Never used?
         Logger::write("Received GameActionFightKillMessage : find out what is different with GameActionFightDeathMessage", LOG_IMPORTANT_WARNING);
         break;
 
     case SequenceEndMessage::protocolId:
         seMsg = dynamic_pointer_cast<SequenceEndMessage>(message);
         if(seMsg->authorId == dofusBotParent->playedCharacter->contextualId) {
+            // End of the player's action; requests next action from AI in 3 secs
             this->sendGameActionAcknowledgementMessage(seMsg);
             dofusBotParent->sendSelfMessage(make_shared<TimedMessage>(make_shared<ReadyNextFightActionMessage>(), 3000));
         }
@@ -518,22 +551,3 @@ bool FightContextFrame::sendGameActionAcknowledgementMessage(sp<SequenceEndMessa
     return true;
 
 }
-
-// void FightContextFrame::processGameFightEndMessage(sp<GameFightEndMessage> gfeMsg) {
-//     sp<FightResultPlayerListEntry> frple = nullptr;
-
-//     for(auto result : gfeMsg->results) {
-//         frple = dynamic_pointer_cast<FightResultPlayerListEntry>(result);
-//         if(frple && frple->id == dofusBotParent->playedCharacter->contextualId) {
-//             sp<FightResultExperienceData> fred = nullptr;
-            
-//             for(auto additional : frple->additional) {
-//                 fred = dynamic_pointer_cast<FightResultExperienceData>(additional);
-//                 if(fred) {
-//                     Logger::write("Gained experience : +" + to_string(fred->experienceFightDelta) + " points; current xp : " + to_string(fred->experience));
-//                     dofusBotParent->characterManager.setXp(fred->experience, fred->experienceLevelFloor, fred->experienceNextLevelFloor);
-//                 }
-//             }
-//         }
-//     }
-// }

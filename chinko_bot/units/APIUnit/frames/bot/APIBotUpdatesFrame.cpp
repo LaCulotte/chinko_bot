@@ -4,6 +4,7 @@
 
 bool APIBotUpdatesFrame::computeMessage(sp<Message> message, int srcId) {
     for(pair range : updateMessagesIdRanges)
+        // Relays the updates to the API client
         if(message->getId() >= range.first && message->getId() <= range.second) {
             sp<SendPacketRequestMessage> packetRelay = make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<ConnectionMessage>(message), apiUnitParent->getAPIConnectionId());
             apiUnitParent->sendMessage(packetRelay, apiUnitParent->getConnectionUnitId());

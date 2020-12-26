@@ -49,14 +49,22 @@ public:
 
     // Informations of the current GameServer 
     GameServerData gameServerInfos;
+    // Bot's played character
     sp<ActorData> playedCharacter = nullptr;
+    // Bot's played character manager
     sp<PlayedCharacterManager> characterManager;
+    // Returns true if the bot is connected to a game server
     bool isConnectedToGameServer() { return connectedToGameServer; }
+    // Tells the bot it is connected to a game server
     void setConnectedToGameServer() { connectedToGameServer = true; }
 
+    // Id of the current map
     double currentMapId = 0;
+    // Map manager
     sp<AbstractMapManager> mapInfos = nullptr;
+    // Return the mapInfos casted as RoleplayInfos
     sp<RoleplayMapManager> getMapInfosAsRoleplay() { return dynamic_pointer_cast<RoleplayMapManager>(this->mapInfos); };
+    // Return the mapInfos casted as FightInfos
     sp<FightMapManager> getMapInfosAsFight() { return dynamic_pointer_cast<FightMapManager>(this->mapInfos); };
 
     void resetNextTick() { toReset = true; };
@@ -72,9 +80,12 @@ protected:
     // APIUnit's MessagingInterface's id
     int apiUnitId = -1;
 
+    // True id the bot is connected to a game server
     bool connectedToGameServer = false;
 
+    // Set to true in order to reset the bot on the next tick
     bool toReset = false;
+    // Fully resets the bot. Should be called at the beginning/end of a tick
     void fullReset();
 };
 

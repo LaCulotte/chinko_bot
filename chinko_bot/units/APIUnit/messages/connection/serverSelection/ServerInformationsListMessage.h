@@ -4,6 +4,7 @@
 #include "PrefixedMessage.h"
 #include "ServerInformations.h"
 
+// List of servers to select from
 class ServerInformationsListMessage : public PrefixedMessage {
 public : 
     // Constructor

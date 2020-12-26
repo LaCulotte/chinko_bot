@@ -48,10 +48,12 @@ protected:
     bool sendGameMapMovementRequestMessage(MovementPath* path);
     bool sendChangeMapMessage(double mapId);
 
+    // Movement manager
     sp<MovementManager> manager;
 
+    // Move the bot to a cell that can be pathfind to from an array to cell
     bool moveToRandomCellInVector(vector<int> cells);
-
+    // Gets all cells that are on a specific floor from an array
     vector<int> getCellsOnFloor(vector<int> cells, int floor);
 
  };

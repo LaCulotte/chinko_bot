@@ -3,6 +3,7 @@
 
 #include "Message.h"
 
+// Request BotConnectionStatusMessage
 class BotConnectionStatusRequestMessage : public Message {
 public:
 	// Constructor

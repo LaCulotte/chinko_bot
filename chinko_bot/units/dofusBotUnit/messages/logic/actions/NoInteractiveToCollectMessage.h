@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Notifies that there is nno interactive to collect
 class NoInteractiveToCollectMessage : public Message {
 public: 
 	// Constructor

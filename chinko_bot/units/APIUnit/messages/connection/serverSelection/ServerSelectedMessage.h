@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Messages for the selected server's id 
 class ServerSelectedMessage : public PrefixedMessage {
 public : 
     // Constructor

@@ -18,7 +18,7 @@ public:
 	~IdentificationMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 5833;
+	static const unsigned int protocolId = 5667;
 
 	// Turns raw data into the usable data (message's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;
@@ -33,7 +33,7 @@ public:
 	int serverId = 0;
 	vector<char> credentials;
 	string lang = "fr";
-	Version version = Version(2, 57, 12, 17, 0);
+	Version version = Version(2, 58, 1, 1, 0);
 };
 
 #endif

@@ -45,10 +45,12 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
     case MapComplementaryInformationsDataMessage::protocolId:
         mcidMsg = dynamic_pointer_cast<MapComplementaryInformationsDataMessage>(message);
         {
+            // Builds the map manager & loads map informations
             sp<RoleplayMapManager> mapManager(new RoleplayMapManager());
             mapManager->loadMapInformations(mcidMsg);
             dofusBotParent->currentMapId = mcidMsg->mapId;
 
+            // Get player for the dofusBotUnit
             if(dofusBotParent->playedCharacter && mapManager->getPlayer(dofusBotParent->playedCharacter->contextualId)) {
                 dofusBotParent->playedCharacter = mapManager->getPlayer(dofusBotParent->playedCharacter->contextualId);
                 Logger::write("Played character : " + mapManager->getPlayer(dofusBotParent->playedCharacter->contextualId)->name + ".", LOG_INFO);
@@ -62,6 +64,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
 
             dofusBotParent->mapInfos = mapManager;
 
+            // Adds necessary frames
             if(!dofusBotParent->getFrame<TempDialogFrame>()) {
                 dofusBotParent->addFrame(make_shared<TempDialogFrame>());
             }
@@ -74,6 +77,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
             if(!dofusBotParent->getFrame<APIActionsFrame>())
                 dofusBotParent->addFrame(make_shared<APIActionsFrame>());
         }
+
         Logger::write("Received MapComplementaryInformationsDataMessage", LOG_INFO);
         dofusBotParent->sendSelfMessage(make_shared<CurrentMapChangedMessage>());
         break;
@@ -86,14 +90,17 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
         
         {    
             gmmMsg = dynamic_pointer_cast<GameMapMovementMessage>(message);
+            // Updates actor position
+            dofusBotParent->mapInfos->updateActorPosition(gmmMsg->actorId, gmmMsg->keyMovements.back() & 0xFFF);
+            // Logs movement
             string actorName = "";
             if (dynamic_pointer_cast<RoleplayCharacterData>(dofusBotParent->mapInfos->getActor(gmmMsg->actorId)))
                 actorName = " (" + dynamic_pointer_cast<RoleplayCharacterData>(dofusBotParent->mapInfos->getActor(gmmMsg->actorId))->name + ")";
-            dofusBotParent->mapInfos->updateActorPosition(gmmMsg->actorId, gmmMsg->keyMovements.back() & 0xFFF);
             Logger::write("Actor " + to_string(gmmMsg->actorId) + actorName + " moved from cell " + to_string(gmmMsg->keyMovements.front() & 0xFFF) + " to cell " + to_string(gmmMsg->keyMovements.back() & 0xFFF) + ".", LOG_DEBUG);
         }
 
-
+        // If the one moving is the player, send a MovementConfirmMessage at the end of the movement
+        // TODO : prendre en compte si le joueur sur une DD?
         if(dofusBotParent->playedCharacter && gmmMsg->actorId == dofusBotParent->playedCharacter->contextualId) {
             int time = 0;
             for (int i = 0; i < gmmMsg->keyMovements.size() - 1; i++) {
@@ -115,12 +122,14 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case GameMapNoMovementMessage::protocolId:
+        // Movement could not be done => send error
         gmnmMsg = dynamic_pointer_cast<GameMapNoMovementMessage>(message);
         Logger::write("No movement : (" + to_string(gmnmMsg->cellX) + "; " + to_string(gmnmMsg->cellY) + ").", LOG_WARNING);
         dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         break;
 
     case StatedElementUpdatedMessage::protocolId:
+        // Updates stated element
         seuMsg = dynamic_pointer_cast<StatedElementUpdatedMessage>(message);
         if(!dofusBotParent->getMapInfosAsRoleplay()) {
             Logger::write("Player on map but map info is not initialized !!", LOG_ERROR);
@@ -132,6 +141,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case InteractiveElementUpdatedMessage::protocolId:
+        // Updates interactive element
         ieuMsg = dynamic_pointer_cast<InteractiveElementUpdatedMessage>(message);
         if(!dofusBotParent->getMapInfosAsRoleplay()) {
             Logger::write("Player on map but map info is not initialized !!", LOG_ERROR);
@@ -139,6 +149,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
         }
 
         dofusBotParent->getMapInfosAsRoleplay()->updateInteractiveElement(ieuMsg->interactiveElement);
+        // Logs
         Logger::write("Interactive element (" + to_string(ieuMsg->interactiveElement.elementId) + ") updated. Type id = " + to_string(ieuMsg->interactiveElement.elementTypeId) + ".", LOG_DEBUG);
         break;
 
@@ -149,6 +160,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Logs the interactive use
         if(dofusBotParent->getMapInfosAsRoleplay()->getPlayer(iuMsg->entityId))
             Logger::write("Player : " + dofusBotParent->getMapInfosAsRoleplay()->getPlayer(iuMsg->entityId)->name + " is using element " + to_string(iuMsg->elemId), LOG_INFO);
         else 
@@ -160,7 +172,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
             Logger::write("Player on map but map info is not initialized !!", LOG_ERROR);
             break;
         }
-
+        // Logs and does the actor removal
         gcreMsg = dynamic_pointer_cast<GameContextRemoveElementMessage>(message);
         if(dofusBotParent->getMapInfosAsRoleplay() && dofusBotParent->getMapInfosAsRoleplay()->getPlayer(gcreMsg->id))
             Logger::write("Player : " + dofusBotParent->getMapInfosAsRoleplay()->getPlayer(gcreMsg->id)->name + " exited.", LOG_INFO);
@@ -176,6 +188,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Logs and adds the actor 
         dofusBotParent->mapInfos->addActor(grpsaMsg->informations);
         if(dofusBotParent->getMapInfosAsRoleplay() && dofusBotParent->getMapInfosAsRoleplay()->getPlayer(grpsaMsg->informations->contextualId))
             Logger::write("Added player : " + dofusBotParent->getMapInfosAsRoleplay()->getPlayer(grpsaMsg->informations->contextualId)->name, LOG_DEBUG);
@@ -191,6 +204,7 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Logs and rotates the actor 
         if(dofusBotParent->mapInfos->getActor(gmcoMsg->orientation.id)) {
             dofusBotParent->mapInfos->getActor(gmcoMsg->orientation.id)->direction = gmcoMsg->orientation.id;
             Logger::write("Actor : " + to_string(gmcoMsg->orientation.id) + " is now oriented to " + to_string(gmcoMsg->orientation.direction), LOG_INFO);
@@ -204,15 +218,18 @@ bool RoleplayContextFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Sets the character's restrictions 
         if (dofusBotParent->getMapInfosAsRoleplay() && dofusBotParent->getMapInfosAsRoleplay()->getPlayer(scrMsg->actorId))
             dofusBotParent->getMapInfosAsRoleplay()->getPlayer(scrMsg->actorId)->restrictions = scrMsg->restrictions;
         break;
 
     case GameContextDestroyMessage::protocolId:
         Logger::write("Roleplay context destroyed.", LOG_INFO);
+        // Adds the frame to build contexts
         dofusBotParent->addFrame(make_shared<SwitchContextFrame>());
-        dofusBotParent->removeFrame(this);
 
+        // Removes all necessary frames
+        dofusBotParent->removeFrame(this);
         dofusBotParent->popAllFrames<MovementFrame>();
         dofusBotParent->popAllFrames<BasicActionsFrame>();
         dofusBotParent->popAllFrames<APIActionsFrame>();

@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Launches a script
 class LaunchScriptMessage : public PrefixedMessage {
 public:
 	// Constructor

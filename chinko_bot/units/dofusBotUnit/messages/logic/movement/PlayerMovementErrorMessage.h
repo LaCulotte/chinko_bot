@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Notify that the character movement was a failure
 class PlayerMovementErrorMessage : public Message {
 public: 
 	// Constructor

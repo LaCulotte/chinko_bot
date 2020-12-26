@@ -5,6 +5,7 @@
 
 #include "PlayedCharacterInformations.h"
 
+// Bot's character informations
 class PlayedCharacterInformationsMessage : public PrefixedMessage {
 public:
 	// Constructor

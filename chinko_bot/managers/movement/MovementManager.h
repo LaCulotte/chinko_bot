@@ -19,12 +19,16 @@ public:
     // Destructor
     ~MovementManager() = default;
 
+    // Returns the cellId of a cell that can be pathfind to from an array to cell
     int pathfindToCellInVectorRandom(vector<int> cells);
+    // Returns the cellId offseted by (xOffset, yOffset)
     int cellIdWithOffset(int cellId, int xOffset, int yOffset);
 
+    // Sets DofusBotUnit
     void setBot(DofusBotUnit* bot) { this->bot = bot; };
 
 protected:
+    // DofusBotUnit
     DofusBotUnit* bot = nullptr;
 };
 

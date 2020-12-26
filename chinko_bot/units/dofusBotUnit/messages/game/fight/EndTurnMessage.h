@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the GameContext building
+// Message to end bot's turn in a fight
 class EndTurnMessage : public Message {
 public: 
 	// Constructor

@@ -1,7 +1,7 @@
 while(isFull() == false) {
     log("Current weight : ", getWeightStatusAsString());
 
-    collect(1);
+    collect();
     usleep(100 * 1000);
 
     mapRight(-360);

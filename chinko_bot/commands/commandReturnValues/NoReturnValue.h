@@ -3,8 +3,10 @@
 
 #include "BotCommandReturnValues.h"
 
+// Returns nothing, but the command has ended.
 class NoReturnValue : public BotCommandReturnValues {
 public:
+    // Constructor
     NoReturnValue() {};
 };
 

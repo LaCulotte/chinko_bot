@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the GameContext building
+// Requests for the bot to get ready in a fight
 class GetFightReadyMessage : public Message {
 public: 
 	// Constructor

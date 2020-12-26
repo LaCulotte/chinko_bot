@@ -4,6 +4,7 @@
 #include "Message.h"
 #include "GameServerInformations.h"
 
+// Request the server selection from the API client
 class QueryServerSelectionMessage : public Message {
 public:
 	// Constructor

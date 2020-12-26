@@ -47,8 +47,10 @@ bool CharacterUpdatesFrame::computeMessage(sp<Message> message, int srcId) {
     sp<ObjectModifiedMessage> omMsg;
     sp<KamasUpdateMessage> kuMsg;
 
+    // Id of the things to update. Used to send updates to the API client
     vector<int> updatesId;
 
+    // Process the character's updates
     switch (message->getId())
     {
     case ShortcutBarContentMessage::protocolId:

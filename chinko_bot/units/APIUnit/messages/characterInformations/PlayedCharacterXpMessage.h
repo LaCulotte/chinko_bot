@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Bot's character update : updates character's xp count
 class PlayedCharacterXpMessage : public PrefixedMessage {
 public:
 	// Constructor

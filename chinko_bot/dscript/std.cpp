@@ -98,7 +98,7 @@ void initstd(parser_data_t *data) {
 	data->usrfuncs = {};
 
 	data->stdfuncs.insert({"pow", stdpow});
-	data->stdfuncs.insert({"logg", log});
+	data->stdfuncs.insert({"log", log});
 	data->stdfuncs.insert({"usleep", usleep});
 	data->stdfuncs.insert({"randRange", randRange});
 
@@ -131,7 +131,7 @@ void initstd(parser_data_t *data) {
 	data->stdfuncs.insert({"max", stdmax});
 	data->stdfuncs.insert({"pi", stdpi});
 	data->stdfuncs.insert({"exp", stdexp});
-	data->stdfuncs.insert({"log", stdlog});
+	// data->stdfuncs.insert({"log", stdlog});
 	data->stdfuncs.insert({"sqrt", stdsqrt});
 	data->stdfuncs.insert({"round", stdround});
 	data->stdfuncs.insert({"isinf", stdisinf});

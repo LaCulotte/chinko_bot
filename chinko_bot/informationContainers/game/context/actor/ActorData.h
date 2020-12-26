@@ -15,6 +15,8 @@ public:
     // Destructor
     virtual ~ActorData() = default;
 
+
+    // Bunch of informations that are necessary for logic
     double contextualId = 0;
 
     bool allowMovementThrough = false;

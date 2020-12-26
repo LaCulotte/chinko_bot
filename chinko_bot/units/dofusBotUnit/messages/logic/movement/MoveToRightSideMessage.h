@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Requests to move to the right side of the map
 class MoveToRightSideMessage : public Message {
 public: 
 	// Constructor

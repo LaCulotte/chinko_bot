@@ -4,6 +4,7 @@
 #include "Message.h"
 #include "BotCommandReturnValues.h"
 
+// Message for return values
 class BotCommandReturnValuesMessage : public Message {
 public:
 	// Constructor

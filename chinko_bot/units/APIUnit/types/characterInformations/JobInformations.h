@@ -7,6 +7,7 @@
 
 #include "SkillInformations.h"
 
+// Job's informations type
 class JobInformations : public APIType {
 public:
     // Constructor

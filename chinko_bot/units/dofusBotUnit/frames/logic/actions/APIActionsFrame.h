@@ -30,11 +30,16 @@ public:
     
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
+    // Collects an interactive of the current id
     void collectNextInteractive();
+    
 protected:
+    // Interactives to collect on this map
     vector<int> interactivesTypesIdsToCollect;
+    // Index of the current interactive that is being collected
     int currentInteractiveIndex = 0;
 
+    // Frame's state
     APIActionsFrameState currentState = aaf_idle;
 };
 

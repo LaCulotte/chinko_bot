@@ -16,6 +16,7 @@
 #include "MoveToCellMessage.h"
 #include "EndTurnMessage.h"
 
+// Spell structure (here only attacking spells)
 struct Spell {
     int id = 0;
     int range = 0;
@@ -39,25 +40,23 @@ public:
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
 protected:
-//     virtual bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
-//     virtual bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
-
+    // Returns all the cells that can be accessed by the fighter
     vector<int> getReachableCells(sp<FighterData> fighter);
 
+    // Does the next action
     void getNextAction();
+    // Tries a direct attack to an enemy
     bool tryDirectAttack();
+    // Tries a move in order to attack an enemy
     bool tryMoveToAttack();
+    // Tries a move towards an enemy
     bool moveTowardsEnnemy();
 
+    // Return index of the best castable spell (the one that does the most damages in this one instance)
     int bestCastableSpell(int targetCellId);
 
-    // sp<FighterData> tempPlayedCharacterInfos;
-
-    // vector<sp<AbstactFightAction>> actionList;
-
+    // Spells that can be used
     const vector<Spell> spells = {{13047, 8, 3, 12}};
-
-    // bool 
 };
 
 #endif

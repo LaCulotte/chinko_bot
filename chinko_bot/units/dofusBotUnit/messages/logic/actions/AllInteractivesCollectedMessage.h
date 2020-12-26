@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Notify that all interactives requested on the map are collected
 class AllInteractivesCollectedMessage : public Message {
 public: 
 	// Constructor

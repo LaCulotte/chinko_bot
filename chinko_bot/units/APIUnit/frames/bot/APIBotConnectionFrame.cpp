@@ -37,6 +37,7 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
     switch (message->getId())
     {
     case BeginAuthentificationMessage::protocolId:
+        // Checks if units are available
         if(apiUnitParent->getDofusBotUnitId() == -1) {
             Logger::write("Cannot begin authentification : no dofusBotUnit linked to APIUnit.", LOG_ERROR);
             break;
@@ -47,14 +48,17 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
             break;
         }
 
+        // Relays the message to the dofusBotUnit
         apiUnitParent->sendMessage(message, apiUnitParent->getDofusBotUnitId());
         break;
 
     case AuthentificationSuccessMessage::protocolId:
+        // Relays the message to the API client
         apiUnitParent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<AuthentificationSuccessMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
         break;
 
     case AuthentificationFailureMessage::protocolId:
+        // Relays the message to the API client
         apiUnitParent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<AuthentificationFailureMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
         break;
 
@@ -62,6 +66,7 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         qcsMsg = dynamic_pointer_cast<QueryCharacterSelectionMessage>(message);
         cilMsg = make_shared<CharacterInformationsListMessage>();
 
+        // Sets the CharacterInformationsListMessage's characters' informations
         for(int i = 0; i < qcsMsg->characters.size(); i++) {
             CharacterInformations character;
 
@@ -78,47 +83,31 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
             cilMsg->characters.push_back(character);
         }
 
-        // TODO : proper connectionId
+        // Sends the characters to the API client
         apiUnitParent->sendMessage(make_shared<SendPacketRequestMessage>(cilMsg, apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
         break;
 
-        // qcsMsg = dynamic_pointer_cast<QueryCharacterSelectionMessage>(message);
-
-        // cout << "Choose character : " << endl;
-        // for(int i = 0; i < qcsMsg->characters.size(); i++) {
-        //     sp<CharacterBaseInformations> character = qcsMsg->characters[i];
-        //     cout << "(" << i << ") " << character->name << " : lvl " << character->level << "; ";
-        //     cout << (character->sex?"Female ":"Male ") << breed_idToString[character->breed] << "." << endl; 
-        // }
-
-        // {
-        //     int selectedCharacterId;
-        //     do {
-        //         cin >> selectedCharacterId;
-        //     } while (selectedCharacterId < 0 || selectedCharacterId >= qcsMsg->characters.size());
-
-        //     csMsg = make_shared<CharacterSelectionMessage>();
-        //     csMsg->id = qcsMsg->characters[selectedCharacterId]->id;
-        //     parent->sendMessage(csMsg, srcId);
-        // }
-        // break;
-
     case CharacterSelectedMessage::protocolId:
+        // Relays the character's selection to the dofusBotClient
         csedMsg = dynamic_pointer_cast<CharacterSelectedMessage>(message);
         csionMsg = make_shared<CharacterSelectionMessage>();
         csionMsg->id = csedMsg->id;
+
         apiUnitParent->sendMessage(csionMsg, apiUnitParent->getDofusBotUnitId());
         break;
 
 
     case CharacterSelectionSuccessMessage::protocolId:
+        // Relays the message to the API client
         parent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<CharacterSelectionSuccessMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
+        // Adds update frame
         parent->addFrame(make_shared<APIBotUpdatesFrame>());
         // TODO : 
         // parent->removeFrame(this);
         break;
 
     case CharacterSelectionFailureMessage::protocolId:
+        // Relays the message to the API client
         parent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<CharacterSelectionFailureMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
         break;
 
@@ -126,6 +115,7 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
         qssMsg = dynamic_pointer_cast<QueryServerSelectionMessage>(message);
         silMsg = make_shared<ServerInformationsListMessage>();
 
+        // Sets the ServerInformationsListMessage's servers' informations
         for(int i = 0; i < qssMsg->servers.size(); i++) {
             ServerInformations server;
 
@@ -145,42 +135,26 @@ bool APIBotConnectionFrame::computeMessage(sp<Message> message, int srcId) {
             silMsg->servers.push_back(server);
         }
 
+        // Sends the servers to the API client
         apiUnitParent->sendMessage(make_shared<SendPacketRequestMessage>(silMsg, apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
-        // cout << "Choose character : " << endl;
-        // for(int i = 0; i < qssMsg->servers.size(); i++) {
-        //     GameServerInformations server = qssMsg->servers[i];
-
-        //     auto serverNameIt = server_idToString.find(server.id); 
-
-        //     cout << "(" << i << ") " << (serverNameIt!=server_idToString.end()?serverNameIt->second:"TODO") << " (" << (server.isSelectable?"Avalaible":"Unavailable") << ") ";
-        //     cout << server.charactersCount << "/" << server.charactersSlots << " characters." << endl;
-        //     // cout << (character->sex?"Female ":"Male ") << breed_idToString[character->breed] << "." << endl; 
-        // }
-
-        // {
-        //     int selectedServerId;
-        //     do {
-        //         cin >> selectedServerId;
-        //     } while (selectedServerId < 0 || selectedServerId >= qssMsg->servers.size());
-
-        //     ssedMsg = make_shared<ServerSelectionMessage>();
-        //     ssedMsg->serverId = qssMsg->servers[selectedServerId].id;
-        //     parent->sendMessage(ssedMsg, srcId);
-        // }
         break;
 
     case ServerSelectedMessage::protocolId:
+        // Relays the server's selection to the dofusBotClient
         ssedMsg = dynamic_pointer_cast<ServerSelectedMessage>(message);
         ssionMsg = make_shared<ServerSelectionMessage>();
         ssionMsg->serverId = ssedMsg->id;
+        
         apiUnitParent->sendMessage(ssionMsg, apiUnitParent->getDofusBotUnitId());
         break;
 
     case ServerSelectionSuccessMessage::protocolId:
+        // Relays the message to the API client
         parent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<ServerSelectionSuccessMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
         break;
 
     case ServerSelectionFailureMessage::protocolId:
+        // Relays the message to the API client
         parent->sendMessage(make_shared<SendPacketRequestMessage>(dynamic_pointer_cast<ServerSelectionFailureMessage>(message), apiUnitParent->getAPIConnectionId()), apiUnitParent->getConnectionUnitId());
         break;
 

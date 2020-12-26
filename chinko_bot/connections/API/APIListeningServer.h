@@ -6,8 +6,10 @@
 
 #include "APIServerFullMessage.h"
 
+// Server that listens for any API connection
 class APIListeningServer : public ListeningServer {
 public:
+    // Constructor
     APIListeningServer() : ListeningServer() {};
 
     // Constructor with listening port initialisation

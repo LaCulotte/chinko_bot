@@ -3,6 +3,7 @@
 
 #include "APIType.h"
 
+// Server's informations type
 class ServerInformations : public APIType {
 public:
     // Constructor

@@ -18,6 +18,7 @@ public :
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
 protected:
+    // Range of the bot updates messages' ids
     vector<pair<int, int>> updateMessagesIdRanges = {{11030, 11037}};
 };
 

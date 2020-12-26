@@ -9,125 +9,25 @@
 #define TOLERENCE_ELEVATION 11
 #define sign(x) ((x) > 0 ) - ((x) < 0)
 
-// bool AbstractMapManager::loadMapInformations(sp<MapComplementaryInformationsDataMessage> mcidMsg) {
-//     clearAll();
-
-//     for(auto actor : mcidMsg->actors)
-//         addActor(actor);
-
-//     // interactiveElements = mcidMsg->interactiveElements;
-//     for (auto interactiveElement : mcidMsg->interactiveElements) {
-//         this->interactiveElements[interactiveElement->elementId] = interactiveElement;
-//     }
-//     for (auto statedElement : mcidMsg->statedElements) {
-//         this->statedElements[statedElement.elementId] = statedElement;
-//     }
-//     mapId = mcidMsg->mapId;
-//     hasAggressiveMonsters = mcidMsg->hasAggressiveMonsters;
-
-//     if(!this->loadMapCellsInformations()) 
-//         return false;
-
-//     for(MapObstacle obstacle : mcidMsg->obstacles)
-//         // Le 1 correspond à MapObstacleStateEnum::OBSTACLE_OPEN (sinon 2 qui correspond à MapObstacleStateEnum::OPSTACLE_CLOSED)
-//         if(obstacle.state != 1 && isInMap(obstacle.obstacleCellId))
-//             cells[obstacle.obstacleCellId]->isBlockedByObstacle = true;
-
-//     return true;
-// }
-
-// void AbstractMapManager::addActor(const sp<GameRolePlayActorInformations> actorInfos) {
-//     sp<ActorData> actorData;
-
-//     switch (actorInfos->getId()) {
-//     case GameRolePlayCharacterInformations::typeId:
-//     case GameRolePlayHumanoidInformations::typeId:
-//         {
-//             sp<GameRolePlayHumanoidInformations> grphInfos = dynamic_pointer_cast<GameRolePlayHumanoidInformations>(actorInfos);
-//             sp<RoleplayCharacterData> characterData(new RoleplayCharacterData());
-            
-//             characterData->accountId = grphInfos->accountId;
-//             characterData->restrictions = grphInfos->humanoidInfo->restrictions;
-//             characterData->name = grphInfos->name;
-            
-//             actorData = characterData;
-//             players[actorInfos->contextualId] = characterData;
-//         }
-//         break;
-    
-//     case GameRolePlayGroupMonsterInformations::typeId:
-//         {
-//             sp<GameRolePlayGroupMonsterInformations> grpgmInfos = dynamic_pointer_cast<GameRolePlayGroupMonsterInformations>(actorInfos);
-//             sp<RoleplayMonsterGroupData> monsterGroupData(new RoleplayMonsterGroupData());
-
-//             monsterGroupData->mainMonster = grpgmInfos->staticInfos->mainCreatureLightInfos;
-//             for (auto underling : grpgmInfos->staticInfos->underlings) 
-//                 monsterGroupData->underlings.push_back(underling);
-
-//             actorData = monsterGroupData;
-//             monsterGroups[actorInfos->contextualId] = monsterGroupData;
-//         }
-//         break;
-
-//     case GameRolePlayNpcWithQuestInformations::typeId:
-//         {
-//             sp<GameRolePlayNpcWithQuestInformations> grpnwqInfos = dynamic_pointer_cast<GameRolePlayNpcWithQuestInformations>(actorInfos);
-//             sp<RoleplayNpcWithQuestData> npcWithQuestData(new RoleplayNpcWithQuestData());
-
-//             npcWithQuestData->questFlag = grpnwqInfos->questFlag;
-//             npcWithQuestData->npcId = grpnwqInfos->npcId;
-
-//             actorData = npcWithQuestData;
-//             npcs[actorInfos->contextualId] = npcWithQuestData;
-//         }
-//         break;
-
-//     case GameRolePlayNpcInformations::typeId:
-//         {
-//             sp<GameRolePlayNpcInformations> grpnInfos = dynamic_pointer_cast<GameRolePlayNpcInformations>(actorInfos);
-//             sp<RoleplayNpcData> npcData(new RoleplayNpcData());
-
-//             npcData->npcId = grpnInfos->npcId;
-
-//             actorData = npcData;
-//             npcs[actorInfos->contextualId] = npcData;
-//         }
-//         break;
-
-//     default:
-//         actorData = make_shared<ActorData>();
-//     }
-
-//     actorData->contextualId = actorInfos->contextualId;
-//     actorData->cellId       = actorInfos->disposition->cellId;
-//     actorData->direction    = actorInfos->disposition->direction;
-
-//     switch (actorInfos->getId())
-//     {
-//     case GameRolePlayTaxCollectorInformations::typeId:
-//     case GameRolePlayPrismInformations::typeId:
-//     case GameRolePlayPortalInformations::typeId:
-//         actorData->allowMovementThrough = true; 
-//         break;
-//     }
-
-//     allActors[actorData->contextualId] = actorData;
-// }
-
 bool AbstractMapManager::loadMapInformations(int mapId) {
+    // Resets all containers
     this->clearAll();
     
+    // Sets mapId
     this->mapId = mapId;
     this->cellsLoaded = false;
     
+    // Loads cells
     return this->loadMapCellsInformations();
 }
 
 bool AbstractMapManager::loadMapCellsInformations() {
+    // Gets map's json file's path
     ostringstream filename_strstream;
     filename_strstream.precision(0); 
     filename_strstream << mapsFolder << "/" << fixed << mapId << ".json";
 
+    // Opens map's json file
     ifstream mapFile_stream(filename_strstream.str(), ifstream::binary);
 
     if(!mapFile_stream) {
@@ -136,12 +36,14 @@ bool AbstractMapManager::loadMapCellsInformations() {
     }
 
     Json::Value mapFile_json;
-    // Json::Reader mapFile_reader;
     Json::CharReaderBuilder builder;
 
     string error_str;
+    // Reads json file
     bool couldRead = Json::parseFromStream(builder, mapFile_stream, &mapFile_json, &error_str);
+    mapFile_stream.close();
 
+    // Check for errors
     if(!couldRead) {
         Logger::write("Cannot read the map information file of mapId : " + to_string(mapId) + "; it is not a correct json file. Error : " + error_str, LOG_ERROR);
         return false;
@@ -152,6 +54,7 @@ bool AbstractMapManager::loadMapCellsInformations() {
         return false;
     }
 
+    // Reads cells
     cells.clear();
     for(auto cell_json : mapFile_json["cells"]) {
         sp<Cell> cell(new Cell());
@@ -178,6 +81,7 @@ bool AbstractMapManager::loadMapCellsInformations() {
         cells.push_back(cell);
     }
 
+    // Read neighbouring maps' ids
     rightMapId = mapFile_json["rightNeighbourId"].asDouble();
     downMapId = mapFile_json["bottomNeighbourId"].asDouble();
     leftMapId = mapFile_json["leftNeighbourId"].asDouble();
@@ -233,6 +137,7 @@ float AbstractMapManager::getEuclidianDistance(int cellId1, int cellId2) {
 }
 
 bool AbstractMapManager::canMove(int cellId, int previousCellId, int endCellId, bool avoidObstacles, bool allowThroughEntities) {
+    // Translation of the source code 
     if(!isInMap(cellId))
         return false;
 
@@ -271,6 +176,7 @@ bool AbstractMapManager::sortCellDist(int* cell1, int* cell2) {
 }
 
 vector<int> AbstractMapManager::getLine(int cell1, int cell2) {
+    // Translation of the source code
     vector<int> ret;
 
     float dist = this->getEuclidianDistance(cell1, cell2);
@@ -311,6 +217,7 @@ vector<int> AbstractMapManager::getLine(int cell1, int cell2) {
 }
 
 bool AbstractMapManager::isThereLos(int destCellId, int referencePosition) {
+    // Translation of the source code
     vector<int> line = this->getLine(referencePosition, destCellId);
 
     int referenceX = this->cellId_to_XPosition(referencePosition);
@@ -339,6 +246,7 @@ bool AbstractMapManager::isThereLos(int destCellId, int referencePosition) {
 }
 
 vector<int> AbstractMapManager::getLosFromCells(vector<int> range, int referencePosition) {
+    // Translation of the source code
     vector<int*> orderedCells;
     unordered_map<int, bool> testedCells;
     vector<int> result;
@@ -347,7 +255,6 @@ vector<int> AbstractMapManager::getLosFromCells(vector<int> range, int reference
     int referenceY = this->cellId_to_YPosition(referencePosition);
 
     for(int cell : range) {
-        // int cellAndDist[2] = {cell, this->getManhattanDistance(cell, referencePosition)};
         int* cellAndDist = (int *) malloc(2 * sizeof(int));
         cellAndDist[0] = cell;
         cellAndDist[1] = this->getManhattanDistance(cell, referencePosition);
@@ -369,8 +276,6 @@ vector<int> AbstractMapManager::getLosFromCells(vector<int> range, int reference
             int referenceY = this->cellId_to_YPosition(referencePosition);
 
             if(line.size() == 0) {
-                // return true
-                // result.push_back(cellId);
                 testedCells[cellId] = true;
             } else {
                 bool los = true;
@@ -380,7 +285,6 @@ vector<int> AbstractMapManager::getLosFromCells(vector<int> range, int reference
                     int lineCellX = this->cellId_to_XPosition(lineCellId);
                     int lineCellY = this->cellId_to_YPosition(lineCellId);
 
-                    // if(isCoordsInMap(lineCellX, lineCellY)) {
                     if(isInMap(lineCellId)) {
                         if(i > 0 && this->isThereSeeBlockingEntityOn(line[i - 1], true)) {
                             los = false;
@@ -390,7 +294,6 @@ vector<int> AbstractMapManager::getLosFromCells(vector<int> range, int reference
                         } else if(testedCells.find(lineCellId) == testedCells.end()) {
                             los = los && !cells[lineCellId]->isBlockedByObstacle && cells[lineCellId]->los;
                         } else {
-                            // los = los && !cells[lineCellId]->isBlockedByObstacle && cells[lineCellId]->los;
                             los = los && testedCells.find(lineCellId)->second;
                         }
                     }
@@ -410,6 +313,7 @@ vector<int> AbstractMapManager::getLosFromCells(vector<int> range, int reference
 }
 
 bool AbstractMapManager::isThereBlockingEntityOn(int cellId, bool allowThroughEntities) {
+    // Checks for all the actors & their cell
     for(auto actorIt : allActors) {
         sp<ActorData> actor = actorIt.second;
         if(actor->cellId == cellId && (!allowThroughEntities || !actor->allowMovementThrough))
@@ -420,6 +324,7 @@ bool AbstractMapManager::isThereBlockingEntityOn(int cellId, bool allowThroughEn
 }
 
 bool AbstractMapManager::isThereSeeBlockingEntityOn(int cellId, bool allowThroughEntities) {
+    // Checks for all the actors & their cell
     for(auto actorIt : allActors) {
         sp<ActorData> actor = actorIt.second;
         if(actor->cellId == cellId && (!allowThroughEntities || !actor->canSeeThrough))
@@ -433,9 +338,10 @@ bool AbstractMapManager::isChangeZone(int cellId1, int cellId2) {
     if(!isInMap(cellId1) || !isInMap(cellId2))
         return true;
 
+    // Computes floor difference between the two cells
     int floorDiff = abs(abs(cells[cellId1]->floor) - abs(cells[cellId2]->floor));
 
-    return cells[cellId1]->moveZone !=  cells[cellId2]->moveZone && floorDiff > 0; 
+    return cells[cellId1]->moveZone != cells[cellId2]->moveZone && floorDiff > 0; 
 }
 
 int AbstractMapManager::getLookDirection(int fromCellId, int toCellId) {
@@ -443,6 +349,7 @@ int AbstractMapManager::getLookDirection(int fromCellId, int toCellId) {
 }
 
 int AbstractMapManager::getLookDirection(int fromCellX, int fromCellY, int toCellX, int toCellY) {
+    // Translation from the source code
     int dX = sign(toCellX - fromCellX);
     int dY = sign(toCellY - fromCellY);
 
@@ -455,6 +362,7 @@ int AbstractMapManager::getLookDirection(int fromCellX, int fromCellY, int toCel
 }
 
 int AbstractMapManager::getAdvancedOrientation(int fromCellX, int fromCellY, int toCellX, int toCellY, bool fourDir) {
+    // Translation from the source code
     float xDiff = toCellX - fromCellX;
     float yDiff = fromCellY - toCellY;
 
@@ -476,6 +384,7 @@ int AbstractMapManager::getAdvancedOrientation(int fromCellId, int toCellId, boo
 }
 
 int AbstractMapManager::getNearestCellInDirection(int srcCellId, int dir) {
+    // Translation from the source code
     int cellX = cellId_to_XPosition(srcCellId);
     int cellY = cellId_to_YPosition(srcCellId);
     switch(dir) {
@@ -519,6 +428,7 @@ int AbstractMapManager::getNearestCellInDirection(int srcCellId, int dir) {
 }
 
 int AbstractMapManager::getNearestFreeCellInDirection(int srcCellId, int dir, bool allowItself, bool allowThroughEntity, bool ignoreSpeed, sp<vector<int>> forbiddenCells) {
+    // Translation from the source code
     if(!forbiddenCells)
         forbiddenCells = make_shared<vector<int>>();
 
@@ -568,10 +478,12 @@ int AbstractMapManager::getNearestFreeCellInDirection(int srcCellId, int dir, bo
 
 
 int AbstractMapManager::getOrientationDist(int dir1, int dir2) {
+    // Translation from the source code
     return min(abs(dir2 - dir1), abs(8 - dir2 + dir1));
 }
 
 sp<ActorData> AbstractMapManager::getActor(double actorId) {
+    // Searches for the actor in the map
     auto actorIt = allActors.find(actorId);
     if(actorIt != allActors.end())
         return actorIt->second;
@@ -580,35 +492,11 @@ sp<ActorData> AbstractMapManager::getActor(double actorId) {
 }
 
 void AbstractMapManager::removeActor(double actorId) {
+    // Removes the actor from the map
     allActors.erase(actorId);
 }
-
-// sp<RoleplayCharacterData> AbstractMapManager::getPlayer(double playerId) {
-//     auto playerIt = players.find(playerId);
-//     if(playerIt != players.end())
-//         return playerIt->second.lock();
-
-//     return nullptr;
-// }
-
-// sp<RoleplayNpcData> AbstractMapManager::getNpc(double npcId) {
-//     auto npcIt = npcs.find(npcId);
-//     if(npcIt != npcs.end())
-//         return npcIt->second.lock();
-
-//     return nullptr;
-// }
-
-// sp<RoleplayMonsterGroupData> AbstractMapManager::getMonsterGroup(double monsterGroupId) {
-//     auto monsterGroupIt = monsterGroups.find(monsterGroupId);
-//     if(monsterGroupIt != monsterGroups.end())
-//         return monsterGroupIt->second.lock();
-
-//     return nullptr;
-// }
-
 bool AbstractMapManager::updateActorPosition(double actorId, int newCellId) {
-
+    // Searches the actor in the map
     auto actorIt = allActors.find(actorId);
     if(actorIt != allActors.end()) {
         actorIt->second->cellId = newCellId;
@@ -618,60 +506,8 @@ bool AbstractMapManager::updateActorPosition(double actorId, int newCellId) {
     return false;
 }
 
-// void AbstractMapManager::updateInteractiveElement(sp<InteractiveElement> interactive) {
-//     auto interactiveIt = interactiveElements.find(interactive->elementId);
-//     if(interactiveIt != interactiveElements.end()) {
-//         interactiveIt->second->enabledSkills = interactive->enabledSkills;
-//         interactiveIt->second->disabledSkills = interactive->disabledSkills;
-//         interactiveIt->second->onCurrentMap = interactive->onCurrentMap;
-//         interactiveIt->second->elementTypeId = interactive->elementTypeId;
-//     } else {
-//         interactiveElements[interactive->elementId] = interactive;
-//     }
-// }
-
-// void AbstractMapManager::updateInteractiveElement(InteractiveElement interactive) {
-//     auto interactiveIt = interactiveElements.find(interactive.elementId);
-//     if(interactiveIt != interactiveElements.end()) {
-//         interactiveIt->second->enabledSkills = interactive.enabledSkills;
-//         interactiveIt->second->disabledSkills = interactive.disabledSkills;
-//         interactiveIt->second->onCurrentMap = interactive.onCurrentMap;
-//         interactiveIt->second->elementTypeId = interactive.elementTypeId;
-//     } else {
-//         interactiveElements[interactive.elementId] = make_shared<InteractiveElement>(interactive);
-//     }
-// }
-
-// void AbstractMapManager::updateStatedElement(StatedElement stated) {
-//     auto statedIt = statedElements.find(stated.elementId);
-//     if(statedIt != statedElements.end()) {
-//         statedIt->second.elementState = stated.elementState;
-//         statedIt->second.onCurrentMap = stated.onCurrentMap;
-//         statedIt->second.elementCellId = stated.elementCellId;
-//     } else {
-//         statedElements[stated.elementId] = stated;
-//     }
-// }
-
-// int AbstractMapManager::getClosestCellIdFromVector(int cellId, vector<int> cells) {
-//     if(cells.size() > 0)
-//         return -1;
-    
-//     int minDistCellId = -1;
-//     int minDist = 99999;
-
-//     for(int destCellId : cells) {
-//         int destCellDist = getManhattanDistance(cellId, destCellId);
-//         if(destCellDist < minDist) {
-//             minDist = destCellDist;
-//             minDistCellId = destCellId;
-//         }
-//     }
-
-//     return minDistCellId;
-// }
-
 bool AbstractMapManager::isCoordsInMap(int x, int y) {
+    // Translation from the source code
     if(y >= -x && y <= x && y <= MAP_WIDTH + 13 - x)
         return y >= x - (MAP_HEIGHT - (-19));
 
@@ -679,6 +515,7 @@ bool AbstractMapManager::isCoordsInMap(int x, int y) {
 }
 
 int AbstractMapManager::cellSpecialEffects(int x, int y) {
+    // If the coordinates are in the map, then returns cell's special effect
     if(this->isCoordsInMap(x, y)) {
         return this->getCell(position_to_cellId(x, y))->specialEffects;
     } else {
@@ -687,17 +524,22 @@ int AbstractMapManager::cellSpecialEffects(int x, int y) {
 }
 
 void AbstractMapManager::setCellSpecialEffects(int x, int y, int specialEffects) {
+    // If the coordinates are in the map, then returns cell's special effect
     if(this->isCoordsInMap(x, y)) {
         this->getCell(position_to_cellId(x, y))->specialEffects = specialEffects;
     }
 }
 
 void AbstractMapManager::addMark(GameActionMark actionMark) {
+    // Checks if the mark is not already on the map
     auto markIt = marks.find(actionMark.markId);
     if(markIt == marks.end() || markIt->second->cells.size() == 0) {
+        // Builds mark's intance
         sp<Mark> mark(new Mark(actionMark.markId, actionMark.markType));
         
         if(actionMark.cells.size() > 0) {
+            // Sets mark cells
+
             GameActionMarkedCell markedCell = actionMark.cells[0];
             vector<int> selection;
             // 1 corresponds to GameActionMarkCellsTypeEnum.CELLS_CROSS 
@@ -726,6 +568,7 @@ void AbstractMapManager::addMark(GameActionMark actionMark) {
 }
 
 void AbstractMapManager::removeMark(int markId) {
+    // Remove mark from the map
     auto markIt = marks.find(markId);
     if(markIt != marks.end()) {
         // 2 corresponds to GameActionMarkTypeEnum.TRAP
@@ -741,6 +584,7 @@ void AbstractMapManager::removeMark(int markId) {
 }
 
 void AbstractMapManager::updateMarksInformations() {
+    // Translation of the source code
     vector<int> cellMarks = vector<int>(cells.size(), 0);
 
     for(auto mark : marks) {

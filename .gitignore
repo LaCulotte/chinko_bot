@@ -7,4 +7,6 @@ helpers/protocol_builder/types
 helpers/protocol_builder/messages
 chinko_bot/messages_backup
 chinko_bot/types_backup
-chinko_bot/database
+database
+RMD.swf
+RMD_1.swf

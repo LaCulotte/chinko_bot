@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Character selection was successful
 class ServerSelectionSuccessMessage : public PrefixedMessage {
 public : 
     // Constructor

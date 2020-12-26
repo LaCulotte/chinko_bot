@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the GameContext building
+// Message to attack a monster group
 class AttackMonsterGroupMessage : public Message {
 public: 
 	// Constructor

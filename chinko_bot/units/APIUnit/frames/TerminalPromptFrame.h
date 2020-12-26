@@ -9,6 +9,8 @@
 #include "CharactersListMessage.h"
 #include "CharacterSelectionMessage.h"
 
+// TODO : delete
+
 class TerminalPromptFrame : public Frame {
 public :
     // Constructor

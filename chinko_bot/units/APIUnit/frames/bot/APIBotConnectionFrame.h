@@ -26,6 +26,7 @@ public :
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
 protected:
+    // Maps a breed's id to its name
     unordered_map<int, string> breed_idToString = {    {1, "Feca"}, {2, "Osamodas"},
                                                         {3, "Enutrof"}, {4, "Sram"},
                                                         {5, "Xelor"}, {6, "Ecaflip"},
@@ -36,6 +37,7 @@ protected:
                                                         {15, "Steamer"}, {16, "Eliotrope"},
                                                         {17, "Huppermage"}, {18, "Ouginiak"}};
 
+    // Maps a server's id to its name
     unordered_map<int, string> server_idToString = {{50, "Ombre"}, {210, "Merkator"}};
 };
 

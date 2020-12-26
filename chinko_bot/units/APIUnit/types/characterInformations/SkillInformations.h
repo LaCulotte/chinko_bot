@@ -3,6 +3,7 @@
 
 #include "APIType.h"
 
+// Skill's informations type
 class SkillInformations : public APIType {
 public:
     // Constructor

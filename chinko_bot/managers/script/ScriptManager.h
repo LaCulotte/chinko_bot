@@ -21,9 +21,12 @@ public:
     // Destructor
     ~ScriptManager() = default;
 
+    // Launches a script from a script file
     void launchScript(string scriptFilePath);
 
+    // Return last command launched by a script
     sp<BotCommand> getLastCommand();
+    // Sets return values to be read by a script
     void setReturnValues(sp<BotCommandReturnValues> returnValues);
 
 private:

@@ -6,6 +6,8 @@
 
 // TODO : support allowThroughEntitites = false
 MovementPath PathFinding::findPath(sp<AbstractMapManager> map, int startCellId, int endCellId, bool allowDiags, bool avoidObstacles, bool allowThroughEntities){
+    // Translation from the dofus' source code
+
     if(!map) {
         Logger::write("Cannot pathfind : no map provided.", LOG_ERROR);
         return MovementPath();
@@ -33,13 +35,6 @@ MovementPath PathFinding::findPath(sp<AbstractMapManager> map, int startCellId, 
         PathTile* parent = *openTiles.begin();
         int minWeight = parent->weight;
 
-        // for(int i = 1; i < openTiles.size(); i++){
-        //     if(openTiles[i]->weight < minWeight) {
-        //         minWeightTile_index = i;
-        //         minWeight = openTiles[i]->weight;
-        //     }
-        // }
-
         for (PathTile* tile : openTiles) {
             if(tile->weight < minWeight) {
                 parent = tile;
@@ -47,15 +42,11 @@ MovementPath PathFinding::findPath(sp<AbstractMapManager> map, int startCellId, 
             }
         }
 
-        // PathTile* parent = openTiles[minWeightTile_index];
         int parentX = map->cellId_to_XPosition(parent->cellId);
         int parentY = map->cellId_to_YPosition(parent->cellId);
         
         openTiles.erase(parent);
         parent->closed = true;
-
-        // if(parent->cellId == endCellId) 
-        //     arrived = true;
 
         for(int x = parentX - 1; x < parentX + 2; x++) {
             for(int y = parentY - 1; y < parentY + 2; y++) {
@@ -210,14 +201,14 @@ MovementPath PathFinding::findPath(sp<AbstractMapManager> map, int startCellId, 
             if(tile == endTile)
                 tile->lookDirection = map->getLookDirection(tile->parentTile->cellId, tile->cellId);
         }
-
-        // cout << map->cellId_to_XPosition(tile->cellId) << "; " << map->cellId_to_YPosition(tile->cellId) << endl;
     }
 
     return MovementPath(endTile);
 }
 
 float PathFinding::alternativePointWeight(int cellId, sp<AbstractMapManager> map, bool allowThroughEntities) {
+    // Translation from dofus' source code 
+    
     if(!map->isInMap(cellId)){
         Logger::write("Tried to compute the weight of an invalid cell", LOG_WARNING);
         return 10;

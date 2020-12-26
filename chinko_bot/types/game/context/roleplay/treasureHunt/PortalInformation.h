@@ -17,7 +17,7 @@ public:
 	~PortalInformation() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 477;
+	static const unsigned int typeId = 4544;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

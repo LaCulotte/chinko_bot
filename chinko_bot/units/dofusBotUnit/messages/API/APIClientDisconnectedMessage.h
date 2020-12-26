@@ -3,6 +3,7 @@
 
 #include "Message.h"
 
+// API has disconnected
 class APIClientDisconnectedMessage : public Message {
 public:
 	// Constructor

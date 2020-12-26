@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Character could not be selected
 class CharacterSelectionFailureMessage : public PrefixedMessage {
 public : 
     // Constructor

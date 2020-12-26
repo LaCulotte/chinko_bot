@@ -4,6 +4,7 @@
 #include "PrefixedMessage.h"
 #include "ItemInformations.h"
 
+// Bot's character update : add/update/remove (if item quantity is 0) an item to the inventory 
 class ItemsAddMessage : public PrefixedMessage {
 public:
 	// Constructor

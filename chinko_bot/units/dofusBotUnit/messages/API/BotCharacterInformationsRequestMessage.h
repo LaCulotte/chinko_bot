@@ -3,6 +3,7 @@
 
 #include "Message.h"
 
+// Requests bot character's informations
 class BotCharacterInformationsRequestMessage : public Message {
 public:
 	// Constructor

@@ -18,7 +18,7 @@ public:
 	~AllianceInformations() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 8760;
+	static const unsigned int typeId = 9961;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

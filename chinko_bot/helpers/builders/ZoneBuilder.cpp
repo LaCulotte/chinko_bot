@@ -9,6 +9,7 @@ vector<int> ZoneBuilder::Cross(int centerCellId, int minRadius, int maxRadius, A
     int xCenter = AbstractMapManager::cellId_to_XPosition(centerCellId);
     int yCenter = AbstractMapManager::cellId_to_YPosition(centerCellId);
 
+    // Builds a cross of cells
     for(int r = maxRadius; r > 0 && r >= minRadius; r--) {
         if(AbstractMapManager::isCoordsInMap(xCenter + r, yCenter)) {
             if(!mapManager || mapManager->canMove(AbstractMapManager::position_to_cellId(xCenter + r, yCenter)))
@@ -43,6 +44,7 @@ vector<int> ZoneBuilder::Lozenge(int centerCellId, int minRadius, int maxRadius,
     int xCenter = AbstractMapManager::cellId_to_XPosition(centerCellId);
     int yCenter = AbstractMapManager::cellId_to_YPosition(centerCellId);
 
+    // Builds a lozenge of cells and push them in the returning array
     for(int step = maxRadius; step >= minRadius; step--) {
         for(int i = -step; i <= step; i++) {
             for(int j = -step; j <= step; j++) {

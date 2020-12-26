@@ -23,9 +23,8 @@ public:
     bool update() override;
 
 protected:
+    // Script Manager
     ScriptManager scriptManager;
-
-    bool temp = false;
 };
 
 #endif

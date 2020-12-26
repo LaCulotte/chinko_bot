@@ -3,7 +3,7 @@
 
 #include "PrefixedMessage.h"
 
-
+// No bot is available
 class APINoBotMessage : public PrefixedMessage {
 public:
 	// Constructor

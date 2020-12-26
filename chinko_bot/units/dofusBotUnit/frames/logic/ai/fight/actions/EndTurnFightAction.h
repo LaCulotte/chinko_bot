@@ -3,6 +3,7 @@
 
 #include "AbstractFightAction.h"
 
+// UNUSED
 class EndTurnFightAction : public AbstactFightAction {
 public:
     // Constructor

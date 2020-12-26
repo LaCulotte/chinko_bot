@@ -18,6 +18,7 @@ public:
 
     virtual bool setParent(MessagingUnit* parent) override;
 
+    // Frame's parent APIUnit
     APIUnit* apiUnitParent = nullptr;
 };
 

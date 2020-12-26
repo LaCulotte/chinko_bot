@@ -49,7 +49,6 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         // Receive the characters' list
         if(currentState == rcv_CharactersListMessage) {
             // Asks for the APIUnit's id
-            // apiUnitId = parent->getMessageInterfaceOutId<APIUnit>();
             if(dofusBotParent->getAPIUnitId() != -1) {
                 // Sends the character list to the APIUnit
                 sp<BasicCharactersListMessage> bclMsg = dynamic_pointer_cast<BasicCharactersListMessage>(message);
@@ -139,6 +138,7 @@ bool CharacterSelectionFrame::computeMessage(sp<Message> message, int srcId) {
         break;        
 
     case APIClientDisconnectedMessage::protocolId:
+        // Resets the bit if the API client has disconnected
         Logger::write("API client disconnected during authentification : bot will be reset.", LOG_WARNING);
 
         dofusBotParent->resetNextTick();

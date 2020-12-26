@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Bot's character update : updates characters' weight
 class PlayedCharacterInventoryWeightMessage : public PrefixedMessage {
 public:
 	// Constructor

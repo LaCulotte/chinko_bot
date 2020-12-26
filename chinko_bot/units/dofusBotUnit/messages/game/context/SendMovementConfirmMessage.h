@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the GameContext building
+// Message to send a movement confirmation message
 class SendMovementConfirmMessage : public Message {
 public: 
 	// Constructor

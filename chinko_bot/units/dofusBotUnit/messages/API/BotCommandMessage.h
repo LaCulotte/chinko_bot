@@ -4,6 +4,7 @@
 #include "Message.h"
 #include "BotCommand.h"
 
+// Message for bot command 
 class BotCommandMessage : public Message {
 public:
 	// Constructor

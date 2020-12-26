@@ -39,27 +39,33 @@ public:
     // Destructor
     ~ScriptThread() = default;
 
+    // true if the script should be stopped
     bool stop = false;
 
 // Asynchronus methods
 public:
+    // Launches the script
     void launchScript();
-    // Careful -> will be called asynchronusly 
+    // /!\ Careful -> will be called asynchronusly 
     void stopScript() { stop = true; };
 
-    // sp<Command> getCurrentCommand();
-    // bool setCommandReturnValue(sp<CommandReturnValue> return);
-
+    // Sets script file's path
     void setScriptPath(string scriptFilePath) { this->scriptFilePath = scriptFilePath; }
+    // Sets script config
     void setScriptConfig(ScriptConfig config);
 
+    // Returns the last command launched by the script
     sp<BotCommand> getCurrentCommand();
+    // Sets a command return values to be read by the script 
     void setReturnValues(sp<BotCommandReturnValues> returnValues);
 
 protected:
+    // Launches a script thread
     void launchThread();
 
+    // Path to the script's file
     string scriptFilePath;
+    // Script's thread
     thread scriptThread;
 };
 

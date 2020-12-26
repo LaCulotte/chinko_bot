@@ -21,6 +21,7 @@ bool FightActionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case CastSpellOnCellMessage::protocolId:
+        // Casts spell 
         cosMsg = dynamic_pointer_cast<CastSpellOnCellMessage>(message);
         this->sendGameActionFightCastRequestMessage(cosMsg->cellId, cosMsg->spellId);
         break;
@@ -29,13 +30,16 @@ bool FightActionFrame::computeMessage(sp<Message> message, int srcId) {
         mtcMsg = dynamic_pointer_cast<MoveToCellMessage>(message);
 
         if(dofusBotParent->playedCharacter) {
+            // Gets played character
             if(dofusBotParent->playedCharacter->cellId == mtcMsg->destinationCellId) {
                 dofusBotParent->sendSelfMessage(make_shared<FightActionFailureMessage>());
             } else {
                 Logger::write("Pathfinding : " + to_string(dofusBotParent->playedCharacter->cellId) + " to " + to_string(mtcMsg->destinationCellId), LOG_INFO);
-
+                
+                // Specific pathfind for the battle
                 MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, mtcMsg->destinationCellId, false, true, false);
                 
+                // Sends the path if it is valid
                 if(movPath.toKeyMovements().size() > 1) {
                     sendGameMapMovementRequestMessage(&movPath);
                 } else {
@@ -50,6 +54,7 @@ bool FightActionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case GetFightReadyMessage::protocolId:
+        // Gets character ready
         Logger::write("Getting ready.", LOG_INFO);
         gfrMsg = make_shared<GameFightReadyMessage>();
         gfrMsg->isReady = true;
@@ -57,6 +62,7 @@ bool FightActionFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case EndTurnMessage::protocolId:
+        // Ends player's turn
         Logger::write("Ending turn.", LOG_INFO);
         sendPacket(make_shared<GameFightTurnFinishMessage>(), dofusBotParent->gameServerInfos.connectionId);
         break;

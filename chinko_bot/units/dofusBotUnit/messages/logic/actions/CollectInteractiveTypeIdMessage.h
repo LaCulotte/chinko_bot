@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Request for an interactive type collection
 class CollectInteractiveTypeIdMessage : public Message {
 public: 
 	// Constructor

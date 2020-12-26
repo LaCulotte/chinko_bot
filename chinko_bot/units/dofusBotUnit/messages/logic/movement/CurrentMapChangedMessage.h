@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Notify that the map has changed
 class CurrentMapChangedMessage : public Message {
 public: 
 	// Constructor

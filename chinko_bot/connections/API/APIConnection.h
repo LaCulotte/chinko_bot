@@ -4,8 +4,10 @@
 #include "PrefixNetworkConnection.h"
 #include "APIMessageTypeHandler.h"
 
+// Connection for the API unit
 class APIConnection : public PrefixNetworkConnection {
 public:
+    // Constructor
     APIConnection();
 
     // Copy constructor
@@ -16,8 +18,7 @@ public:
     // Destructor
     virtual ~APIConnection() = default; 
 
-    // virtual void onConnection() override;
-
+    // Initialization of the message handlers
     virtual void initHandler() override;
 
 protected:

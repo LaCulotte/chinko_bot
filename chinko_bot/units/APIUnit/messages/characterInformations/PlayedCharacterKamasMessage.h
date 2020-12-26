@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Bot's character update : updates character's kamas
 class PlayedCharacterKamasMessage : public PrefixedMessage {
 public:
 	// Constructor

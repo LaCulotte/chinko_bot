@@ -3,6 +3,7 @@
 
 #include "APIType.h"
 
+// Character's informations type
 class CharacterInformations : public APIType {
 public:
     // Constructor

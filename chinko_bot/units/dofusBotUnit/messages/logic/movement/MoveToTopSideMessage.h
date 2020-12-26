@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Requests to move to the top side of the map
 class MoveToTopSideMessage : public Message {
 public: 
 	// Constructor

@@ -15,30 +15,10 @@
 #include "RoleplayCharacterData.h"
 
 #include "BeginGameContextRequestMessage.h"
-// #include "TimedMessage.h"
-
-// #include "SendMovementConfirmMessage.h"
-// #include "PlayerMovementEndedMessage.h"
-// #include "PlayerMovementErrorMessage.h"
-// #include "CurrentMapChangedMessage.h"
 
 #include "GameContextCreateRequestMessage.h"
 #include "GameContextCreateMessage.h"
 #include "GameContextDestroyMessage.h"
-// #include "CurrentMapMessage.h"
-// #include "MapInformationsRequestMessage.h"
-// #include "MapComplementaryInformationsDataMessage.h"
-// #include "GameMapMovementMessage.h"
-// #include "GameMapNoMovementMessage.h"
-// #include "GameMapMovementConfirmMessage.h"
-// #include "GameContextRemoveElementMessage.h"
-// #include "GameRolePlayShowActorMessage.h"
-// #include "GameMapChangeOrientationMessage.h"
-// #include "SetCharacterRestrictionsMessage.h"
-
-// #include "StatedElementUpdatedMessage.h"
-// #include "InteractiveElementUpdatedMessage.h"
-// #include "InteractiveUsedMessage.h"
 
 // TODO : faire des fichiers séparés pour chaque enum
 enum GameContextEnum {

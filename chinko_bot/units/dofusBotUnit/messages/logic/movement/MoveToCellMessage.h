@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Requests to move on a cell
 class MoveToCellMessage : public Message {
 public: 
 	// Constructor

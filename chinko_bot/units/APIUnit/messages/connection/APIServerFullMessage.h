@@ -3,7 +3,7 @@
 
 #include "PrefixedMessage.h"
 
-
+// The API Server is full, no more API connection can be accepted
 class APIServerFullMessage : public PrefixedMessage {
 public:
 	// Constructor

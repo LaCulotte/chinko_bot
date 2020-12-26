@@ -18,7 +18,7 @@ public:
 	~NamedPartyTeamWithOutcome() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 8522;
+	static const unsigned int typeId = 9333;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

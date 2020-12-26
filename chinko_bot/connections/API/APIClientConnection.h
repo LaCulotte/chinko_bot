@@ -4,6 +4,7 @@
 #include "ClientConnection.h"
 #include "APIConnection.h"
 
+// Connection for any API client to use 
 class APIClientConnection : public APIConnection, public ClientConnection {
 public:
     APIClientConnection() : APIConnection() {};

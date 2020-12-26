@@ -4,6 +4,7 @@
 #include "PrefixedMessage.h"
 #include "JobInformations.h"
 
+// Bot's character update : character's jobs' informations
 class JobsInformationsMessage : public PrefixedMessage {
 public:
 	// Constructor

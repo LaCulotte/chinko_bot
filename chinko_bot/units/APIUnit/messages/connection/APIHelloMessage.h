@@ -3,7 +3,7 @@
 
 #include "PrefixedMessage.h"
 
-
+// First message from the APIServer
 class APIHelloMessage : public PrefixedMessage {
 public:
 	// Constructor

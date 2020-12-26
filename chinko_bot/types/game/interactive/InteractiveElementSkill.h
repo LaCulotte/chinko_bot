@@ -17,7 +17,7 @@ public:
 	~InteractiveElementSkill() = default;
 
 	virtual unsigned int getId() override { return typeId; };
-	static const unsigned int typeId = 1662;
+	static const unsigned int typeId = 7363;
 
 	// Turns raw data into the usable data (type's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

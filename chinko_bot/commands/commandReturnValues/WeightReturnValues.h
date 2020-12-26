@@ -3,6 +3,7 @@
 
 #include "BotCommandReturnValues.h"
 
+// Returning the weight and max weight of the player
 class WeightReturnValues : public BotCommandReturnValues {
 public:
     // Constructor

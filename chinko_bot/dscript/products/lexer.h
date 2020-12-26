@@ -2,9 +2,9 @@
 #define yyHEADER_H 1
 #define yyIN_HEADER 1
 
-#line 6 "chinko_bot/dscript/products/lexer.h"
+#line 5 "chinko_bot/dscript/products/lexer.h"
 
-#line 8 "chinko_bot/dscript/products/lexer.h"
+#line 7 "chinko_bot/dscript/products/lexer.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -33,22 +33,6 @@
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
 /* begin standard C headers. */
-/* Feature test macros. Flex uses functions that require a minimum set of
- * macros defined. As defining some macros may hide function declarations that
- * user code might use, be conservative and respect user's definitions as much
- * as possible. In glibc, feature test macros may not be all set up until one
- * of the libc header (that includes <features.h>) is included. This creates
- * a circular dependency when we check the macros. <assert.h> is the safest
- * header we can include and does not declare too many functions we don't need.
- */
-#if !defined(__GNU_LIBRARY__) && defined(__STDC__)
-#include <assert.h>
-#endif
-#if !(defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE) || \
-    defined(_POSIX_SOURCE))
-# define _POSIX_C_SOURCE 1 /* Required for fileno() */
-# define _POSIX_SOURCE 1
-#endif
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -56,58 +40,75 @@
 
 /* end standard C headers. */
 
-/* begin standard C++ headers. */
-
 /* flex integer type definitions */
 
-#ifndef YYFLEX_INTTYPES_DEFINED
-#define YYFLEX_INTTYPES_DEFINED
+#ifndef FLEXINT_H
+#define FLEXINT_H
 
-/* Prefer C99 integer types if available. */
-# if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-/* Include <inttypes.h> and not <stdint.h> because Solaris 2.6 has the former
- * and not the latter.
+/* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
+
+#if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+
+/* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
+ * if you want the limit (max/min) macros for int types. 
  */
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS 1
+#endif
+
 #include <inttypes.h>
-#  define YYFLEX_USE_STDINT
-# else
-#  if defined(_MSC_VER) && _MSC_VER >= 1600
-/* Visual C++ 2010 does not define __STDC_VERSION__ and has <stdint.h> but not
- * <inttypes.h>.
- */
-#include <stdint.h>
-#   define YYFLEX_USE_STDINT
-#  endif
-# endif
-# ifdef YYFLEX_USE_STDINT
 typedef int8_t flex_int8_t;
 typedef uint8_t flex_uint8_t;
 typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
-# else
-typedef unsigned char flex_uint8_t;
-typedef short int flex_int16_t;
-typedef unsigned short int flex_uint16_t;
-#  ifdef __STDC__
+#else
 typedef signed char flex_int8_t;
-/* ISO C only requires at least 16 bits for int. */
-#include <limits.h>
-#   if UINT_MAX >= 4294967295
-#    define YYFLEX_INT32_DEFINED
+typedef short int flex_int16_t;
 typedef int flex_int32_t;
+typedef unsigned char flex_uint8_t; 
+typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#   endif
-#  else
-typedef char flex_int8_t;
-#  endif
-#  ifndef YYFLEX_INT32_DEFINED
-typedef long int flex_int32_t;
-typedef unsigned long int flex_uint32_t;
-#  endif
-# endif
-#endif /* YYFLEX_INTTYPES_DEFINED */
+
+/* Limits of integral types. */
+#ifndef INT8_MIN
+#define INT8_MIN               (-128)
+#endif
+#ifndef INT16_MIN
+#define INT16_MIN              (-32767-1)
+#endif
+#ifndef INT32_MIN
+#define INT32_MIN              (-2147483647-1)
+#endif
+#ifndef INT8_MAX
+#define INT8_MAX               (127)
+#endif
+#ifndef INT16_MAX
+#define INT16_MAX              (32767)
+#endif
+#ifndef INT32_MAX
+#define INT32_MAX              (2147483647)
+#endif
+#ifndef UINT8_MAX
+#define UINT8_MAX              (255U)
+#endif
+#ifndef UINT16_MAX
+#define UINT16_MAX             (65535U)
+#endif
+#ifndef UINT32_MAX
+#define UINT32_MAX             (4294967295U)
+#endif
+
+#ifndef SIZE_MAX
+#define SIZE_MAX               (~(size_t)0)
+#endif
+
+#endif /* ! C99 */
+
+#endif /* ! FLEXINT_H */
+
+/* begin standard C++ headers. */
 
 /* TODO: this is always defined, so inline it */
 #define yyconst const

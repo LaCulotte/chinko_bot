@@ -17,7 +17,7 @@ public:
 	~InventoryWeightMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 1306;
+	static const unsigned int protocolId = 8954;
 
 	// Turns raw data into the usable data (message's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

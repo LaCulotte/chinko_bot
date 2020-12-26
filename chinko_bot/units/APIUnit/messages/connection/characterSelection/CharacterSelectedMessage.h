@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Messages for the selected character's id 
 class CharacterSelectedMessage : public PrefixedMessage {
 public : 
     // Constructor

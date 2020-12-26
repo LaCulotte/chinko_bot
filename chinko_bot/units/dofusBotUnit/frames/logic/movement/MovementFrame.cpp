@@ -50,8 +50,10 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
             } else {
                 Logger::write("Pathfinding : " + to_string(dofusBotParent->playedCharacter->cellId) + " to " + to_string(mtcMsg->destinationCellId), LOG_INFO);
 
+                // Pathfinds to the cell
                 MovementPath movPath = PathFinding::findPath(dofusBotParent->mapInfos, dofusBotParent->playedCharacter->cellId, mtcMsg->destinationCellId);
                 
+                // Sends the path if it is valid
                 if(movPath.toKeyMovements().size() > 1) {
                     sendGameMapMovementRequestMessage(&movPath);
                 } else {
@@ -66,6 +68,7 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
 
     case MoveToTopSideMessage::protocolId:
         mttsMsg = dynamic_pointer_cast<MoveToTopSideMessage>(message);
+        // Moves to a random cell of the top side
         if(dofusBotParent->mapInfos && !moveToRandomCellInVector(getCellsOnFloor(dofusBotParent->mapInfos->upChangeMapCellsId, mttsMsg->floor))) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
@@ -73,6 +76,7 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
     
     case MoveToBottomSideMessage::protocolId:
         mtbsMsg = dynamic_pointer_cast<MoveToBottomSideMessage>(message);
+        // Moves to a random cell of the bottom side
         if(dofusBotParent->mapInfos && !moveToRandomCellInVector(getCellsOnFloor(dofusBotParent->mapInfos->downChangeMapCellsId, mtbsMsg->floor))) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
@@ -80,6 +84,7 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
     
     case MoveToRightSideMessage::protocolId:
         mtrsMsg = dynamic_pointer_cast<MoveToRightSideMessage>(message);
+        // Moves to a random cell of the right side
         if(dofusBotParent->mapInfos && !moveToRandomCellInVector(getCellsOnFloor(dofusBotParent->mapInfos->rightChangeMapCellsId, mtrsMsg->floor))) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
@@ -87,6 +92,7 @@ bool MovementFrame::computeMessage(sp<Message> message, int srcId) {
     
     case MoveToLeftSideMessage::protocolId:
         mtlsMsg = dynamic_pointer_cast<MoveToLeftSideMessage>(message);
+        // Moves to a random cell of the left side
         if(dofusBotParent->mapInfos && !moveToRandomCellInVector(getCellsOnFloor(dofusBotParent->mapInfos->leftChangeMapCellsId, mtlsMsg->floor))) {
             dofusBotParent->sendSelfMessage(make_shared<PlayerMovementErrorMessage>());
         }
@@ -173,8 +179,10 @@ bool MovementFrame::moveToRandomCellInVector(vector<int> cells) {
         return false;
     }
 
+    // Get a random accessible cell in the vector
     int destId = manager->pathfindToCellInVectorRandom(cells);
     if(destId != -1) {
+        // Moves to it
         dofusBotParent->sendSelfMessage(make_shared<MoveToCellMessage>(destId));
         return true;
     } else {
@@ -227,43 +235,10 @@ bool MovementFrame::sendChangeMapMessage(double mapId) {
     return true;
 }
 
-/*
-    // case PlayerMoved::protocolId:
-    //     if(currentState == mfs_changingmap) {
-    //         // dofusBotParent->
-    //         sp<ChangeMapMessage> cmMsg(new ChangeMapMessage());
-    //         cmMsg->mapId = newMapId;
-
-    //         sendPacket(cmMsg, dofusBotParent->gameServerInfos.connectionId);
-    //         currentState = mfs_idle;
-
-    //         Logger::write("Changing to map : " + to_string(cmMsg->mapId), LOG_INFO);
-    //     } else if (currentState == mfs_pathfindToIron) {
-    //         // Attention : plein de problèmes. A ne pas copier (enfin pas tout)
-    //         if(dofusBotParent->playedCharacter->cellId == destCellId) {
-    //             sp<InteractiveUseRequestMessage> iurMsg(new InteractiveUseRequestMessage());
-    //             iurMsg->elemId = elementId;
-    //             iurMsg->skillInstanceUid = skillId;
-
-    //             sendPacket(iurMsg, dofusBotParent->gameServerInfos.connectionId);
-    //             currentState = mfs_mining;
-
-    //             Logger::write("Begin mining", LOG_INFO);
-    //         } else {
-    //             currentState = mfs_idle;
-    //             Logger::write("Cannot pathfind to iron.", LOG_INFO);
-    //         }
-    //     }
-    //     message->keepInLoop = true;
-    //     return true;
-        // return false;
-
-
-*/
-
 vector<int> MovementFrame::getCellsOnFloor(vector<int> cells, int floor) {
     vector<int> filtered_cells;
 
+    // Loops through the cells, only takes the ones that are on the right floor
     for(int cellId : cells) {
         if(floor == -1 || dofusBotParent->mapInfos->getCell(cellId)->floor == floor)
             filtered_cells.push_back(cellId);

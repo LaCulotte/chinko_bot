@@ -4,8 +4,10 @@
 #include "ServerConnection.h"
 #include "APIConnection.h"
 
+// Connection for the API's server side
 class APIServerConnection : public APIConnection, public ServerConnection {
 public:
+    // Constructor
     APIServerConnection() : APIConnection() {};
 
     // Copy constructor
@@ -15,8 +17,6 @@ public:
     APIServerConnection& operator=(const APIServerConnection& other) = default;
     // Destructor
     virtual ~APIServerConnection() = default; 
-
-    // virtual void initHandler() override;
 };
 
 #endif

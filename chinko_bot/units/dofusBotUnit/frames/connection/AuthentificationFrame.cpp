@@ -75,7 +75,7 @@ bool AuthentificationFrame::computeMessage(sp<Message> message, int srcId) {
 
         break;
 
-    // TODO : à voir si nécéssaire / si on peut faire mieux
+    // TODO : à voir si nécessaire / si on peut faire mieux
     case RetryAuthentificationMessage::protocolId:
         // Message that requests to retry the authentification
         if(currentState == af_idle) {

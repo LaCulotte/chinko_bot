@@ -54,24 +54,30 @@ public:
     virtual bool computeMessage(sp<Message> message, int srcId) override;
 
 protected:
+    // Frame's state
     BasicActionsFrameState currentState = baf_idle;
 
+    // Id of the map to change to
     double changeMapId = 0;
 
-    // int elementToCollectTypeId = 1;
-
-    // vector<int> elementsToCollectOnMap;
+    // Elements that cannot be accessed by the bot
     unordered_set<int> inaccessibleElements;
 
+    // Id of the next interactive element to collect
     int elementToCollectId = 0;
+    // Id of the skill used to collect the next interactive element to collect
     int skillToUseId = 0;
+    // Collect an element of a specified typeId 
     bool collectElementOfTypeId(int elementTypeId);
+    // Collect specific interacitve element with a specific skill 
     bool collectElement(int elementId, int skillId, int skillUID);
 
-    bool sendInteractiveUseRequestMessage(int elementId, int skillId);
-
+    // Id of the monster group to attack
     double monsterId = 0;
+    // Sends GameRolePlayAttackMonsterRequestMessage
     bool sendGameRolePlayAttackMonsterRequestMessage(double monsterGroupId);
+    // Sends InteractiveUseRequestMessage
+    bool sendInteractiveUseRequestMessage(int elementId, int skillId);
 };
 
 #endif

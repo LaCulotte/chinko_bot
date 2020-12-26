@@ -17,7 +17,7 @@ public:
 	~GameActionFightLifeAndShieldPointsLostMessage() = default;
 
 	virtual unsigned int getId() override { return protocolId; };
-	static const unsigned int protocolId = 5065;
+	static const unsigned int protocolId = 1903;
 
 	// Turns raw data into the usable data (message's attributes)
 	virtual bool deserialize(shared_ptr<MessageDataBuffer> input) override;

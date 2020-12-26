@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Request a send of a UseRequestMessage
 class SendUseRequestMessage : public Message {
 public: 
 	// Constructor

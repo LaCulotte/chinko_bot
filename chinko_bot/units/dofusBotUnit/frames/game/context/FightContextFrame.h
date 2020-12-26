@@ -85,8 +85,6 @@ protected:
 
     bool sendGameFightTurnReadyMessage(bool ready = true);
     bool sendGameActionAcknowledgementMessage(sp<SequenceEndMessage> message);
-
-    // void processGameFightEndMessage(sp<GameFightEndMessage> gfeMsg); 
 };
 
 #endif

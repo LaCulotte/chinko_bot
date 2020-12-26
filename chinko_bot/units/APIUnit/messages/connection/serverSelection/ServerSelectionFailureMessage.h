@@ -3,6 +3,7 @@
 
 #include "PrefixedMessage.h"
 
+// Server could not be selected
 class ServerSelectionFailureMessage : public PrefixedMessage {
 public : 
     // Constructor

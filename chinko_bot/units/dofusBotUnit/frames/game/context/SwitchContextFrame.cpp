@@ -5,17 +5,6 @@
 bool SwitchContextFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<GameContextCreateMessage> gccMsg;
-    // sp<CurrentMapMessage> ccMsg;
-    // sp<MapComplementaryInformationsDataMessage> mcidMsg;
-    // sp<GameMapMovementMessage> gmmMsg;
-    // sp<StatedElementUpdatedMessage> seuMsg;
-    // sp<InteractiveElementUpdatedMessage> ieuMsg;
-    // sp<InteractiveUsedMessage> iuMsg;
-    // sp<GameContextRemoveElementMessage> gcreMsg;
-    // sp<GameRolePlayShowActorMessage> grpsaMsg;
-    // sp<GameMapChangeOrientationMessage> gmcoMsg;
-    // sp<SetCharacterRestrictionsMessage> scrMsg;
-    // sp<GameMapNoMovementMessage> gmnmMsg;
 
     switch (message->getId())
     {
@@ -39,6 +28,7 @@ bool SwitchContextFrame::computeMessage(sp<Message> message, int srcId) {
         break;
 
     case GameContextCreateMessage::protocolId:
+        // Adds frames according to the context to be created
         gccMsg = dynamic_pointer_cast<GameContextCreateMessage>(message);
         if(gccMsg->context == GameContextEnum::Roleplay) {
             Logger::write("Creating Roleplay context.", LOG_INFO);

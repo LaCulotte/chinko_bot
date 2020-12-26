@@ -10,21 +10,25 @@
 #include "PlayedCharacterInventoryWeightMessage.h"
 
 void PlayedCharacterManager::loadSkills() {
+    // Opens skills' json file
     ifstream skillsFile(skillsFile_path, ifstream::binary);
 
     Json::Value skills_json;
     Json::CharReaderBuilder skills_readerBuilder;
 
+    // Reads the file's data
     string error_str;
     bool could_read = Json::parseFromStream(skills_readerBuilder, skillsFile, &skills_json, &error_str); 
 
     if(!could_read) {
+        // Logs & returns if there is an error 
         Logger::write("Cannot open file '" +  skillsFile_path + "', it is not a correct json file. Error : " + error_str, LOG_ERROR);
         return;
     }
 
     skills.clear();
 
+    // Loads the skills into the map
     for(auto skill_json : skills_json) {
         sp<SkillInformations> newSkill = make_shared<SkillInformations>();
         newSkill->skillId = skill_json["id"].asInt();
@@ -40,11 +44,13 @@ void PlayedCharacterManager::addItem(int itemUID, int itemGID, int quantity) {
     if(itemIt != infos->inventory.end())
         Logger::write("Overriding an already existing item. Incorrect if ObjectModifiedMessage is not the origin of this change.", LOG_WARNING);
 
+    // Builds the instance of the item
     ItemInformations newItem;
     newItem.itemUID = itemUID;
     newItem.itemGID = itemGID;
     newItem.quantity = quantity;
     
+    // Adds the item instance to the player's inventory
     infos->inventory.insert({newItem.itemUID, newItem});
 }
 
@@ -55,6 +61,7 @@ void PlayedCharacterManager::setItemQuantity(int itemUID, int quantity) {
         return;
     }
 
+    //Sets item's quantity
     itemIt->second.quantity = quantity;
 }
 
@@ -65,19 +72,23 @@ void PlayedCharacterManager::removeItem(int itemUID) {
         return;
     }
 
+    // Erases the item
     infos->inventory.erase(itemIt);
 }
 
 void PlayedCharacterManager::addJob(JobDescription job) {
+    // Checks if the player already has the job
     JobInformations* newJob;
     auto oldJob = infos->jobs.find(job.jobId);
 
     if(oldJob != infos->jobs.end())
+        // If so, gets it
         newJob = &oldJob->second;
     else
+        // If not, builds a new job instance
         newJob = new JobInformations(job.jobId);
     
-
+    // Adds skills to the jobs
     for(auto skill : job.skills) {
         auto skillIt = skills.find(skill->skillId);
         if(skillIt == skills.end())
@@ -86,36 +97,45 @@ void PlayedCharacterManager::addJob(JobDescription job) {
         newJob->skills[skillIt->second->skillId] = skillIt->second;
     }
 
+    // Inserts the job to the player's jobs list
     if(oldJob == infos->jobs.end())
         infos->jobs.insert({newJob->jobId, *newJob});
 }
 
 void PlayedCharacterManager::loadInventory(sp<InventoryContentMessage> icMsg) {
+    // Sets player's kamas
     infos->kamas = icMsg->kamas;
     
+    // Adds items
     for(int i = 0; i < icMsg->objects.size(); i++)
         this->addItem(icMsg->objects[i].objectUID, icMsg->objects[i].objectGID, icMsg->objects[i].quantity);
 }
 
 void PlayedCharacterManager::loadJobs(sp<JobDescriptionMessage> jdMsg) {
+    // Add jobs
     for(int i = 0; i < jdMsg->jobsDescription.size(); i++)
         this->addJob(jdMsg->jobsDescription[i]);
 }
 
 void PlayedCharacterManager::updateJobXp(JobExperience jobXp) {
+    // Checks if the player already has the job
     JobInformations* job;
     auto oldJob = infos->jobs.find(jobXp.jobId);
-
+    
     if(oldJob != infos->jobs.end())
+        // If so, gets it
         job = &oldJob->second;
     else
+        // If not, builds a new instance
         job = new JobInformations(jobXp.jobId);
 
+    // Sets job's xp & lvl
     job->xp = jobXp.jobXP;
     job->level = jobXp.jobLevel;
     job->xpLevelFloor = jobXp.jobXpLevelFloor;
     job->xpNextLevelFloor = jobXp.jobXpNextLevelFloor;
 
+    // Inserts the job to the player's jobs list
     if(oldJob == infos->jobs.end())
         infos->jobs.insert({jobXp.jobId, *job});
 } 
@@ -127,16 +147,21 @@ void PlayedCharacterManager::setXp(uint64_t xp, uint64_t xpLevelFloor, uint64_t 
 }
 
 void PlayedCharacterManager::setJobLevel(int jobId, int newLevel) {
+    // Checks if the player already has the job
     JobInformations* job;
     auto oldJob = infos->jobs.find(jobId);
 
     if(oldJob != infos->jobs.end())
+        // If so, gets it
         job = &oldJob->second;
     else
+        // If so, builds a new instance
         job = new JobInformations(jobId);
 
+    // Sets job's level
     job->level = newLevel;
 
+    // Inserts the job to the player's jobs list
     if(oldJob == infos->jobs.end())
         infos->jobs.insert({jobId, *job});
 }
@@ -286,6 +311,7 @@ void PlayedCharacterManager::sendItemsRemoveMessage(vector<int> itemsId) {
 }
 
 bool PlayedCharacterManager::hasSkill(int skillId) {
+    // Checks for all the jobs if they have the skillId
     for(auto jobIt = infos->jobs.begin(); jobIt != infos->jobs.end(); jobIt++) {
         if(jobIt->second.skills.find(skillId) != jobIt->second.skills.end())
             return true;
@@ -295,6 +321,7 @@ bool PlayedCharacterManager::hasSkill(int skillId) {
 }
 
 int PlayedCharacterManager::getSkillRange(int skillId) {
+    // Gets skill and returns its range
     auto skillIt = skills.find(skillId);
     if(skillIt != skills.end())
         return skillIt->second->range;

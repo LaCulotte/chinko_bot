@@ -4,6 +4,7 @@
 #include "PrefixedMessage.h"
 #include "CharacterInformations.h"
 
+// List of characters to select from
 class CharacterInformationsListMessage : public PrefixedMessage {
 public : 
     // Constructor

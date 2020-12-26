@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the character selection
+// Requests the change to the left map
 class ChangeToLeftMapMessage : public Message {
 public: 
 	// Constructor

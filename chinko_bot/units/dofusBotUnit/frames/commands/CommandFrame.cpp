@@ -37,10 +37,12 @@
 -> sinon : on fait comme si de rien était
 */
 
+// Stores the command if the bot is in a fight
 #define CMD_NOT_AVAILABLE_IN_FIGHT(command)   currentProcessedCommand = command; if(inFight) break;
 
 bool CommandFrame::computeMessage(sp<Message> message, int srcId) {
     if(!inFight) {
+        // Checks if the bot begins a fight
         if(message->getId() == GameContextCreateMessage::protocolId) {
             sp<GameContextCreateMessage> gccMsg = dynamic_pointer_cast<GameContextCreateMessage>(message);
             // TODO : remplacer avec GameContextEnum::Fight
@@ -52,6 +54,7 @@ bool CommandFrame::computeMessage(sp<Message> message, int srcId) {
             return false;
         }
     } else {
+        // Checks if the bot exited the fight
         if(message->getId() == CurrentMapChangedMessage::protocolId) {
             inFight = false;
             if(currentProcessedCommand)
@@ -61,6 +64,7 @@ bool CommandFrame::computeMessage(sp<Message> message, int srcId) {
         }
     }
 
+    // Branches the computation depending on the currend processed command
     switch (currentState)
     {
     case cf_idle:
@@ -80,6 +84,7 @@ bool CommandFrame::computeMessage(sp<Message> message, int srcId) {
 }
 
 void CommandFrame::processCommand(sp<BotCommand> command) {
+    // Number of the current porcessed command
     processedCommandNumber = command->commandNumber;
 
     sp<CollectInteractivesBotCommand> ciCmd;
@@ -88,6 +93,7 @@ void CommandFrame::processCommand(sp<BotCommand> command) {
     sp<ChangeToLeftMapBotCommand> ctlmCmd;
     sp<ChangeToRightMapBotCommand> ctrmCmd;
 
+    // Sends the correct message depending on the incoming command
     switch (command->getCommandId())
     {
     case ChangeToUpMapBotCommand::commandId:
@@ -127,6 +133,7 @@ void CommandFrame::processCommand(sp<BotCommand> command) {
 
     case RequestWeightBotCommand::commandId:
         {
+            // Directly returns the value; no need for intermidiate message
             int weight = dofusBotParent->characterManager->getWeight();
             int maxWeight = dofusBotParent->characterManager->getMaxWeight();
             this->sendReturnValues(make_shared<WeightReturnValues>(weight, maxWeight));
@@ -134,6 +141,7 @@ void CommandFrame::processCommand(sp<BotCommand> command) {
         break;
     
     default:
+        // The command could not be recognized
         currentProcessedCommand = nullptr;
         this->sendReturnValues(make_shared<WrongCommand>());
         currentState = cf_idle;
@@ -142,17 +150,21 @@ void CommandFrame::processCommand(sp<BotCommand> command) {
 }
 
 void CommandFrame::sendReturnValues(sp<BotCommandReturnValues> returnValues) {
+    // Initiliazes the retrunValues' message
     returnValues->commmandNumber = processedCommandNumber;
     sp<BotCommandReturnValuesMessage> bcrvMsg = make_shared<BotCommandReturnValuesMessage>(returnValues);
 
+    // Sends return value to the APIUnit
     if(!dofusBotParent->sendMessage(bcrvMsg, dofusBotParent->getAPIUnitId())) {
         Logger::write("Could not send BotCommandReturnValuesMessage to APIUnit", LOG_ERROR);
     }
 
+    // No command is being processed
     currentProcessedCommand = nullptr;
 }
 
 bool CommandFrame::computeMessage_idle(sp<Message> message, int srcId) {
+    // If the frame is idling, process any incoming command
     if(message->getId() == BotCommandMessage::protocolId) {
         processCommand(dynamic_pointer_cast<BotCommandMessage>(message)->command);
 
@@ -163,6 +175,7 @@ bool CommandFrame::computeMessage_idle(sp<Message> message, int srcId) {
 }
 
 bool CommandFrame::computeMessage_collectInteractives(sp<Message> message, int srcId) {
+    // Waits for the interactives to be all collected
     if(message->getId() == AllInteractivesCollectedMessage::protocolId) {
         sendReturnValues(make_shared<CommandSuccessReturnValue>(true));
         currentState = cf_idle;
@@ -174,6 +187,7 @@ bool CommandFrame::computeMessage_collectInteractives(sp<Message> message, int s
 }
 
 bool CommandFrame::computeMessage_changeMap(sp<Message> message, int srcId) {
+    // Waits for a map change (or player movement error)
     switch (message->getId())
     {
     case CurrentMapChangedMessage::protocolId:

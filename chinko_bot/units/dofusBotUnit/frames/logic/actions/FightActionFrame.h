@@ -35,7 +35,9 @@ protected:
     virtual bool handleSendPacketSuccessMessage(sp<SendPacketSuccessMessage> message) override;
     virtual bool handleSendPacketFailureMessage(sp<SendPacketFailureMessage> message) override;
 
+    // Sends GameActionFightCastRequestMessage
     bool sendGameActionFightCastRequestMessage(int cellId, int spellId);
+    // Sends GameMapMovementRequestMessage
     bool sendGameMapMovementRequestMessage(MovementPath* path);
 };
 

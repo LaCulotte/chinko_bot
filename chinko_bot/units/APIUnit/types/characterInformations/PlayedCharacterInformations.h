@@ -9,6 +9,7 @@
 #include "JobInformations.h"
 #include "ItemInformations.h"
 
+// Played character's informations type
 class PlayedCharacterInformations : public APIType {
 public:
     // Constructor

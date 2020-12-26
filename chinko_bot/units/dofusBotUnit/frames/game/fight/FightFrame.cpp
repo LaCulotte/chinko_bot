@@ -1,5 +1,6 @@
 #include "FightFrame.h"
 
+// TODO : del
 bool FightFrame::computeMessage(sp<Message> message, int srcId) {
 
     sp<GameFightStartingMessage> gfsMsg;

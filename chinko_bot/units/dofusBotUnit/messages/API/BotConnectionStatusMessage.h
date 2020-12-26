@@ -3,6 +3,7 @@
 
 #include "Message.h"
 
+// Tells if the bot is authentified/connected to a game server
 class BotConnectionStatusMessage : public Message {
 public:
 	// Constructor

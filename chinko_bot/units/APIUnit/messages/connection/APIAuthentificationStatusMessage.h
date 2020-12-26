@@ -3,7 +3,7 @@
 
 #include "PrefixedMessage.h"
 
-
+// Message that tells the client if the bot is already authentified/connected to a game server 
 class APIAuthentificationStatusMessage : public PrefixedMessage {
 public:
 	// Constructor

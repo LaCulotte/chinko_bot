@@ -3,7 +3,7 @@
 
 #include "PrefixedMessage.h"
 
-
+// Authentification was successful
 class AuthentificationSuccessMessage : public PrefixedMessage {
 public:
 	// Constructor

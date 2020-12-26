@@ -8,6 +8,7 @@
 #include "CommandFrame.h"
 
 DofusBotUnit::DofusBotUnit() : MessagingUnit() {
+    // Inits the PlayedCharacterManager
     characterManager = make_shared<PlayedCharacterManager>(); 
     characterManager->dofusBot = this;
 }
@@ -16,6 +17,7 @@ DofusBotUnit::DofusBotUnit() : MessagingUnit() {
 void DofusBotUnit::initFrames() {
     MessagingUnit::initFrames();
 
+    // Adds necessary frames
     this->addFrame(make_shared<AuthentificationFrame>());
     this->addFrame(make_shared<BasicDofusBotFrame>());
 
@@ -32,6 +34,7 @@ void DofusBotUnit::initFrames() {
 void DofusBotUnit::tick() {
     MessagingUnit::tick();
 
+    // Resets the bot if necessary
     if(this->toReset)
         fullReset();
 }
@@ -65,14 +68,17 @@ int DofusBotUnit::sendPacket(sp<ConnectionMessage> message, int connectionId) {
 
 void DofusBotUnit::resetPlayedCharacter() {
     if(playedCharacter) {
+        // Stores the character's id
         double id = playedCharacter->contextualId;
 
+        // Resets the played character
         playedCharacter = make_shared<ActorData>();
         playedCharacter->contextualId = id;
     }
 }
 
 int DofusBotUnit::getConnectionUnitId() {
+    // Gets ConnectionUnit's id
     if(connectionUnitId == -1) {
         connectionUnitId = this->getMessageInterfaceOutId<ConnectionUnit>();
         if(connectionUnitId == -1)
@@ -83,6 +89,7 @@ int DofusBotUnit::getConnectionUnitId() {
 }
 
 int DofusBotUnit::getAPIUnitId() {
+    // Gets APIUnit's id
     if(apiUnitId == -1) {
         apiUnitId = this->getMessageInterfaceOutId<APIUnit>();
         if(apiUnitId == -1)
@@ -93,6 +100,8 @@ int DofusBotUnit::getAPIUnitId() {
 }
 
 void DofusBotUnit::fullReset() {
+    // Resets all from the bot 
+
     // TODO : hard remove de toutes les frames (ici tout ce que ca fait c'est marquer les frames comme "à remove")
     this->removeFrames(getAllFrames<Frame>());
     this->messagesToProcess.clear();

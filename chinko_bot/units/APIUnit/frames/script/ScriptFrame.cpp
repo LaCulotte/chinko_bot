@@ -6,8 +6,11 @@
 #include "LaunchScriptMessage.h"
 
 bool ScriptFrame::update() {        
+    // Gets a script command
     sp<BotCommand> cmd = scriptManager.getLastCommand();
+    
     if(cmd)
+        // Sends the command to the BotUnit
         apiUnitParent->sendMessage(make_shared<BotCommandMessage>(cmd), apiUnitParent->getDofusBotUnitId());
 
     return true;

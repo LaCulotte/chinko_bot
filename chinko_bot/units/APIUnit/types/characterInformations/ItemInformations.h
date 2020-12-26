@@ -3,6 +3,7 @@
 
 #include "APIType.h"
 
+// Item's informations type 
 class ItemInformations : public APIType {
 public:
     // Constructor

@@ -5,6 +5,7 @@ APIConnection::APIConnection() : PrefixNetworkConnection() {
 }
 
 void APIConnection::initHandler() {
+    // Construction of the message handler for the API
     this->messageTypeHandler = make_shared<APIMessageTypeHandler>();
 }
 
@@ -13,12 +14,12 @@ sp<MessageDataBuffer> APIConnection::readPrefix() {
     return readData(6);
 }
 
-// TODO : implementer APIConnection::serializePrefix() et APIConnection::deserializePrefix()
-
 sp<PrefixedMessage> APIConnection::deserializePrefix(sp<MessageDataBuffer> prefixData) {
+    // Gets the Id and length of the message
     int id = prefixData->readShort();
     int length = prefixData->readInt();
 
+    // Contruction of the API message
     sp<PrefixedMessage> retMessage = dynamic_pointer_cast<PrefixedMessage>(this->messageTypeHandler->generateMessageById(id));
     
     if(!retMessage)
@@ -29,6 +30,7 @@ sp<PrefixedMessage> APIConnection::deserializePrefix(sp<MessageDataBuffer> prefi
 }
 
 bool APIConnection::serializePrefix(sp<MessageDataBuffer> data, sp<PrefixedMessage> message) {
+    // Checks of the arguments are valid
     if(!data || !message){
         Logger::write("Error : Tried to serialize a prefix with no data or message!", LOG_IMPORTANT_WARNING);
         Logger::write("File : " + (string) __FILE__ + "; Line : " + to_string(__LINE__), LOG_IMPORTANT_WARNING);
@@ -36,8 +38,10 @@ bool APIConnection::serializePrefix(sp<MessageDataBuffer> data, sp<PrefixedMessa
         return false;
     }
 
+    // Gets length of the message's data
     int length = data->size();
 
+    // Inserts the prefix into the sending data
     data->cursor_reset();
     data->insertDataSpace(6);
     data->writeShort(message->getId());

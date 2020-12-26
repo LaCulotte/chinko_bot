@@ -3,7 +3,7 @@
 
 #include "Message.h"
 
-// Message to request the beginning of the GameContext building
+// Continue the current turn's fight actions
 class ReadyNextFightActionMessage : public Message {
 public: 
 	// Constructor
